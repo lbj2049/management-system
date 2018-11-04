@@ -1,0 +1,248 @@
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">分发选题</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>分发选题</cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+        <div class="toolbar layui-toolbar">
+            批次:
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <select name="batchId" xm-select="batchId" xm-select-radio="" lay-verify="required">
+                    </select>
+                </div>
+            </div>
+            班级:
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <select name="classId" xm-select="classId" xm-select-radio="" lay-verify="required">
+                    </select>
+                </div>
+            </div>
+            <input id="topic-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
+            <button id="topic-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+            <button id="topic-btn-distribute" class="layui-btn icon-btn layui-btn-warm"><i class="layui-icon icofont-license"></i>批量发布</button>
+        </div>
+        <table class="layui-table" id="topic-table" lay-filter="topic-table"></table>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="topic-table-bar">
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="distribute">发布</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="undistribute">取消发布</a>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="topic-model">
+    <form id="topic-form" lay-filter="topic-form" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-form-mid layui-word-aux">
+                <label>{{title}}</label>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{content}}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出题人</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{teacherName}}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">提交时间</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{subtime}}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">发布</label>
+            <div class="layui-input-block">
+                <input type="radio" name="distribute" value="1" title="发布">
+                <input type="radio" name="distribute" value="2" title="取消发布" checked>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">回复</label>
+            <div class="layui-input-block">
+                <textarea name="msg" placeholder="请输入内容" class="layui-textarea" maxlength="200"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+            <button class="layui-btn" lay-filter="topic-form-submit" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+
+
+<script type="text/html" id="distributeTpl">
+    {{#  if(d.distribute == 1) { }}
+    发布
+    {{#  } else { }}
+    未发布
+    {{#  } }}
+</script>
+
+<script>
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload'], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var common = layui.common;
+        var auth = layui.auth;
+        var layer = layui.layer;
+        var util = layui.util;
+        var admin = layui.admin;
+        var api = layui.api;
+        var formSelects = layui.formSelects;
+        var upload = layui.upload;
+
+        getBatchData('batchId');
+        getClassData('classId');
+
+        // 渲染表格
+        table.render({
+            elem: '#topic-table',
+            url: common.base_server + 'topic_query.json',
+            method: 'GET',
+            where: {
+                access_token: auth.getToken().access_token
+            },
+            height: 'full-250',
+            page: true,
+            cols: [[
+                {type:'numbers'},
+                {field: 'title', title: '标题', templet: '<div><a href="javascript:;" class="layui-table-link" lay-event="detail">{{d.title}}</a></div>'},
+                {field: 'teacherName', title: '出题人'},
+                {field: 'subtime', title: '提交时间'},
+                {field: 'distribute', title: '发布状态', templet: '#distributeTpl'},
+                {field: 'msg', title: '回复'},
+                {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 160}
+            ]]
+        });
+
+
+        // 表单提交事件
+        form.on('submit(topic-form-submit)', function (data) {
+            layer.load(2);
+            api.req('user_state.json', data.field, function (data) {
+                layer.closeAll('loading');
+                if (data.code == 200) {
+                    layer.msg(data.msg, {icon: 1});
+                    table.reload('topic-table');
+                    layer.closeAll('page');
+                } else {
+                    layer.msg(data.msg, {icon: 2});
+                }
+            }, $('#topic-form').attr('method'));
+            return false;
+        });
+
+        // 工具条点击事件
+        table.on('tool(topic-table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'distribute') { //发布
+                doPass(data.id, 1);
+            } else if (obj.event === 'undistribute') { //取消发布
+                doPass(data.id, 2);
+            } else {
+                showEditModel(data)
+            }
+        });
+
+        // 搜索按钮点击事件
+        $('#topic-btn-search').click(function () {
+            var keyword = $('#topic-edit-search').val();
+            var batchId = formSelects.value('batchId');
+            var classId = formSelects.value('classId');
+            table.reload('topic-table', {where: {keyword: keyword, batchId: batchId, classId: classId}});
+        });
+
+        // 显示编辑弹窗
+        var showEditModel = function (data) {
+            layer.open({
+                type: 1,
+                title: data ? '发布选题' : '添加选题',
+                area: '450px',
+                offset: '120px',
+                content: $('#topic-model').html(),
+                success: function () {
+                    $('#topic-form')[0].reset();
+                    $('#topic-form').attr('method', 'GET');
+                    if (data) {
+                        $('#topic-form').vm(data)
+                        form.val('topic-form', data);
+                        $('#topic-form').attr('method', 'GET');
+
+                    }
+                }
+            });
+        };
+
+        //审核操作
+        function doPass(id, status) {
+            //请修改审核接口
+            api.req('user_state.json', {id: id, status: status}, function (data) {
+                layer.closeAll('loading');
+                if (data.code == 200) {
+                    layer.msg(data.msg, {icon: 1});
+                    table.reload('topic-table');
+                    layer.closeAll('page');
+                } else {
+                    layer.msg(data.msg, {icon: 2});
+                }
+            }, 'get');
+        }
+
+        //加载批次下拉框中的值
+        function getBatchData(selectId, vals) {
+
+            formSelects.btns(selectId, [], '');
+            api.req('batch_query.json', {}, function (data) {
+                if (0 == data.code) {
+                    // 渲染多选下拉框
+                    var opvs = new Array();
+                    for (var i = 0; i < data.data.length; i++) {
+                        opvs.push({name: data.data[i].name, value: data.data[i].id});
+                    }
+                    formSelects.data(selectId, 'local', {arr: opvs});
+
+                    if (vals) {
+                        formSelects.value(selectId, vals);
+                    }
+                }
+            }, 'GET');
+        }
+        //加载班级下拉框中的值
+        function getClassData(selectId, vals) {
+
+            formSelects.btns(selectId, [], '');
+            formSelects.config(selectId, {
+                placeholder: '请选择班级'
+            })
+            api.req('class_query.json', {}, function (data) {
+                if (0 == data.code) {
+                    // 渲染多选下拉框
+                    var opvs = new Array();
+                    for (var i = 0; i < data.data.length; i++) {
+                        opvs.push({name: data.data[i].name, value: data.data[i].id});
+                    }
+                    formSelects.data(selectId, 'local', {arr: opvs});
+
+                    if (vals) {
+                        formSelects.value(selectId, vals);
+                    }
+                }
+            }, 'GET');
+        }
+    });
+</script>

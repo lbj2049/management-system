@@ -1,0 +1,133 @@
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">开题分组</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>开题分组</cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form toolbar">
+            <input id="batch-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
+            <button id="batch-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+            <button id="batch-btn-add" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+        </div>
+
+        <div class="layui-container">
+            <div class="layui-row" id="data-list">
+                <div class="layui-col-md4">
+                    <div class="layui-card">
+                        <div class="layui-card-header">老师列表</div>
+                        <div class="layui-card-body">
+
+                            <table class="layui-table" id="advanced-1">
+                                <tbody p-each="data">
+                                <tr class="item">
+                                    <td>{{realName}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="layui-card">
+                        <div class="layui-card-header">组成员</div>
+                        <div class="layui-card-body">
+
+                            <table class="layui-table" id="advanced-2">
+                                <tbody p-each="data">
+                                <tr class="item">
+                                    <td>{{realName}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="layui-card">
+                        <div class="layui-card-header">学生列表</div>
+                        <div class="layui-card-body">
+
+                            <table class="layui-table" id="advanced-3">
+                                <tbody p-each="data">
+                                <tr class="item">
+                                    <td>{{realName}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/assets/libs/sortable/Sortable.min.js"/>
+<script src="/assets/libs/sortable/jquery.binding.js"/>
+<script type="text/javascript">
+
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin'], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var common = layui.common;
+        var auth = layui.auth;
+        var layer = layui.layer;
+        var util = layui.util;
+        var api = layui.api;
+
+        var users = { data:[
+                {
+                    realName: "test"
+                }
+            ]};
+        api.req('teacher_query.json', {}, function (data) {
+            if (data.code == 0) {
+                $('#advanced-1').vm(data);
+            }
+        }, 'GET');
+        api.req('student_query.json', {}, function (data) {
+            if (data.code == 0) {
+                $('#advanced-3').vm(data);
+            }
+        }, 'GET');
+
+        $('#advanced-2').vm(users);
+
+        var byId = function (id) { return document.getElementById(id); };
+
+        // Advanced groups
+        [
+            {
+                name: 'advanced',
+                pull: true,
+                put: false
+            },
+            {
+                name: 'advanced',
+                pull: false,
+                put: true
+            },
+            {
+                name: 'advanced',
+                pull: true,
+                put: false
+            }
+        ].forEach(function (groupOpts, i) {
+            console.log(groupOpts, i)
+            Sortable.create(byId('advanced-' + (i + 1)), {
+                sort: (i != 1),
+                group: groupOpts,
+                animation: 150,
+                draggable: '.item'
+            });
+        });
+        /*
+        */
+
+
+    });
+</script>

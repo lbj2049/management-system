@@ -57,7 +57,7 @@ layui.define(['jquery', 'common'], function (exports) {
             }, {
                 name: '选题管理',
                 url: '#!selected-topic-list',
-                path: 'system/selected-topic-list.html',
+                path: 'system/topic-select-list.html',
                 icon: 'icofont-pencil-alt-5',
                 auth: '99'
             }, {
