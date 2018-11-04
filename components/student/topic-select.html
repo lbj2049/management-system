@@ -1,0 +1,52 @@
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">选择课题</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>选择课题</cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+        <table class="layui-hide" id="select-paper" lay-filter="select-paper"></table>
+    </div>
+</div>
+
+
+<!-- 表格操作列 -->
+<script type="text/html" id="role-table-bar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="confirm">确认</a>
+</script>
+
+<script>
+    layui.use(['table', 'common', 'auth'], function(){
+        var table = layui.table;
+        var common = layui.common;
+        var auth = layui.auth;
+
+        table.render({
+            elem: '#select-paper',
+            url: common.base_server + 'select_paper.json',
+            where: {
+                access_token: auth.getToken().access_token
+            },
+            cols: [[
+                {field:'paperId', width:80, title: '论文ID'}
+                ,{field:'paperName', title: '论文标题'}
+                ,{align: 'center', toolbar: '#role-table-bar', title: '操作'}
+            ]]
+            ,page: true
+        });
+
+
+        // 工具条点击事件
+        table.on('tool(select-paper)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'confirm') { //修改
+                layer.confirm('确认选择该课题？', {title:''}, function () {
+                    //提示层
+                    layer.msg('您已选择该课题，等待导师确认');
+                });
+            }
+        });
+    });
+</script>

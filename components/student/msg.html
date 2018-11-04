@@ -1,0 +1,36 @@
+<div class="layui-carousel" id="msg-list">
+    <div carousel-item  p-each="data">
+        <div>{{content}}</div>
+    </div>
+</div>
+<script>
+    layui.use(['carousel', 'auth', 'api'], function(){
+        var carousel = layui.carousel;
+        var auth = layui.auth;
+        var api = layui.api;
+
+
+        function getMsg() {
+
+            api.req('user_msg.json', {
+                userId: auth.getUser().id
+            }, function (data) {
+                if (data.code == 0) {
+                    $('#msg-list').vm(data);
+
+                    //建造实例
+                    carousel.render({
+                        elem: '#msg-list'
+                        ,width: '100%' //设置容器宽度
+                        ,height:'24px'
+                        ,arrow: 'none' //始终不显示箭头
+                        ,anim: 'updown' //切换动画方式
+                        ,indicator: 'none'
+                    });
+                }
+            }, 'GET');
+        }
+        setInterval(getMsg(), 1000);
+
+    });
+</script>

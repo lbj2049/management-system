@@ -1,0 +1,25 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 16,
+  "data": [
+      {
+        "id": 3,
+        "name":"文史三班",
+        "batchId": 3,
+        "batchName":"2018届"
+      },
+      {
+        "id": 2,
+        "name":"文史二班",
+        "batchId": 3,
+        "batchName":"2018届"
+      },
+      {
+        "id": 1,
+        "name":"文史一班",
+        "batchId": 3,
+        "batchName":"2018届"
+      }
+    ]
+}

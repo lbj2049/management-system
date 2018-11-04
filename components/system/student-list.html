@@ -1,0 +1,382 @@
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">学生管理</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>学生管理</cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+        <div class="toolbar layui-toolbar">
+            <input id="student-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
+            <button id="student-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+            <button id="student-btn-add" class="layui-btn icon-btn"><i class="layui-icon layui-icon-add-1"></i>添加</button>
+            <button id="student-btn-audit" class="layui-btn icon-btn layui-btn-warm"><i class="layui-icon icofont-license"></i>审核</button>
+            <div class="layui-btn-container pull-right">
+                <button id="student-btn-add-batch" class="layui-btn icon-btn layui-btn-normal"><i class="layui-icon layui-icon-add-circle"></i>批量添加</button>
+                <button id="student-btn-add-import" class="layui-btn icon-btn layui-btn-normal"><i class="layui-icon icofont-document-folder"></i>导入</button>
+                <button id="student-btn-download" class="layui-btn icon-btn layui-btn-primary"><i class="layui-icon icofont-download"></i>下载模版</button>
+            </div>
+        </div>
+        <table class="layui-table" id="student-table" lay-filter="student-table"></table>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="student-table-bar">
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="audit">审核</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="student-model">
+    <form id="student-form" lay-filter="student-form" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">批次</label>
+            <div class="layui-input-block">
+                <select name="batchId" xm-select="batchId" xm-select-radio="" lay-verify="required">
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">班级</label>
+            <div class="layui-input-block">
+                <select name="classId" xm-select="classId" xm-select-radio="" lay-verify="required">
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input name="username" placeholder="请输入用户" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input name="password" placeholder="请输入密码" type="password" class="layui-input" autocomplete="off" maxlength="20" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input name="realName" placeholder="请输入姓名" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">学号</label>
+            <div class="layui-input-block">
+                <input name="scNum" placeholder="请输入学号" type="text" class="layui-input" maxlength="40" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="radio" name="sex" value="1" title="男">
+                <input type="radio" name="sex" value="2" title="女" checked>
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+            <button class="layui-btn" lay-filter="student-form-submit" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+
+
+<!-- 表单弹窗-批量添加 -->
+<script type="text/html" id="batch-student-model">
+    <form id="batch-student-form" lay-filter="batch-student-form" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">账号前缀</label>
+            <div class="layui-input-block">
+                <input name="name" placeholder="请输入前缀" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">账号数量</label>
+            <div class="layui-input-block">
+                <input name="name" placeholder="请输入数量" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+            <button class="layui-btn" lay-filter="batch-form-submit" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+
+<!-- 表单弹窗-文件导入 -->
+<script type="text/html" id="import-student-model">
+    <form id="import-student-form" lay-filter="import-student-form" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-block">
+                <div class="layui-upload">
+                    <button type="button" class="layui-btn layui-btn-normal" id="import-file">选择文件</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+            <button class="layui-btn" id="import-file-submit">开始上传</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="sexTpl">
+    {{#  if(d.sex == 1){ }}
+        男
+    {{#  } else { }}
+        女
+    {{#  } }}
+</script>
+<script type="text/html" id="statusTpl">
+    {{#  if(d.status == 1) { }}
+    已审核
+    {{#  } else { }}
+    未审核
+    {{#  } }}
+</script>
+
+<script>
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload'], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var common = layui.common;
+        var auth = layui.auth;
+        var layer = layui.layer;
+        var util = layui.util;
+        var admin = layui.admin;
+        var api = layui.api;
+        var formSelects = layui.formSelects;
+        var upload = layui.upload;
+
+        // 渲染表格
+        table.render({
+            elem: '#student-table',
+            url: common.base_server + 'student_query.json',
+            method: 'GET',
+            where: {
+                access_token: auth.getToken().access_token
+            },
+            height: 'full-250',
+            page: true,
+            cols: [[
+                {type:'checkbox'},
+                {field: 'batchName', title: '毕业批次', width: 160},
+                {field: 'className', title: '班级'},
+                {field: 'username', title: '用户名'},
+                {field: 'password', title: '密码'},
+                {field: 'realName', title: '姓名'},
+                {field: 'scNum', title: '学号'},
+                {field: 'sex', title: '性别', templet: '#sexTpl'},
+                {field: 'status', title: '状态', templet: '#statusTpl'},
+                {align: 'center', toolbar: '#student-table-bar', title: '操作', width: 160}
+            ]]
+        });
+
+        // 添加按钮点击事件
+        $('#student-btn-add').click(function () {
+            showEditModel();
+        });
+        // 批量添加按钮点击事件
+        $('#student-btn-add-batch').click(function () {
+            showBatchAddModel();
+        });
+        // 导入按钮点击事件
+        $('#student-btn-add-import').click(function () {
+            showImportAddModel();
+        });
+        // 审核按钮点击事件
+        $('#student-btn-audit').click(function () {
+            var checkStatus = table.checkStatus('student-table');
+            if (checkStatus.data.length == 0) {
+                layer.msg('请选择需要审核的数据', {icon: 2});
+                return;
+            }
+            var ids = new Array();
+            $.each(checkStatus.data, function (i, v) {
+                ids.push(v.id);
+            })
+            doAudit(ids.join(","));
+
+        });
+
+
+        // 表单提交事件
+        form.on('submit(student-form-submit)', function (data) {
+            layer.load(2);
+            api.req('user_state.json', data.field, function (data) {
+                layer.closeAll('loading');
+                if (data.code == 200) {
+                    layer.msg(data.msg, {icon: 1});
+                    table.reload('student-table');
+                    layer.closeAll('page');
+                } else {
+                    layer.msg(data.msg, {icon: 2});
+                }
+            }, $('#student-form').attr('method'));
+            return false;
+        });
+
+        // 工具条点击事件
+        table.on('tool(student-table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'audit') { //审核
+                doAudit(data.id);;
+            } else if (obj.event === 'edit') { //修改
+                showEditModel(data);
+            } else if (obj.event === 'del') { //删除
+                doDelete(obj);
+            }
+        });
+
+        // 搜索按钮点击事件
+        $('#student-btn-search').click(function () {
+            var keyword = $('#student-edit-search').val();
+            table.reload('student-table', {where: {keyword: keyword}});
+        });
+
+        // 显示编辑弹窗
+        var showEditModel = function (data) {
+            layer.open({
+                type: 1,
+                title: data ? '修改学生' : '添加学生',
+                area: '450px',
+                offset: '120px',
+                content: $('#student-model').html(),
+                success: function () {
+                    $('#student-form')[0].reset();
+                    $('#student-form').attr('method', 'GET');
+                    if (data) {
+                        form.val('student-form', data);
+                        $('#student-form').attr('method', 'GET');
+
+                        getBatchData('batchId', [data.batchId]);
+                        getClassData('classId', [data.classId]);
+
+                    } else {
+                        getBatchData('batchId');
+                        getClassData('classId');
+                    }
+                }
+            });
+        };
+
+        var showBatchAddModel = function () {
+            layer.open({
+                type: 1,
+                title: '批量生成',
+                area: '450px',
+                offset: '120px',
+                content: $('#batch-student-model').html(),
+                success: function () {
+                    $('#batch-student-form')[0].reset();
+                    $('#batch-student-form').attr('method', 'GET');
+                }
+            });
+        };
+        var showImportAddModel = function () {
+            layer.open({
+                type: 1,
+                title: '导入',
+                area: '450px',
+                offset: '120px',
+                content: $('#import-student-model').html(),
+                success: function () {
+                    $('#import-student-form')[0].reset();
+                    $('#import-student-form').attr('method', 'GET');
+                    //选完文件后不自动上传
+                    upload.render({
+                        elem: '#import-file'
+                        ,url: '/upload/'
+                        ,auto: false
+                        //,multiple: true
+                        ,accept: 'file'
+                        ,acceptMime: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                        ,bindAction: '#import-file-submit'
+                        ,done: function(res){
+                            console.log(res)
+                        }
+                    });
+                }
+            });
+        };
+
+        // 删除
+        var doDelete = function (obj) {
+            layer.confirm('确定要删除吗？', function (i) {
+                layer.close(i);
+                layer.load(2);
+                api.req('class_query.json?id=' + obj.data.id, {}, function (data) {
+                    layer.closeAll('loading');
+                    if (data.code == 200) {
+                        layer.msg(data.msg, {icon: 1});
+                        obj.del();
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }, 'GET');
+            });
+        };
+
+        //审核操作
+        function doAudit(ids) {
+            //请修改审核接口
+            api.req('user_state.json', {ids: ids}, function (data) {
+                layer.closeAll('loading');
+                if (data.code == 200) {
+                    layer.msg(data.msg, {icon: 1});
+                    table.reload('student-table');
+                    layer.closeAll('page');
+                } else {
+                    layer.msg(data.msg, {icon: 2});
+                }
+            }, 'get');
+        }
+
+        //加载批次下拉框中的值
+        function getBatchData(selectId, vals) {
+
+            formSelects.btns(selectId, [], '');
+            api.req('batch_query.json', {}, function (data) {
+                if (0 == data.code) {
+                    // 渲染多选下拉框
+                    var opvs = new Array();
+                    for (var i = 0; i < data.data.length; i++) {
+                        opvs.push({name: data.data[i].name, value: data.data[i].id});
+                    }
+                    formSelects.data(selectId, 'local', {arr: opvs});
+
+                    if (vals) {
+                        formSelects.value(selectId, vals);
+                    }
+                }
+            }, 'GET');
+        }
+        //加载学生下拉框中的值
+        function getClassData(selectId, vals) {
+
+            formSelects.btns(selectId, [], '');
+            api.req('class_query.json', {}, function (data) {
+                if (0 == data.code) {
+                    // 渲染多选下拉框
+                    var opvs = new Array();
+                    for (var i = 0; i < data.data.length; i++) {
+                        opvs.push({name: data.data[i].name, value: data.data[i].id});
+                    }
+                    formSelects.data(selectId, 'local', {arr: opvs});
+
+                    if (vals) {
+                        formSelects.value(selectId, vals);
+                    }
+                }
+            }, 'GET');
+        }
+    });
+</script>

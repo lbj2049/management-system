@@ -1,0 +1,19 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 3,
+  "data": [
+    {
+      "paperId": "12",
+      "paperName": "论北京"
+    },
+    {
+      "paperId": "13",
+      "paperName": "论中国"
+    },
+    {
+      "paperId": "14",
+      "paperName": "论世界"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="utf-8"/>
+    <title>请回答1988[国语]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="assets/libs/layui/css/layui.css"/>
+</head>
+
+<body class="layui-layout-body">
+	<table class="layui-table" id="video">
+	</table>
+	<script type="text/html" id="showVideoTpl">
+	  <a href="{{d.url}}" target="_blank" class="layui-table-link">第{{ d.LAY_INDEX }}集</a>
+	</script>
+
+<script type="text/javascript" src="assets/libs/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="assets/libs/q.js"></script>
+<script type="text/javascript" src="assets/libs/pandyle.min.js"></script>
+<script type="text/javascript" src="assets/libs/layui/layui.js"></script>
+
+<script>
+var ll = [
+{"url":"https://boba.52kuyun.com/share/wBJcxkCE7JHgPmCQ"},
+{"url":"https://boba.52kuyun.com/share/lgVu64cPSQNVVSeK"},
+{"url":"https://boba.52kuyun.com/share/KlhZ2PF4xbHosrmW"},
+{"url":"https://boba.52kuyun.com/share/fwQNleJR8iQrfPZT"},
+{"url":"https://boba.52kuyun.com/share/iPP6e5FrSWE8YlPR"},
+{"url":"https://boba.52kuyun.com/share/quiZaYWafz1XsSaN"},
+{"url":"https://boba.52kuyun.com/share/9NTI4olK9ApYLNgm"},
+{"url":"https://boba.52kuyun.com/share/hpudZllywVtxs1os"},
+{"url":"https://boba.52kuyun.com/share/FgMZYpjG8grJqAku"},
+{"url":"https://boba.52kuyun.com/share/fAiW5h7JtXjLMHT3"},
+{"url":"https://boba.52kuyun.com/share/38UCbM6dQOmSM0Ra"},
+{"url":"https://boba.52kuyun.com/share/eo8DgjVXy6RKMlAf"},
+{"url":"https://boba.52kuyun.com/share/dbQF6VvZm7pUhmnS"},
+{"url":"https://boba.52kuyun.com/share/grvCzwmnmPXkzDhw"},
+{"url":"https://boba.52kuyun.com/share/4Oz14beWvwmGWXYF"},
+{"url":"https://boba.52kuyun.com/share/pbLCIEkJ2w4e91Nj"},
+{"url":"https://boba.52kuyun.com/share/4cyYPFZBblZ2rU7h"},
+{"url":"https://boba.52kuyun.com/share/NdXhk1CTDCXqcGI4"},
+{"url":"https://boba.52kuyun.com/share/kjGzhSKjRfUltFUI"},
+{"url":"https://boba.52kuyun.com/share/quya3QU3JQeHepkO"},
+{"url":"https://boba.52kuyun.com/share/CRWz3D6kJgJ5Hykd"},
+{"url":"https://boba.52kuyun.com/share/eboO0CD0jUZTBmK6"},
+{"url":"https://boba.52kuyun.com/share/Sar799IXy0SnTCsA"},
+{"url":"https://boba.52kuyun.com/share/EDPbiJwJHBYLTcCh"},
+{"url":"https://boba.52kuyun.com/share/dy1LMVd5hwBh2RUv"},
+{"url":"https://boba.52kuyun.com/share/s3pylO43kupppH5K"},
+{"url":"https://boba.52kuyun.com/share/KGgW65xt7Tnwi0Oo"},
+{"url":"https://boba.52kuyun.com/share/gn3PaHAwTzemxPfH"},
+{"url":"https://boba.52kuyun.com/share/8GCbuUjuDzvgnUWV"},
+{"url":"https://boba.52kuyun.com/share/RAwwuPpjqDujtJLm"},
+{"url":"https://boba.52kuyun.com/share/Cj238o1gEKdFLv28"},
+{"url":"https://boba.52kuyun.com/share/KQOMH9IvOZHXws84"},
+{"url":"https://boba.52kuyun.com/share/ohTfm6wuxf7V92fi"},
+{"url":"https://boba.52kuyun.com/share/pKBYNgs7MrtBkXnB"},
+{"url":"https://boba.52kuyun.com/share/sUFgLfwfEKXa1JzV"},
+{"url":"https://boba.52kuyun.com/share/3KTTtWVrmJqLB0om"},
+{"url":"https://boba.52kuyun.com/share/Wf9PgoSRoEKkDnDl"},
+{"url":"https://boba.52kuyun.com/share/nUFjnICV8lpsH9KF"},
+{"url":"https://cdn.kuyunbo.club/share/sLk24MlUkkRWUFn2"},
+{"url":"https://cdn.kuyunbo.club/share/heeJSRGXlrssps1i"}
+]
+
+    layui.config({
+        base: 'module/'
+    }).use(['element', 'table'], function () {
+	var table = layui.table;
+  
+  //第一个实例
+  table.render({
+    elem: '#video'
+    //,url: ll //数据接口
+	,data: ll
+    ,page: true //开启分页
+    ,cols: [[ //表头
+      {field: 'url', title: '集数', templet: '#showVideoTpl'}
+    ]]
+  });
+    });
+</script>
+</body>
+
+</html>

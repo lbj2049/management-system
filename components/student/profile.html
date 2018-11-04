@@ -1,0 +1,49 @@
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">个人信息</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>个人信息</cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-container">
+            <div class="layui-row">
+                <div class="layui-col-md4 layui-col-md-offset4">
+                    <table class="layui-table layui-text" id="userinfo">
+                        <colgroup>
+                            <col width="150">
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <td align="right">学号</td>
+                            <td>{{userId}}</td>
+                        </tr>
+                        <tr>
+                            <td align="right">姓名</td>
+                            <td>{{username}}</td>
+                        </tr>
+                        <tr>
+                            <td align="right">联系电话</td>
+                            <td>{{phone}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['carousel', 'auth', 'api', 'table'], function(){
+        var carousel = layui.carousel;
+        var auth = layui.auth;
+        var api = layui.api;
+
+        $('#userinfo').vm(auth.getUser());
+
+    });
+</script>
+

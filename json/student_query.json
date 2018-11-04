@@ -1,0 +1,46 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 16,
+  "data": [
+      {
+        "id": 3,
+        "username":"st3",
+        "password":"123456",
+        "realName":"张三",
+        "scNum":"8888",
+        "sex":"1",
+        "status":"1",
+        "classId": 3,
+        "className":"文史三班",
+        "batchId": 3,
+        "batchName":"2018届"
+      },
+      {
+        "id": 2,
+        "username":"st2",
+        "password":"123456",
+        "realName":"李四",
+        "scNum":"8888",
+        "sex":"2",
+        "status":"1",
+        "classId": 2,
+        "className":"文史二班",
+        "batchId": 3,
+        "batchName":"2018届"
+      },
+      {
+        "id": 2,
+        "username":"st1",
+        "password":"123456",
+        "realName":"大佬",
+        "scNum":"8888",
+        "sex":"1",
+        "status":"0",
+        "classId": 1,
+        "className":"文史一班",
+        "batchId": 3,
+        "batchName":"2018届"
+      }
+    ]
+}

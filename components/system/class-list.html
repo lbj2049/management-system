@@ -1,0 +1,195 @@
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">班级管理</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>班级管理</cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form toolbar">
+            批次:
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <select name="batchId" xm-select="searchBatchId" xm-select-radio="" lay-verify="required">
+                    </select>
+                </div>
+            </div>
+            <input id="class-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
+            <button id="class-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+            <button id="class-btn-add" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+        </div>
+
+        <table class="layui-table" id="class-table" lay-filter="class-table"></table>
+    </div>
+</div>
+
+
+<!-- 表格操作列 -->
+<script type="text/html" id="class-table-bar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="class-model">
+    <form id="class-form" lay-filter="class-form" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">批次</label>
+            <div class="layui-input-block">
+                <select name="batchId" xm-select="batchId" xm-select-radio="" lay-verify="required">
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">班级名称</label>
+            <div class="layui-input-block">
+                <input name="name" placeholder="请输入批次" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea name="comment" placeholder="请输入内容" class="layui-textarea" maxlength="200"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+            <button class="layui-btn" lay-filter="class-form-submit" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+
+<script>
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects'], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var common = layui.common;
+        var auth = layui.auth;
+        var layer = layui.layer;
+        var util = layui.util;
+        var admin = layui.admin;
+        var api = layui.api;
+        var formSelects = layui.formSelects;
+
+        getBatchData('searchBatchId');
+
+        // 渲染表格
+        table.render({
+            elem: '#class-table',
+            url: common.base_server + 'class_query.json',
+            method: 'GET',
+            where: {
+                access_token: auth.getToken().access_token
+            },
+            height: 'full-250',
+            page: true,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'batchName', title: '毕业批次', width: 160},
+                {field: 'name', sort: true, title: '批次'},
+                {align: 'center', toolbar: '#class-table-bar', title: '操作', width: 120}
+            ]]
+        });
+
+        // 添加按钮点击事件
+        $('#class-btn-add').click(function () {
+            showEditModel();
+        });
+
+        // 表单提交事件
+        form.on('submit(class-form-submit)', function (data) {
+            layer.load(2);
+            api.req('user_state.json', data.field, function (data) {
+                layer.closeAll('loading');
+                if (data.code == 200) {
+                    layer.msg(data.msg, {icon: 1});
+                    table.reload('class-table');
+                    layer.closeAll('page');
+                } else {
+                    layer.msg(data.msg, {icon: 2});
+                }
+            }, $('#class-form').attr('method'));
+            return false;
+        });
+
+        // 工具条点击事件
+        table.on('tool(class-table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') { //修改
+                showEditModel(data);
+            } else if (obj.event === 'del') { //删除
+                doDelete(obj);
+            }
+        });
+
+        // 搜索按钮点击事件
+        $('#class-btn-search').click(function () {
+            var keyword = $('#class-edit-search').val();
+            var batchId = formSelects.value('batchId');
+            table.reload('class-table', {where: {keyword: keyword, batchId: batchId}});
+        });
+
+        // 显示编辑弹窗
+        var showEditModel = function (data) {
+            layer.open({
+                type: 1,
+                title: data ? '修改班级' : '添加班级',
+                area: '450px',
+                offset: '120px',
+                content: $('#class-model').html(),
+                success: function () {
+                    $('#class-form')[0].reset();
+                    $('#class-form').attr('method', 'GET');
+                    if (data) {
+                        form.val('class-form', data);
+                        $('#class-form').attr('method', 'GET');
+
+                        getBatchData('batchId', [data.batchId]);
+
+                    } else {
+                        getBatchData('batchId');
+                    }
+                }
+            });
+        };
+
+        // 删除
+        var doDelete = function (obj) {
+            layer.confirm('确定要删除吗？', function (i) {
+                layer.close(i);
+                layer.load(2);
+                api.req('class_query.json?id=' + obj.data.id, {}, function (data) {
+                    layer.closeAll('loading');
+                    if (data.code == 200) {
+                        layer.msg(data.msg, {icon: 1});
+                        obj.del();
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }, 'GET');
+            });
+        };
+
+        //加载下拉框中的值
+        function getBatchData(selectId, vals) {
+
+            formSelects.btns(selectId, []);
+            api.req('batch_query.json', {}, function (data) {
+                if (0 == data.code) {
+                    // 渲染多选下拉框
+                    var opvs = new Array();
+                    for (var i = 0; i < data.data.length; i++) {
+                        opvs.push({name: data.data[i].name, value: data.data[i].id});
+                    }
+                    formSelects.data(selectId, 'local', {arr: opvs});
+
+                    if (vals) {
+                        formSelects.value(selectId, vals);
+                    }
+                }
+            }, 'GET');
+        }
+    });
+</script>

@@ -1,0 +1,114 @@
+<style>
+
+    /* 宫格 */
+    .site-doc {
+        text-align: center;
+    }
+    .site-doc-icon {
+        margin: 80px 20px 160px 20px;
+        font-size: 0;
+    }
+
+    .site-doc-icon li {
+        display: inline-block;
+        vertical-align: middle;
+        width: 127px;
+        height: 105px;
+        line-height: 25px;
+        padding: 20px 0;
+        margin-right: -1px;
+        margin-bottom: -1px;
+        /*border: 1px solid #e2e2e2;*/
+        font-size: 14px;
+        text-align: center;
+        color: #666;
+        transition: all .3s;
+        -webkit-transition: all .3s;
+    }
+
+    .site-doc-anim li {
+        height: auto;
+    }
+
+    .site-doc-icon li:hover {
+        background-color: #f2f2f2;
+        color: #000;
+    }
+
+
+    .site-doc-icon li {
+        width: 222px;
+    }
+
+    .site-doc-icon li .layui-anim {
+        width: 150px;
+        height: 150px;
+        line-height: 150px;
+        margin: 0 auto 10px;
+        text-align: center;
+        background-color: #009688;
+        cursor: pointer;
+        color: #fff;
+        border-radius: 5%;
+    }
+    .site-doc-icon li .layui-anim.yellow {
+        background-color: #FF8800;
+    }
+    .site-doc-icon li .layui-anim.red {
+        background-color: #FF6633;
+    }
+    .site-doc-icon li .layui-anim.blue {
+        background-color: #01AAED;
+    }
+    .site-doc-icon li .layui-anim.green {
+        background-color: #009688;
+    }
+
+</style>
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">论文管理</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>论文管理</cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-container">
+            <div class="layui-row">
+                <div class="site-doc">
+                    <ul class="site-doc-icon site-doc-anim">
+                        <li>
+                            <a href="#!topic-select">
+                                <div class="layui-anim blue">
+                                    选题
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#!topic-open">
+                                <div class="layui-anim yellow">
+                                    开题管理
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#!middle-check">
+                                <div class="layui-anim green">
+                                    中期检查
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#!last-reply">
+                                <div class="layui-anim red">
+                                    答辩管理
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
