@@ -693,6 +693,47 @@ html {
     right: 0;
 }
 
+
+
+.layui-layout-admin .layui-body .layui-icon-down {
+    right: 0;
+}
+
+
+.layui-layout-admin .layui-body .draggable {
+    /*height: 400px;*/
+}
+.layui-layout-admin .layui-body .draggable ul {
+    height: 400px;
+    border: 1px solid #EFEFEF;
+}
+
+.layui-layout-admin .layui-body .draggable li {
+    padding: 5px 15px;
+    background: #f6f6f6;
+    border: 1px solid #EFEFEF;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .admin-tabs-select.layui-nav {
     position: absolute;
     left: 0;
