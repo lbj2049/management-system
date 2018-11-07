@@ -1,0 +1,91 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 16,
+  "data": [
+    {
+      "id": 3,
+      "name":"第三组",
+      "classId": 3,
+      "className":"文史三班",
+      "batchId": 3,
+      "batchName":"2018届",
+      "teachers": [
+        {
+          "id": 3,
+          "realName":"王老师"
+        },
+        {
+          "id": 2,
+          "realName":"刘老师"
+        },
+        {
+          "id": 1,
+          "realName":"朱老师"
+        }
+      ],
+      "students": [
+        {
+          "id": 3,
+          "realName":"张三"
+        },
+        {
+          "id": 2,
+          "realName":"李四"
+        },
+        {
+          "id": 1,
+          "realName":"大佬"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name":"第二组",
+      "classId": 2,
+      "className":"文史二班",
+      "batchId": 3,
+      "batchName":"2018届",
+      "teachers": [
+        {
+          "id": 2,
+          "realName":"刘老师"
+        },
+        {
+          "id": 1,
+          "realName":"朱老师"
+        }
+      ],
+      "students": [
+        {
+          "id": 2,
+          "realName":"李四"
+        },
+        {
+          "id": 1,
+          "realName":"大佬"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name":"第一组",
+      "classId": 1,
+      "className":"文史一班",
+      "batchId": 3,
+      "batchName":"2018届",
+      "teachers": [
+        {
+          "id": 1,
+          "realName":"朱老师"
+        }
+      ],
+      "students": [
+        {
+          "id": 1,
+          "realName":"大佬"
+        }
+      ]
+    }
+  ]
+}

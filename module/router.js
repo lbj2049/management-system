@@ -86,8 +86,8 @@ layui.define(['jquery', 'common'], function (exports) {
                 auth: '99'
             }, {
                 name: '中期检查分组列表',
-                url: '#!group-middle-list',
-                path: 'system/group-middle-list.html',
+                url: '#!group-middle-check-list',
+                path: 'system/group-middle-check-list.html',
                 icon: 'icofont-listing-number',
                 auth: '99'
             }, {
