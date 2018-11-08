@@ -33,7 +33,7 @@
             elem: '#logr-table',
             url: common.base_server + 'login_record.json',
             where: {
-                access_token: auth.getToken().access_token
+                access_token: auth.getUUID()
             },
             page: true,
             cols: [[

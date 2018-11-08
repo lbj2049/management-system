@@ -26,33 +26,20 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label"><i class="layui-icon layui-icon-username"></i></label>
                     <div class="layui-input-block">
-                        <input name="username" value="admin" type="text" lay-verify="required" placeholder="账号" class="layui-input">
+                        <input name="loginName" value="admin" type="text" lay-verify="required" placeholder="账号" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label"><i class="layui-icon layui-icon-password"></i></label>
                     <div class="layui-input-block">
-                        <input name="password" value="1" type="password" lay-verify="required" placeholder="密码" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label"><i class="layui-icon layui-icon-vercode"></i></label>
-                    <div class="layui-input-block">
-                        <div class="layui-row inline-block">
-                            <div class="layui-col-xs7">
-                                <input name="code" value="1" type="text" lay-verify="required" placeholder="验证码" class="layui-input">
-                            </div>
-                            <div class="layui-col-xs5" style="padding-left: 10px;">
-                                <img class="login-captcha" src="https://www.oschina.net/action/user/captcha">
-                            </div>
-                        </div>
+                        <input name="loginPwd" value="123456" type="password" lay-verify="required" placeholder="密码" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item" >
                     <div class="layui-input-block">
-                        <input type="radio" name="role" value="1" title="学生" checked>
-                        <input type="radio" name="role" value="2" title="老师">
-                        <input type="radio" name="role" value="99" title="管理员">
+                        <input type="radio" name="type" value="1" title="学生" checked>
+                        <input type="radio" name="type" value="2" title="老师">
+                        <input type="radio" name="type" value="3" title="管理员">
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -96,7 +83,7 @@
         var common = layui.common;
         var auth = layui.auth;
 
-        if (auth.getToken()) {
+        if (auth.getUUID()) {
             if (field.role != 1) {
                 window.location = './'
                 // location.replace('./');
@@ -110,22 +97,21 @@
         // 表单提交
         form.on('submit(login-submit)', function (obj) {
             var field = obj.field;
-            field.grant_type = 'password';
-            field.scope = 'select';
-            field.client_id = 'client_2';
-            field.client_secret = '123456';
-            field.client_secret = '123456';
 
             layer.load(2);
             $.ajax({
-                url: common.base_server + 'token.json',
+                url: common.base_server + 'userInfo/login',
                 data: field,
-                type: 'GET',
+                type: 'POST',
                 dataType: 'JSON',
                 success: function (data) {
-                    if (data.access_token) {
-                        auth.putToken(data);
-                        auth.putRole(field.role);
+                    if (data.Status == 2000) {
+                        var token = {
+                            access_token: data.Data.UUID
+                        }
+                        auth.putToken(token);
+                        auth.putRole(field.type);
+                        auth.putUser(data.Data);
                         layer.msg('登录成功', {icon: 1, time: 1000}, function () {
                             if (field.role != 1) {
                                 window.location = './'
@@ -135,9 +121,12 @@
                                 // location.replace('front.html');
                             }
                         });
+                    } else if (data.Status == 1000) {
+                        layer.closeAll('loading');
+                        layer.msg(data.ErrorDes, {icon: 5, time: 1000});
                     } else {
                         layer.closeAll('loading');
-                        layer.msg('登录失败，请重试', {icon: 5, time: 1000});
+                        layer.msg('未知错误，请重试', {icon: 5, time: 1000});
                     }
                 },
                 error: function (xhr) {

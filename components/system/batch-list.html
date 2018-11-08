@@ -64,7 +64,7 @@
             url: common.base_server + 'batch_query.json',
             method: 'GET',
             where: {
-                access_token: auth.getToken().access_token
+                access_token: auth.getUUID()
             },
             height: 'full-250',
             page: true,

@@ -6,16 +6,18 @@ layui.define(['jquery', 'common', 'auth'], function(exports){
 
         // 封装ajax请求，返回数据类型为json
         req: function (url, data, success, method) {
-            if ('put' == method.toLowerCase()) {
+            if (!method) {
+                method = 'POST';
+            } else if ('put' == method.toLowerCase()) {
                 method = 'POST';
                 data._method = 'PUT';
             } else if ('delete' == method.toLowerCase()) {
                 method = 'POST';
                 data._method = 'DELETE';
             }
-            var token = auth.getToken();
+            var token = auth.getUUID();
             if (token) {
-                data.access_token = token.access_token;
+                data.UUID = token;
             }
             api.ajax({
                 url: common.base_server + url,
@@ -24,9 +26,9 @@ layui.define(['jquery', 'common', 'auth'], function(exports){
                 dataType: 'json',
                 success: success,
                 beforeSend: function (xhr) {
-                    var token = auth.getToken();
+                    var token = auth.getUUID();
                     if (token) {
-                        xhr.setRequestHeader('Authorization', 'Basic ' + token.access_token);
+                        xhr.setRequestHeader('Authorization', 'Basic ' + token);
                     }
                 }
             });

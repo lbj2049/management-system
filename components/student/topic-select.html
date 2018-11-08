@@ -27,7 +27,7 @@
             elem: '#select-paper',
             url: common.base_server + 'select_paper.json',
             where: {
-                access_token: auth.getToken().access_token
+                access_token: auth.getUUID()
             },
             cols: [[
                 {field:'paperId', width:80, title: '论文ID'}

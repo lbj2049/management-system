@@ -75,7 +75,7 @@
             url: common.base_server + 'group_list.json',
             method: 'GET',
             where: {
-                access_token: auth.getToken().access_token
+                access_token: auth.getUUID()
             },
             height: 'full-250',
             page: true,

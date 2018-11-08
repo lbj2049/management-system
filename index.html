@@ -71,7 +71,7 @@
         var element = layui.element;
 
         // 检查是否登录
-        if (!auth.getToken() || auth.getToken() == '') {
+        if (!auth.getUUID() || auth.getUUID() == '') {
             window.location = 'login.html'
             return;
         }
@@ -82,16 +82,17 @@
         }
 
         // 检查多标签功能是否开启
-        index.checkPageTabs();
+        // index.checkPageTabs();
 
-        // 获取当前用户信息
-        index.getUser(function (user) {
-            $('.layui-layout-admin .layui-header').vm(user);
+        initData();
+        function initData() {
+            // 获取当前用户信息
+            $('.layui-layout-admin .layui-header').vm(auth.getUser());
             index.initLeftNav();
             element.render('nav');
             index.initRouter();
             auth.bindCommonEvent();
-        });
+        }
         //121.42.10.114:6050
             //管理员 admin/admin
             //老师 tea/tea
@@ -100,6 +101,11 @@
             //管理员 admin/admin
             //老师 tea/tea
             //学生 a1/a1
+
+        //121.42.10.114:9090
+            //管理员 admin/123456
+            //老师 tea/123456     tea1/123456 tea2/123456
+            //学生 stu/123456     stu3/123456
     });
 </script>
 </body>

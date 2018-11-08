@@ -137,19 +137,6 @@ layui.define(['common', 'auth', 'api', 'router', 'admin', 'layer', 'laytpl', 'el
                 admin.flexible(true);
             }
         },
-        // 从服务器获取登录用户的信息
-        getUser: function (success) {
-            layer.load(2);
-            api.req('userInfo.json', {}, function (data) {
-                layer.closeAll('loading');
-                if (200 == data.code) {
-                    auth.putUser(data.user);
-                    success(data.user);
-                } else {
-                    layer.msg('获取用户失败', {icon: 2});
-                }
-            }, 'GET');
-        },
         // 检查多标签功能是否开启
         checkPageTabs: function () {
             // 加载主页

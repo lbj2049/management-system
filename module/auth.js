@@ -1,13 +1,14 @@
 layui.define(['jquery', 'common'], function(exports){
     var $ = layui.jquery;
     var common = layui.common;
-    // var admin = layui.admin;
+
     var auth = {
         // 获取缓存的token
-        getToken: function () {
+        getUUID: function () {
             var t = layui.data(common.tableName).token;
             if (t) {
-                return JSON.parse(t);
+                var token = JSON.parse(t);
+                return token.access_token;
             }
         },
         // 清除user
@@ -57,8 +58,14 @@ layui.define(['jquery', 'common'], function(exports){
             // 退出登录
             $('#btnLogout').click(function () {
                 layer.confirm('确定退出登录？', function () {
-                    auth.removeToken();
-                    location.replace('login.html');
+                    $.post(common.base_server + "/userInfo/logout", {UUID:auth.getUUID()},function (data) {
+                        if (data.Status == 2000) {
+                            auth.removeToken();
+                            location.replace('login.html');
+                        } else {
+                            layer.msg('未知错误，请重试', {icon: 5, time: 1000});
+                        }
+                    } )
                 });
             });
             // 修改密码

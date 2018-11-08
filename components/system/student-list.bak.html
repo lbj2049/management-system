@@ -164,7 +164,7 @@
             url: common.base_server + 'student_query.json',
             method: 'GET',
             where: {
-                access_token: auth.getToken().access_token
+                access_token: auth.getUUID()
             },
             height: 'full-300',
             page: true,

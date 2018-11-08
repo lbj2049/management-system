@@ -35,85 +35,85 @@ layui.define(['jquery', 'common'], function (exports) {
                 url: '#!batch-list',
                 path: 'system/batch-list.html',
                 icon: 'icofont-listing-box',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '班级管理',
                 url: '#!class-list',
                 path: 'system/class-list.html',
                 icon: 'layui-icon-flag',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '学生管理',
                 url: '#!student-list',
                 path: 'system/student-list.html',
                 icon: 'icofont-group-students',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '教师管理',
                 url: '#!teacher-list',
                 path: 'system/teacher-list.html',
                 icon: 'icofont-man-in-glasses',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '选题管理',
                 url: '#!selected-topic-list',
                 path: 'system/topic-select-list.html',
                 icon: 'icofont-pencil-alt-5',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '分发选题',
                 url: '#!topic-distribute-list',
                 path: 'system/topic-distribute-list.html',
                 icon: 'icofont-tasks-alt',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '开题分组',
                 url: '#!group-topic-open',
                 path: 'system/group-topic-open.html',
                 icon: 'icofont-hand-drag2',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '开题分组列表',
                 url: '#!group-topic-open-list',
                 path: 'system/group-topic-open-list.html',
                 icon: 'icofont-listing-number',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '中期检查分组',
                 url: '#!group-middle-check',
                 path: 'system/group-middle-check.html',
                 icon: 'icofont-hand-drag2',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '中期检查分组列表',
                 url: '#!group-middle-check-list',
                 path: 'system/group-middle-check-list.html',
                 icon: 'icofont-listing-number',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '答辩分组',
                 url: '#!group-last-reply',
                 path: 'system/group-last-reply.html',
                 icon: 'icofont-hand-drag2',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '答辩分组列表',
                 url: '#!group-last-reply-list',
                 path: 'system/group-last-reply-list.html',
                 icon: 'icofont-listing-number',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '成绩统计',
                 url: '#!scoreManager',
                 path: 'system/score.html',
                 icon: 'icofont-chart-line-alt',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '系统通知',
                 url: '#!notice',
                 path: 'system/notice.html',
                 icon: 'layui-icon-notice',
-                auth: '99'
+                auth: '3'
             }, {
                 name: '选题列表',
                 url: '#!topic-list',

@@ -55,7 +55,7 @@
             url: common.base_server + 'user_query.json',
             method: 'GET',
             where: {
-                access_token: auth.getToken().access_token
+                access_token: auth.getUUID()
             },
             page: true,
             cols: [[

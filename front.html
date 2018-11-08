@@ -58,7 +58,7 @@
         var element = layui.element;
 
         // 检查是否登录
-        if (!auth.getToken() || auth.getToken() == '') {
+        if (!auth.getUUID() || auth.getUUID() == '') {
             window.location = 'login.html'
             return;
         }
@@ -69,16 +69,17 @@
         }
         $('.layui-layout-admin .layui-footer').vm();
 
-        // 获取当前用户信息
-        front.getUser(function (user) {
-            $('.layui-layout-admin .layui-header').vm(user);
+        initData();
+        function initData() {
+            // 获取当前用户信息
+            $('.layui-layout-admin .layui-header').vm(auth.getUser());
             front.initTopNav();
             element.render('nav');
             front.initRouter();
             auth.bindCommonEvent();
 
             $('.layui-layout-admin .layui-msg').load('/components/student/msg.html');
-        });
+        }
     });
 </script>
 </body>
