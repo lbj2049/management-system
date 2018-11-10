@@ -158,18 +158,6 @@ layui.define(['common', 'auth', 'layer'], function (exports) {
         refresh: function () {
             admin.isRefresh = true;
             Q.refresh();
-        },
-        // 判断是否为json
-        parseJSON: function (str) {
-            if (typeof str == 'string') {
-                try {
-                    var obj = JSON.parse(str);
-                    if (typeof obj == 'object' && obj) {
-                        return obj;
-                    }
-                } catch (e) {
-                }
-            }
         }
     };
 

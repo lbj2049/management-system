@@ -7,9 +7,43 @@ layui.define(function (exports) {
         autoRender: false,  // 窗口大小改变后是否自动重新渲染表格，解决layui数据表格非响应式的问题，目前实现的还不是很好，暂时关闭该功能
         pageTabs: false,   // 是否开启多标签
         role: {
-            manager: 99,
+            manager: 3,
             teacher: 2,
             student: 1
+        },
+        //table 返回数据解析
+        tableParseData: function(res) { //res 即为原始返回的数据
+            return {
+                "code": res.Status, //解析接口状态
+                "msg": res.Data.ErrorDes, //解析提示文本
+                "count": res.Data.total, //解析数据长度
+                "data": res.Data.datas //解析数据列表
+            };
+        },
+        //table 默认请求参数
+        tableRequest: {
+            pageName: 'start', //页码的参数名称，默认：page
+            limitName: 'pageSize' //每页数据量的参数名，默认：limit
+        },
+        //table 返回数据字段映射
+        tableResponse: {
+            // statusName: 'Status', //规定数据状态的字段名称，默认：code
+            statusCode: 2000, //规定成功的状态码，默认：0
+            // msgName: 'Data.ErrorDes', //规定状态信息的字段名称，默认：msg
+            // countName: 'Data.total', //规定数据总数的字段名称，默认：count
+            // dataName: 'Data.datas' //规定数据列表的字段名称，默认：data
+        },
+        // 判断是否为json
+        parseJSON: function (str) {
+            if (typeof str == 'string') {
+                try {
+                    var obj = JSON.parse(str);
+                    if (typeof obj == 'object' && obj) {
+                        return obj;
+                    }
+                } catch (e) {
+                }
+            }
         },
 
         // 显示加载动画

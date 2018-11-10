@@ -27,17 +27,11 @@
 <!-- 表单弹窗 -->
 <script type="text/html" id="batch-model">
     <form id="batch-form" lay-filter="batch-form" class="layui-form model-form">
-        <input name="id" type="hidden"/>
+        <input name="batchID" type="hidden"/>
         <div class="layui-form-item">
             <label class="layui-form-label">批次</label>
             <div class="layui-input-block">
-                <input name="name" placeholder="请输入批次" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">备注</label>
-            <div class="layui-input-block">
-                <textarea name="comment" placeholder="请输入内容" class="layui-textarea" maxlength="200"></textarea>
+                <input name="batchName" placeholder="请输入批次" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
             </div>
         </div>
         <div class="layui-form-item model-form-footer">
@@ -61,17 +55,20 @@
         // 渲染表格
         table.render({
             elem: '#batch-table',
-            url: common.base_server + 'batch_query.json',
-            method: 'GET',
+            url: common.base_server + 'batchInfo/getBatchList',
+            method: 'POST',
             where: {
-                access_token: auth.getUUID()
+                UUID: auth.getUUID()
             },
+            request: common.tableRequest,
+            response: common.tableResponse,
+            parseData: common.tableParseData,
             height: 'full-250',
             page: true,
             cols: [[
                 {type: 'numbers'},
-                // {field: 'id', title: 'ID', width: 120},
-                {field: 'name', sort: true, title: '批次'},
+                // {field: 'batchID', title: 'batchID', width: 120},
+                {field: 'batchName', title: '批次'},
                 {align: 'center', toolbar: '#batch-table-bar', title: '操作', width: 120}
             ]]
         });
@@ -84,16 +81,22 @@
         // 表单提交事件
         form.on('submit(batch-form-submit)', function (data) {
             layer.load(2);
-            api.req('user_state.json', data.field, function (data) {
+            var url = '';
+            if (data.field.batchID) {
+                url = 'batchInfo/updBatchInfo';
+            } else {
+                url = 'batchInfo/adBatchInfo';
+            }
+            api.req(url, data.field, function (data) {
                 layer.closeAll('loading');
-                if (data.code == 200) {
-                    layer.msg(data.msg, {icon: 1});
+                if (data.Status == 2000) {
+                    layer.msg(data.Data.Result, {icon: 1});
                     table.reload('batch-table');
                     layer.closeAll('page');
                 } else {
-                    layer.msg(data.msg, {icon: 2});
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
-            }, $('#batch-form').attr('method'));
+            });
             return false;
         });
 
@@ -109,7 +112,7 @@
 
         // 搜索按钮点击事件
         $('#batch-btn-search').click(function () {
-            var keyword = $('#batch-edit-search').val();
+            var keyword = $('#batch-search-value').val();
             table.reload('batch-table', {where: {keyword: keyword}});
         });
 
@@ -137,15 +140,17 @@
             layer.confirm('确定要删除吗？', function (i) {
                 layer.close(i);
                 layer.load(2);
-                api.req('batch_query.json?id=' + obj.data.id, {}, function (data) {
+
+                api.req('batchInfo/delBatchInfo', {'batchID': obj.data.batchID}, function (data) {
                     layer.closeAll('loading');
-                    if (data.code == 200) {
-                        layer.msg(data.msg, {icon: 1});
-                        obj.del();
+                    if (data.Status == 2000) {
+                        layer.msg(data.Data.Result, {icon: 1});
+                        table.reload('batch-table');
+                        layer.closeAll('page');
                     } else {
-                        layer.msg(data.msg, {icon: 2});
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
                     }
-                }, 'GET');
+                });
             });
         };
     });
