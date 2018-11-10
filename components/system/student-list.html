@@ -8,24 +8,15 @@
     </div>
     <div class="layui-card-body">
         <div class="layui-form layui-search-from">
-            批次:
             <div class="layui-inline">
-                <div class="layui-input-inline">
-                    <select name="batchID" xm-select="searchBatchId" xm-select-radio="" lay-verify="required">
-                    </select>
-                </div>
-            </div>
-            班级:
-            <div class="layui-inline">
-                <div class="layui-input-inline">
-                    <select name="classID" xm-select="searchClassId" xm-select-radio="" lay-verify="required">
-                    </select>
+                <div id="search-batch-class-id">
                 </div>
             </div>
             <input id="student-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
             <button id="student-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
         </div>
         <div class="toolbar layui-toolbar">
+
             <button id="student-btn-add" class="layui-btn icon-btn"><i class="layui-icon layui-icon-add-1"></i>添加</button>
             <button id="student-btn-del" class="layui-btn icon-btn layui-btn-danger"><i class="layui-icon icofont-license"></i>批量删除</button>
             <button id="student-btn-audit" class="layui-btn icon-btn layui-btn-warm"><i class="layui-icon icofont-license"></i>审核</button>
@@ -41,7 +32,16 @@
 
 <!-- 表格操作列 -->
 <script type="text/html" id="student-table-bar">
-    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="audit">审核</a>
+
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="audit">
+        {{#  if(d.state == 0) { }}
+        审核
+        {{#  } else if(d.state == 1) { }}
+        禁用
+        {{#  } else { }}
+        恢复
+        {{#  } }}
+    </a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
@@ -53,17 +53,10 @@
         <input name="state" type="hidden" value="1"/>
         <input name="userType" type="hidden" value="1"/>
         <div class="layui-form-item">
-            <label class="layui-form-label">批次</label>
+            <label class="layui-form-label">毕业批次/班级</label>
             <div class="layui-input-block">
-                <select name="batchID" xm-select="batchID" xm-select-radio="" lay-verify="required">
-                </select>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">班级</label>
-            <div class="layui-input-block">
-                <select name="classID" xm-select="classID" xm-select-radio="" lay-verify="required">
-                </select>
+                <div id="batch-class-id">
+                </div>
             </div>
         </div>
         <div class="layui-form-item">
@@ -99,8 +92,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label">性别</label>
             <div class="layui-input-block">
-                <input type="radio" name="userSex" value="1" title="男">
-                <input type="radio" name="userSex" value="2" title="女" checked>
+                <input type="radio" name="userSex" value="1" title="男" checked>
+                <input type="radio" name="userSex" value="2" title="女">
             </div>
         </div>
         <div class="layui-form-item model-form-footer">
@@ -161,15 +154,17 @@
     {{#  } }}
 </script>
 <script type="text/html" id="stateTpl">
-    {{#  if(d.state == 1) { }}
-    已审核
-    {{#  } else { }}
+    {{#  if(d.state == 0) { }}
     未审核
+    {{#  } else if(d.state == 1) { }}
+    已审核
+    {{#  } else if(d.state == 2) { }}
+    禁用
     {{#  } }}
 </script>
 
 <script>
-    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload'], function () {
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload', 'selectN'], function () {
         var form = layui.form;
         var table = layui.table;
         var common = layui.common;
@@ -180,42 +175,43 @@
         var api = layui.api;
         var formSelects = layui.formSelects;
         var upload = layui.upload;
+        var selectN = layui.selectN
         $.ajaxSetup({
             async: false
         })
-        // setTimeout(function() {
-            getBatchData('searchBatchId');
-            getClassData('searchClassId');
-            console.log(formSelects.value('searchBatchId', 'valStr'), formSelects.value('searchClassId', 'valStr'))
-            // 渲染表格
-            table.render({
-                elem: '#student-table',
-                url: common.base_server + 'userInfo/getStuList',
-                method: 'POST',
-                where: {
-                    UUID: auth.getUUID(),
-                    classID: formSelects.value('searchClassId', 'valStr')
-                },
-                request: common.tableRequest,
-                response: common.tableResponse,
-                parseData: common.tableParseData,
-                height: 'full-250',
-                page: true,
-                cols: [[
-                    {type:'checkbox'},
-                    {field: 'batchName', title: '毕业批次', width: 160},
-                    {field: 'className', title: '班级'},
-                    {field: 'loginName', title: '用户名'},
-                    {field: 'password', title: '密码'},
-                    {field: 'userName', title: '姓名'},
-                    {field: 'userNo', title: '学号'},
-                    {field: 'userTel', title: '电话'},
-                    {field: 'userSex', title: '性别', templet: '#userSexTpl'},
-                    {field: 'state', title: '状态', templet: '#stateTpl'},
-                    {align: 'center', toolbar: '#student-table-bar', title: '操作', width: 160}
-                ]]
-            });
-        // }, 100);
+
+        //初始化联级
+        getBatchClassData('search-batch-class-id');
+        var batch_class_select, batch_class_id;
+
+        // 渲染表格
+        table.render({
+            elem: '#student-table',
+            url: common.base_server + 'userInfo/getStuList',
+            method: 'POST',
+            where: {
+                UUID: auth.getUUID(),
+                classID: batch_class_select.lastValue
+            },
+            request: common.tableRequest,
+            response: common.tableResponse,
+            parseData: common.tableParseData,
+            height: 'full-250',
+            page: true,
+            cols: [[
+                {type:'checkbox'},
+                // {field: 'batchName', title: '毕业批次', width: 160},
+                // {field: 'className', title: '班级'},
+                {field: 'loginName', title: '用户名'},
+                // {field: 'loginPwd', title: '密码'},
+                {field: 'userName', title: '姓名'},
+                {field: 'userNo', title: '学号'},
+                {field: 'userTel', title: '电话'},
+                {field: 'userSex', title: '性别', templet: '#userSexTpl'},
+                {field: 'state', title: '状态', templet: '#stateTpl'},
+                {align: 'center', toolbar: '#student-table-bar', title: '操作', width: 160}
+            ]]
+        });
 
         // 添加按钮点击事件
         $('#student-btn-add').click(function () {
@@ -231,9 +227,12 @@
             }
             var ids = new Array();
             $.each(checkStatus.data, function (i, v) {
-                ids.push(v.id);
+                ids.push(v.UUID);
             })
-            doDelete(ids.join(","));
+            layer.confirm('确定删除选择的数据？', {icon: 3, title:'提示'}, function(index) {
+                doDelete(ids.join(","));
+                layer.close(index);
+            });
         });
         // 批量添加按钮点击事件
         $('#student-btn-add-batch').click(function () {
@@ -251,10 +250,22 @@
                 return;
             }
             var ids = new Array();
+            var f = false;
             $.each(checkStatus.data, function (i, v) {
+                if (v.state != 0) {
+                    f = true;
+                }
                 ids.push(v.id);
-            })
-            doAudit(ids.join(","));
+            });
+            if (f) {
+                layer.msg('请选择需要审核的数据', {icon: 2});
+                return;
+            } else {
+                layer.confirm('确定审核？', {icon: 3, title:'提示'}, function(index) {
+                    doAudit(ids.join(","), 1);
+                    layer.close(index);
+                });
+            }
 
         });
 
@@ -263,19 +274,27 @@
         form.on('submit(student-form-submit)', function (data) {
             layer.load(2);
             var url = '';
+            data.field.classID = batch_class_id.lastValue;
+            var url = '';
             if (data.field.UUID) {
-                url = 'classInfo/updClassInfo';
+                url = 'userInfo/editUserInfo';
             } else {
-                url = 'classInfo/adClassInfo';
+                url = 'userInfo/editUserInfo';
             }
-            api.req(url, data.field, function (data) {
-                layer.closeAll('loading');
-                if (data.Status == 2000) {
-                    layer.msg(data.Data.Result, {icon: 1});
-                    table.reload('student-table');
-                    layer.closeAll('page');
-                } else {
-                    layer.msg(data.Data.ErrorDes, {icon: 2});
+            api.ajax({
+                url: common.base_server + url,
+                data: data.field,
+                type: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status == 2000) {
+                        layer.msg(data.Data.Result, {icon: 1});
+                        table.reload('student-table');
+                        layer.closeAll('page');
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
                 }
             });
             return false;
@@ -285,19 +304,26 @@
         table.on('tool(student-table)', function (obj) {
             var data = obj.data;
             if (obj.event === 'audit') { //审核
-                doAudit(data.UUID);
+                var state = data.state == 0 ? 1 : data.state == 1 ? 2 : 1;
+                var txt = data.state == 0 ? '审核' : data.state == 1 ? '禁用' : '恢复';
+                layer.confirm('确认' + txt + '？', {icon: 3, title:'提示'}, function(index){
+                    doAudit(data.UUID, state);
+                    layer.close(index);
+                });
             } else if (obj.event === 'edit') { //修改
                 showEditModel(data);
             } else if (obj.event === 'del') { //删除
-                doDelete(obj.UUID);
+                layer.confirm('确认删除？', {icon: 3, title:'提示'}, function(index){
+                    doDelete(data.UUID);
+                    layer.close(index);
+                });
             }
         });
 
         // 搜索按钮点击事件
         $('#student-btn-search').click(function () {
             var keyword = $('#student-search-value').val();
-            // var batchID = formSelects.value('searchBatchId', 'valStr');
-            var classID = formSelects.value('searchClassId', 'valStr');
+            var classID = batch_class_select.lastValue;
             table.reload('student-table', {where: {keyword: keyword, classID: classID}});
         });
 
@@ -316,12 +342,9 @@
                         form.val('student-form', data);
                         $('#student-form').attr('method', 'GET');
 
-                        getBatchData('batchID', [data.batchID]);
-                        getClassData('classID', [data.classID]);
-
+                        getBatchClassData('batch-class-id', data.classID);
                     } else {
-                        getBatchData('batchID');
-                        getClassData('classID');
+                        getBatchClassData('batch-class-id');
                     }
                 }
             });
@@ -372,77 +395,106 @@
             layer.confirm('确定要删除吗？', function (i) {
                 layer.close(i);
                 layer.load(2);
-                api.req('userInfo/delUserInfo', {UUIDs: ids}, function (data) {
-                    layer.closeAll('loading');
-                    if (data.Status == 2000) {
-                        layer.msg(data.Data.Result, {icon: 1});
-                        table.reload('class-table');
-                        layer.closeAll('page');
-                    } else {
-                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                api.ajax({
+                    url: common.base_server + 'userInfo/delUserInfo',
+                    data: {UUIDs: ids},
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (data) {
+                        layer.closeAll('loading');
+                        if (data.Status == 2000) {
+                            layer.msg(data.Data.Result, {icon: 1});
+                            table.reload('student-table');
+                            layer.closeAll('page');
+                        } else {
+                            layer.msg(data.Data.ErrorDes, {icon: 2});
+                        }
                     }
                 });
             });
         };
 
         //审核操作
-        function doAudit(ids) {
+        function doAudit(ids, state) {
             //请修改审核接口
-            api.req('user_state.json', {ids: ids}, function (data) {
-                layer.closeAll('loading');
-                if (data.code == 200) {
-                    layer.msg(data.msg, {icon: 1});
-                    table.reload('student-table');
-                    layer.closeAll('page');
-                } else {
-                    layer.msg(data.msg, {icon: 2});
-                }
-            }, 'get');
-        }
-
-        //加载批次下拉框中的值
-        function getBatchData(selectId, vals) {
-            formSelects.btns(selectId, []);
-            api.req('batchInfo/getBatchList', {start:1, pageSize: 1000}, function (data) {
-                if (data.Status == 2000) {
-                    var rs = data.Data.datas;
-                    // 渲染多选下拉框
-                    var opvs = new Array();
-                    for (var i = 0; i < rs.length; i++) {
-                        opvs.push({name: rs[i].batchName, value: rs[i].batchID});
-                    }
-                    formSelects.data(selectId, 'local', {arr: opvs});
-
-                    if (vals) {
-                        formSelects.value(selectId, vals);
+            api.ajax({
+                url: common.base_server + 'userInfo/setState',
+                data: {UUIDs: ids, state: state},
+                type: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status == 2000) {
+                        layer.msg(data.Data.Result, {icon: 1});
+                        table.reload('student-table');
+                        layer.closeAll('page');
                     } else {
-                        formSelects.value(selectId, [opvs[0].value]);
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
                     }
                 }
             });
         }
-        //加载学生下拉框中的值
-        function getClassData(selectId, vals) {
-            formSelects.btns(selectId, []);
 
-            var batchID = formSelects.value('batchId', 'valStr');
-            api.req('classInfo/getClassList', {start:1, pageSize: 1000, batchID: batchID}, function (data) {
+
+        //毕业批次与班级下拉联级
+        function getBatchClassData(selectId, classId) {
+            api.req('batchInfo/BatchLD', {}, function (data) {
                 if (data.Status == 2000) {
-                    var rs = data.Data.datas;
-                    // 渲染多选下拉框
-                    var opvs = new Array();
-                    for (var i = 0; i < rs.length; i++) {
-                        opvs.push({name: rs[i].className, value: rs[i].classID});
-                    }
-                    formSelects.data(selectId, 'local', {arr: opvs});
 
-                    if (vals) {
-                        formSelects.value(selectId, vals);
-                    } else {
-                        formSelects.value(selectId, [opvs[0].value]);
+                    var opvs = new Array();
+                    var selected = new Array();
+
+                    var rs = data.Data;
+                    for (var i = 0; i < rs.length; i++) {
+                        if (i == 0 && !classId) {
+                            selected.push(rs[i].batchID);
+                        }
+                        var trs = rs[i].classList;
+                        if (trs) {
+                            var topvs = new Array();
+                            for (var j = 0; j < trs.length; j++) {
+                                if ((i == 0 && j == 0) && !classId) {
+                                    selected.push(trs[j].classID);
+                                } else if (classId && classId == trs[j].classID) {
+                                    selected.push(rs[i].batchID);
+                                    selected.push(trs[j].classID);
+                                }
+                                topvs.push({name: trs[j].className, id: trs[i].classID})
+                            }
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID, children: topvs});
+                        } else {
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID});
+                        }
                     }
+                    if (selectId == 'search-batch-class-id')  {
+                        batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
+                    } else {
+                        batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
+                    }
+
                 }
             });
         }
+        function getSelectNParam(id, opvs, selected) {
+            return {
+                //元素容器【必填】
+                elem: '#' + id,
+                search:[false,true],
+                //候选数据【必填】
+                data: opvs,
+                //为真只取最后一个值
+                last:true,
+                //默认值
+                selected: selected,
+                //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
+                tips: ['请选择毕业批次', '请选择班级'],
+                //数据的键名
+                field:{idName:'id',titleName:'name',childName:'children'},
+                //添加验证
+                verify:'required'
+
+            };
+        }
+
     });
 </script>

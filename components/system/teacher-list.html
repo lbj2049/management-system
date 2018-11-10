@@ -21,7 +21,16 @@
 
 <!-- 表格操作列 -->
 <script type="text/html" id="teacher-table-bar">
-    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="audit">审核</a>
+
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="audit">
+        {{#  if(d.state == 0) { }}
+        审核
+        {{#  } else if(d.state == 1) { }}
+        禁用
+        {{#  } else { }}
+        恢复
+        {{#  } }}
+    </a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
@@ -29,23 +38,38 @@
 <!-- 表单弹窗 -->
 <script type="text/html" id="teacher-model">
     <form id="teacher-form" lay-filter="teacher-form" class="layui-form model-form">
-        <input name="id" type="hidden"/>
+        <input name="UUID" type="hidden"/>
+        <input name="state" type="hidden" value="1"/>
+        <input name="userType" type="hidden" value="2"/>
         <div class="layui-form-item">
             <label class="layui-form-label">用户名</label>
             <div class="layui-input-block">
-                <input name="username" placeholder="请输入用户" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
+                <input name="loginName" placeholder="请输入用户" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">密码</label>
             <div class="layui-input-block">
-                <input name="password" placeholder="请输入密码" type="password" class="layui-input" autocomplete="off" maxlength="20" lay-verify="required" required/>
+                <input name="loginPwd" placeholder="请输入密码" type="password" class="layui-input" autocomplete="off" maxlength="20" lay-verify="required" required/>
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">姓名</label>
             <div class="layui-input-block">
-                <input name="realName" placeholder="请输入姓名" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
+                <input name="userName" placeholder="请输入姓名" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-block">
+                <input name="userTel" placeholder="请输入电话" type="text" class="layui-input" maxlength="40"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="radio" name="userSex" value="1" title="男" checked>
+                <input type="radio" name="userSex" value="2" title="女">
             </div>
         </div>
         <div class="layui-form-item model-form-footer">
@@ -55,11 +79,22 @@
     </form>
 </script>
 
-<script type="text/html" id="statusTpl">
-    {{#  if(d.status == 1) { }}
-    已审核
+
+<script type="text/html" id="user-sex">
+    {{#  if(d.userSex == 1){ }}
+    男
     {{#  } else { }}
+    女
+    {{#  } }}
+</script>
+
+<script type="text/html" id="user-tpl-state">
+    {{#  if(d.state == 0) { }}
     未审核
+    {{#  } else if(d.state == 1) { }}
+    已审核
+    {{#  } else if(d.state == 2) { }}
+    禁用
     {{#  } }}
 </script>
 <script>
@@ -76,19 +111,24 @@
         // 渲染表格
         table.render({
             elem: '#teacher-table',
-            url: common.base_server + 'teacher_query.json',
-            method: 'GET',
+            url: common.base_server + 'userInfo/getTeaList',
+            method: 'POST',
             where: {
                 UUID: auth.getUUID()
             },
+            request: common.tableRequest,
+            response: common.tableResponse,
+            parseData: common.tableParseData,
             height: 'full-250',
             page: true,
             cols: [[
                 {type: 'checkbox'},
-                {field: 'username', title: '用户名'},
-                {field: 'password', title: '密码'},
-                {field: 'realName', title: '姓名'},
-                {field: 'status', title: '状态', templet: '#statusTpl'},
+                {field: 'loginName', title: '用户名'},
+                // {field: 'loginPwd', title: '密码'},
+                {field: 'userName', title: '姓名'},
+                {field: 'userTel', title: '电话'},
+                {field: 'userSex', title: '性别', templet: '#user-sex'},
+                {field: 'state', title: '状态', templet: '#user-tpl-state'},
                 {align: 'center', toolbar: '#teacher-table-bar', title: '操作', width: 160}
             ]]
         });
@@ -96,6 +136,20 @@
         // 添加按钮点击事件
         $('#teacher-btn-add').click(function () {
             showEditModel();
+        });
+
+        // 批量删除按钮点击事件
+        $('#teacher-btn-del').click(function () {
+            var checkStatus = table.checkStatus('teacher-table');
+            if (checkStatus.data.length == 0) {
+                layer.msg('请选择需要删除的数据', {icon: 2});
+                return;
+            }
+            var ids = new Array();
+            $.each(checkStatus.data, function (i, v) {
+                ids.push(v.UUID);
+            })
+            doDelete(ids.join(","));
         });
         // 审核按钮点击事件
         $('#teacher-btn-audit').click(function () {
@@ -105,26 +159,50 @@
                 return;
             }
             var ids = new Array();
+            var f = false;
             $.each(checkStatus.data, function (i, v) {
+                if (v.state != 0) {
+                    f = true;
+                }
                 ids.push(v.id);
-            })
-            doAudit(ids.join(","));
+            });
+            if (f) {
+                layer.msg('请选择需要审核的数据', {icon: 2});
+                return;
+            } else {
+                layer.confirm('确定审核？', {icon: 3, title:'提示'}, function(index) {
+                    doAudit(ids.join(","), 1);
+                    layer.close(index);
+                });
+            }
 
         });
 
         // 表单提交事件
         form.on('submit(teacher-form-submit)', function (data) {
             layer.load(2);
-            api.req('user_state.json', data.field, function (data) {
-                layer.closeAll('loading');
-                if (data.code == 200) {
-                    layer.msg(data.msg, {icon: 1});
-                    table.reload('teacher-table');
-                    layer.closeAll('page');
-                } else {
-                    layer.msg(data.msg, {icon: 2});
+            var url = '';
+            if (data.field.UUID) {
+                url = 'userInfo/editUserInfo';
+            } else {
+                url = 'userInfo/editUserInfo';
+            }
+            api.ajax({
+                url: common.base_server + url,
+                data: data.field,
+                type: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status == 2000) {
+                        layer.msg(data.Data.Result, {icon: 1});
+                        table.reload('teacher-table');
+                        layer.closeAll('page');
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
                 }
-            }, $('#teacher-form').attr('method'));
+            });
             return false;
         });
 
@@ -132,17 +210,25 @@
         table.on('tool(teacher-table)', function (obj) {
             var data = obj.data;
             if (obj.event === 'audit') { //审核
-                doAudit(data.id);;
+                var state = data.state == 0 ? 1 : data.state == 1 ? 2 : 1;
+                var txt = data.state == 0 ? '审核' : data.state == 1 ? '禁用' : '恢复';
+                layer.confirm('确认' + txt + '？', {icon: 3, title:'提示'}, function(index){
+                    doAudit(data.UUID, state);
+                    layer.close(index);
+                });
             } else if (obj.event === 'edit') { //修改
                 showEditModel(data);
             } else if (obj.event === 'del') { //删除
-                doDelete(obj);
+                layer.confirm('确认删除？', {icon: 3, title:'提示'}, function(index){
+                    doDelete(data.UUID);
+                    layer.close(index);
+                });
             }
         });
 
         // 搜索按钮点击事件
         $('#teacher-btn-search').click(function () {
-            var keyword = $('#teacher-edit-search').val();
+            var keyword = $('#teacher-search-value').val();
             table.reload('teacher-table', {where: {keyword: keyword}});
         });
 
@@ -166,37 +252,50 @@
         };
 
         // 删除
-        var doDelete = function (obj) {
+        var doDelete = function (ids) {
             layer.confirm('确定要删除吗？', function (i) {
                 layer.close(i);
                 layer.load(2);
-                api.req('teacher_query.json?id=' + obj.data.id, {}, function (data) {
-                    layer.closeAll('loading');
-                    if (data.code == 200) {
-                        layer.msg(data.msg, {icon: 1});
-                        obj.del();
-                    } else {
-                        layer.msg(data.msg, {icon: 2});
+                api.ajax({
+                    url: common.base_server + 'userInfo/delUserInfo',
+                    data: {UUIDs: ids},
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (data) {
+                        layer.closeAll('loading');
+                        if (data.Status == 2000) {
+                            layer.msg(data.Data.Result, {icon: 1});
+                            table.reload('teacher-table');
+                            layer.closeAll('page');
+                        } else {
+                            layer.msg(data.Data.ErrorDes, {icon: 2});
+                        }
                     }
-                }, 'GET');
+                });
             });
         };
 
 
 
         //审核操作
-        function doAudit(ids) {
+        function doAudit(ids, state) {
             //请修改审核接口
-            api.req('user_state.json', {ids: ids}, function (data) {
-                layer.closeAll('loading');
-                if (data.code == 200) {
-                    layer.msg(data.msg, {icon: 1});
-                    table.reload('teacher-table');
-                    layer.closeAll('page');
-                } else {
-                    layer.msg(data.msg, {icon: 2});
+            api.ajax({
+                url: common.base_server + 'userInfo/setState',
+                data: {UUIDs: ids, state: state},
+                type: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status == 2000) {
+                        layer.msg(data.Data.Result, {icon: 1});
+                        table.reload('teacher-table');
+                        layer.closeAll('page');
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
                 }
-            }, 'get');
+            });
         }
     });
 </script>

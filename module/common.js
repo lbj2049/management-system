@@ -2,6 +2,7 @@ layui.define(function (exports) {
 
     var common = {
         // base_server: 'json/', // 接口地址，实际项目请换成http形式的地址
+        // base_server: '/pageManage/',
         base_server: '/pageManage/',
         tableName: 'QBIWeb',  // 存储表名
         autoRender: false,  // 窗口大小改变后是否自动重新渲染表格，解决layui数据表格非响应式的问题，目前实现的还不是很好，暂时关闭该功能

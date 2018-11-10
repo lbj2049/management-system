@@ -7,23 +7,14 @@
         </span>
     </div>
     <div class="layui-card-body">
-        <div class="toolbar layui-toolbar">
-            批次:
-            <div class="layui-inline">
-                <div class="layui-input-inline">
-                    <select name="batchId" xm-select="batchId" xm-select-radio="" lay-verify="required">
-                    </select>
+        <div class="toolbar layui-toolbar layui-form">
+
+                <div class="layui-inline">
+                    <div id="search-batch-class-id">
+                    </div>
                 </div>
-            </div>
-            班级:
-            <div class="layui-inline">
-                <div class="layui-input-inline">
-                    <select name="classId" xm-select="classId" xm-select-radio="" lay-verify="required">
-                    </select>
-                </div>
-            </div>
-            <input id="topic-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
-            <button id="topic-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+                <input id="topic-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
+                <button id="topic-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
         </div>
         <table class="layui-table" id="topic-table" lay-filter="topic-table"></table>
     </div>
@@ -93,7 +84,7 @@
 </script>
 
 <script>
-    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload'], function () {
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload', 'selectN'], function () {
         var form = layui.form;
         var table = layui.table;
         var common = layui.common;
@@ -104,9 +95,17 @@
         var api = layui.api;
         var formSelects = layui.formSelects;
         var upload = layui.upload;
+        var selectN = layui.selectN;
 
         getBatchData('batchId');
         getClassData('classId');
+
+
+
+        //初始化联级
+        getBatchClassData('search-batch-class-id');
+        var batch_class_select, batch_class_id;
+
 
         // 渲染表格
         table.render({
@@ -242,6 +241,68 @@
                     }
                 }
             }, 'GET');
+        }
+
+
+
+        //毕业批次与班级下拉联级
+        function getBatchClassData(selectId, classId) {
+            api.req('batchInfo/BatchLD', {}, function (data) {
+                if (data.Status == 2000) {
+
+                    var opvs = new Array();
+                    var selected = new Array();
+
+                    var rs = data.Data;
+                    for (var i = 0; i < rs.length; i++) {
+                        if (i == 0 && !classId) {
+                            selected.push(rs[i].batchID);
+                        }
+                        var trs = rs[i].classList;
+                        if (trs) {
+                            var topvs = new Array();
+                            for (var j = 0; j < trs.length; j++) {
+                                if ((i == 0 && j == 0) && !classId) {
+                                    selected.push(trs[j].classID);
+                                } else if (classId && classId == trs[j].classID) {
+                                    selected.push(rs[i].batchID);
+                                    selected.push(trs[j].classID);
+                                }
+                                topvs.push({name: trs[j].className, id: trs[i].classID})
+                            }
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID, children: topvs});
+                        } else {
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID});
+                        }
+                    }
+                    if (selectId == 'search-batch-class-id')  {
+                        batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
+                    } else {
+                        batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
+                    }
+
+                }
+            });
+        }
+        function getSelectNParam(id, opvs, selected) {
+            return {
+                //元素容器【必填】
+                elem: '#' + id,
+                search:[false,true],
+                //候选数据【必填】
+                data: opvs,
+                //为真只取最后一个值
+                last:true,
+                //默认值
+                selected: selected,
+                //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
+                tips: ['请选择毕业批次', '请选择班级'],
+                //数据的键名
+                field:{idName:'id',titleName:'name',childName:'children'},
+                //添加验证
+                verify:'required'
+
+            };
         }
     });
 </script>

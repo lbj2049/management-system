@@ -33,25 +33,6 @@ layui.define(['jquery', 'common', 'auth'], function(exports){
                 }
             });
         },
-        post: function(url, data, success) {
-            var token = auth.getUUID();
-            if (token) {
-                data.UUID = token;
-            }
-            api.ajax({
-                url: common.base_server + url,
-                data: data,
-                type: 'POST',
-                dataType: 'json',
-                success: success,
-                beforeSend: function (xhr) {
-                    var token = auth.getUUID();
-                    if (token) {
-                        xhr.setRequestHeader('Authorization', 'Basic ' + token);
-                    }
-                }
-            });
-        },
         // 封装ajax请求
         ajax: function (param) {
             var successCallback = param.success;

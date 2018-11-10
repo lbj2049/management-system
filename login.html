@@ -121,12 +121,9 @@
                                 // location.replace('front.html');
                             }
                         });
-                    } else if (data.Status == 1000) {
-                        layer.closeAll('loading');
-                        layer.msg(data.ErrorDes, {icon: 5, time: 1000});
                     } else {
                         layer.closeAll('loading');
-                        layer.msg('未知错误，请重试', {icon: 5, time: 1000});
+                        layer.msg(data.Data.ErrorDes, {icon: 5, time: 1000});
                     }
                 },
                 error: function (xhr) {
