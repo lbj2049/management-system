@@ -115,16 +115,16 @@ layui.define(['jquery', 'common'], function (exports) {
                 icon: 'layui-icon-notice',
                 auth: '3'
             }, {
-                name: '选题列表',
-                url: '#!topic-list',
-                path: 'teacher/topic-list.html',
-                icon: 'icofont-listine-dots',
-                auth: '2'
-            }, {
                 name: '我的出题',
                 url: '#!my-paper-topic',
                 path: 'teacher/my-paper-topic.html',
                 icon: 'icofont-memorial',
+                auth: '2'
+            }, {
+                name: '选题审核',
+                url: '#!topic-list',
+                path: 'teacher/topic-list.html',
+                icon: 'icofont-listine-dots',
                 auth: '2'
             }, {
                 name: '我的学生作业',

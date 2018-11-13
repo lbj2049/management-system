@@ -1,0 +1,88 @@
+{
+  "Status": 2000,
+  "Data": {
+    "total": 3,
+    "datas": [
+      {
+        "batchID": 1,
+        "batchName": "A届",
+        "classID": 1,
+        "className": "A班",
+        "groupID": 1,
+        "groupName": "A组",
+
+        "stqID": 2,
+        "upTime": "2018-11-09 14:26:44",
+        "reContent": "",
+        "title": "test",
+        "content": "asfasdfasdfasdf",
+
+        "UUID": "c26bd37a-ab35-11e8-bd92-c606ccec3959",
+        "studentID": "12345",
+        "studentName": "A学生",
+        "studentNo": "12345",
+        "studentTel": "18800000000",
+
+        "score": 90,
+        "teacherID": 111,
+        "teacherName": 111,
+        "state": 0
+      },
+      {
+        "batchID": 1,
+        "batchName": "B届",
+        "classID": 1,
+        "className": "B班",
+        "groupID": 1,
+        "groupName": "B组",
+
+        "stqID": 2,
+        "upTime": "2018-11-09 14:26:44",
+        "reContent": "",
+        "title": "test",
+        "content": "asfasdfasdfasdf",
+
+        "UUID": "c26bd37a-ab35-11e8-bd92-c606ccec3959",
+        "studentID": "12345",
+        "studentName": "B学生",
+        "studentNo": "12345",
+        "studentTel": "18800000000",
+
+        "score": 90,
+        "teacherID": 111,
+        "teacherName": 111,
+        "state": 2
+
+      },
+      {
+        "batchID": 1,
+        "batchName": "C届",
+        "classID": 1,
+        "className": "C班",
+        "groupID": 1,
+        "groupName": "C组",
+
+        "stqID": 2,
+        "upTime": "2018-11-09 14:26:44",
+        "reContent": "",
+        "title": "test",
+        "content": "asfasdfasdfasdf",
+
+        "UUID": "c26bd37a-ab35-11e8-bd92-c606ccec3959",
+        "studentID": "12345",
+        "studentName": "C学生",
+        "studentNo": "12345",
+        "studentTel": "18800000000",
+
+        "score": 90,
+        "teacherID": 111,
+        "teacherName": 111,
+        "state": 2
+
+      }
+    ],
+    "page": 1,
+    "pageCount": 1,
+    "pageSize": 2
+  }
+}

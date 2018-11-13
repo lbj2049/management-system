@@ -175,43 +175,57 @@
         var api = layui.api;
         var formSelects = layui.formSelects;
         var upload = layui.upload;
-        var selectN = layui.selectN
+        var selectN = layui.selectN;
         $.ajaxSetup({
             async: false
         })
 
-        //初始化联级
-        getBatchClassData('search-batch-class-id');
         var batch_class_select, batch_class_id;
 
-        // 渲染表格
-        table.render({
-            elem: '#student-table',
-            url: common.base_server + 'userInfo/getStuList',
-            method: 'POST',
-            where: {
-                UUID: auth.getUUID(),
-                classID: batch_class_select.lastValue
-            },
-            request: common.tableRequest,
-            response: common.tableResponse,
-            parseData: common.tableParseData,
-            height: 'full-250',
-            page: true,
-            cols: [[
-                {type:'checkbox'},
-                // {field: 'batchName', title: '毕业批次', width: 160},
-                // {field: 'className', title: '班级'},
-                {field: 'loginName', title: '用户名'},
-                // {field: 'loginPwd', title: '密码'},
-                {field: 'userName', title: '姓名'},
-                {field: 'userNo', title: '学号'},
-                {field: 'userTel', title: '电话'},
-                {field: 'userSex', title: '性别', templet: '#userSexTpl'},
-                {field: 'state', title: '状态', templet: '#stateTpl'},
-                {align: 'center', toolbar: '#student-table-bar', title: '操作', width: 160}
-            ]]
-        });
+        initData();
+
+        //页面加载时初始化
+        function initData() {
+            //初始化联级
+            getBatchClassData('search-batch-class-id');
+
+            var idArr = batch_class_select.values;
+            var batchID, classID;
+            if (idArr && idArr.length == 2) {
+                batchID = idArr[0]
+                classID = idArr[1]
+            } else {
+                layer.msg('请选择毕业批次和班级', {icon: 2});
+            }
+            // 渲染表格
+            table.render({
+                elem: '#student-table',
+                url: common.base_server + 'userInfo/getStuList',
+                method: 'POST',
+                where: {
+                    UUID: auth.getUUID(),
+                    classID: classID
+                },
+                request: common.tableRequest,
+                response: common.tableResponse,
+                parseData: common.tableParseData,
+                height: 'full-250',
+                page: true,
+                cols: [[
+                    {type: 'checkbox'},
+                    // {field: 'batchName', title: '毕业批次', width: 160},
+                    // {field: 'className', title: '班级'},
+                    {field: 'loginName', title: '用户名'},
+                    // {field: 'loginPwd', title: '密码'},
+                    {field: 'userName', title: '姓名'},
+                    {field: 'userNo', title: '学号'},
+                    {field: 'userTel', title: '电话'},
+                    {field: 'userSex', title: '性别', templet: '#userSexTpl'},
+                    {field: 'state', title: '状态', templet: '#stateTpl'},
+                    {align: 'center', toolbar: '#student-table-bar', title: '操作', width: 160}
+                ]]
+            });
+        }
 
         // 添加按钮点击事件
         $('#student-btn-add').click(function () {
@@ -459,7 +473,7 @@
                                     selected.push(rs[i].batchID);
                                     selected.push(trs[j].classID);
                                 }
-                                topvs.push({name: trs[j].className, id: trs[i].classID})
+                                topvs.push({name: trs[j].className, id: trs[j].classID})
                             }
                             opvs.push({name: rs[i].batchName, id: rs[i].batchID, children: topvs});
                         } else {

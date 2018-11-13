@@ -1,9 +1,9 @@
 <div class="layui-card">
     <div class="layui-card-header">
-        <h2 class="header-title">选题审核</h2>
+        <h2 class="header-title">我的出题</h2>
         <span class="layui-breadcrumb pull-right">
           <a href="#!welcome">首页</a>
-          <a><cite>选题审核</cite></a>
+          <a><cite>我的出题</cite></a>
         </span>
     </div>
     <div class="layui-card-body">
@@ -15,6 +15,7 @@
             </div>
             <input id="topic-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
             <button id="topic-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+            <button id="topic-btn-add" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
         </div>
         <table class="layui-table" id="topic-table" lay-filter="topic-table"></table>
     </div>
@@ -22,12 +23,67 @@
 
 <!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar">
-    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="child">查看</a>
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">查看</a>
+    {{#  if(d.state == 0 || d.state == 2) { }}
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+    {{#  } else if(d.state == 1 || d.state == 3) { }}
+
+    {{#  } }}
 </script>
 
 <!-- 表单弹窗 -->
-<script type="text/html" id="topic-child-model">
-    <table class="layui-table" id="topic-child-table" lay-filter="topic-child-table"></table>
+<script type="text/html" id="topic-model">
+    <form id="topic-form" lay-filter="topic-form" class="layui-form model-form">
+        <input name="stqID" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input name="title" placeholder="请输入标题" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-input-block">
+                <textarea name="content" placeholder="请输入内容" class="layui-textarea" maxlength="400" lay-verify="required" required></textarea>
+            </div>
+        </div>
+        <!--
+        <div class="layui-form-item">
+            <label class="layui-form-label">出题人</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{teacherName}}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">提交时间</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{subtime}}
+            </div>
+        </div>
+        -->
+        <!--
+        <div class="layui-form-item">
+            <label class="layui-form-label">回复信息</label>
+            <div class="layui-input-block">
+                <textarea name="reContent" placeholder="请输入回复信息" class="layui-textarea" maxlength="200"></textarea>
+            </div>
+        </div>
+        -->
+        <!--
+        <div class="layui-form-item">
+            <label class="layui-form-label">审核</label>
+            <div class="layui-input-block">
+                <input type="radio" name="state" value="1" title="通过">
+                <input type="radio" name="state" value="2" title="不通过" checked>
+            </div>
+        </div>
+        -->
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+            <button class="layui-btn" lay-filter="topic-form-submit" lay-submit>保存</button>
+        </div>
+    </form>
 </script>
 
 <script type="text/html" id="topic-detail-model">
@@ -44,20 +100,24 @@
                 {{content}}
             </div>
         </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">回复信息</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{reContent}}
+            </div>
+        </div>
+        <!--
+        <div class="layui-form-item">
+            <label class="layui-form-label">提交时间</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{subtime}}
+            </div>
+        </div>
+        -->
         <div class="layui-form-item model-form-footer">
             <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
         </div>
     </div>
-</script>
-<script type="text/html" id="topic-child-table-bar">
-    {{#  if(d.state == 0) { }}
-    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="pass">通过</a>
-    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="unpass">未通过</a>
-    {{#  } else if(d.state == 1) { }}
-
-    {{#  } else if(d.state == 2) { }}
-    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="pass">通过</a>
-    {{#  } }}
 </script>
 
 <script type="text/html" id="stateTpl">
@@ -67,6 +127,8 @@
     通过
     {{#  } else if(d.state == 2) { }}
     未通过
+    {{#  } else if(d.state == 3) { }}
+    已分发
     {{#  } }}
 </script>
 
@@ -103,7 +165,7 @@
             // 渲染表格
             table.render({
                 elem: '#topic-table',
-                url: common.base_server + 'selQuest/getCheckList',
+                url: common.base_server + 'setQuest/getQuestList',
                 method: 'POST',
                 where: {
                     UUID: auth.getUUID(),
@@ -119,9 +181,9 @@
                     {type:'numbers'},
                     {field: 'title', title: '标题', templet: '<div><a href="javascript:;" class="layui-table-link" lay-event="detail">{{d.title}}</a></div>'},
                     // {field: 'teacherName', title: '出题人'},
-                    {field: 'num', title: '选题人数'},
-                    {field: 'userNames', title: '学生名称'},
-                    // {field: 'state', title: '审核状态', templet: '#stateTpl'},
+                    {field: 'upTime', title: '更新时间'},
+                    {field: 'state', title: '审核状态', templet: '#stateTpl'},
+                    // {field: 'msg', title: '回复'},
                     {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 160}
                 ]]
             });
@@ -160,8 +222,10 @@
             var data = obj.data;
             if (obj.event === 'detail') { //查看
                 showDetailModel(data);
-            } else if (obj.event === 'child') { //编辑
-                showChildModel(data)
+            } else if (obj.event === 'edit') { //编辑
+                showEditModel(data)
+            } else if (obj.event === 'del') { //编辑
+                doDelete(data)
             }
         });
 
@@ -174,57 +238,38 @@
             table.reload('topic-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
         });
 
-        // 显示子列表弹窗
-        var showChildModel = function (data) {
+        // 添加按钮点击事件
+        $('#topic-btn-add').click(function () {
+            showEditModel();
+        });
+
+        // 显示编辑弹窗
+        var showEditModel = function (data) {
             layer.open({
                 type: 1,
-                title: data ? '审核选题' : '添加选题',
-                area: '650px',
+                title: data ? '编辑选题' : '添加选题',
+                area: '450px',
                 offset: '120px',
-                content: $('#topic-child-model').html(),
+                content: $('#topic-model').html(),
                 success: function () {
-                    table.render({
-                        elem: '#topic-child-table',
-                        url: common.base_server + 'selQuest/getCheckInfoList',
-                        method: 'POST',
-                        where: {
-                            UUID: auth.getUUID(),
-                            stqID: data.stqID
-                        },
-                        request: common.tableRequest,
-                        response: common.tableResponse,
-                        parseData: common.tableParseData,
-                        height: 'full-250',
-                        page: true,
-                        cols: [[
-                            {type:'numbers'},
-                            {field: 'title', title: '标题'},
-                            {field: 'num', title: '选题人数'},
-                            {field: 'userName', title: '学生名称'},
-                            {field: 'state', title: '审核状态', templet: '#stateTpl'},
-                            {align: 'center', toolbar: '#topic-child-table-bar', title: '操作', width: 160}
-                        ]]
-                    });
+                    $('#topic-form')[0].reset();
+                    $('#topic-form').attr('method', 'GET');
+                    if (data) {
+                        $('#topic-form').vm(data)
+                        form.val('topic-form', data);
+                        $('#topic-form').attr('method', 'GET');
+
+                    }
                 }
             });
         };
-
-        // 工具条点击事件
-        table.on('tool(topic-child-table)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'pass') { //通过
-                doPass(data.slqID, 1);
-            } else if (obj.event === 'unpass') { //不通过
-                doPass(data.slqID, 2);
-            }
-        });
 
 
         // 显示编辑弹窗
         var showDetailModel = function (data) {
             layer.open({
                 type: 1,
-                title: '查看选题内容',
+                title: '查看选题',
                 area: '450px',
                 offset: '120px',
                 content: $('#topic-detail-model').html(),
@@ -252,21 +297,6 @@
                 });
             });
         };
-
-        //审核操作
-        function doPass(id, state) {
-            //请修改审核接口
-            api.req('selQuest/setState', {slqID: id, state: state}, function (data) {
-                layer.closeAll('loading');
-                if (data.code == 200) {
-                    layer.msg(data.msg, {icon: 1});
-                    table.reload('topic-child-table');
-                    layer.closeAll('page');
-                } else {
-                    layer.msg(data.msg, {icon: 2});
-                }
-            });
-        }
 
 
         //毕业批次与班级下拉联级
