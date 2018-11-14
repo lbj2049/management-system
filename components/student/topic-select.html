@@ -14,8 +14,10 @@
 
 <!-- 表格操作列 -->
 <script type="text/html" id="role-table-bar">
-    <input class="layui-hide" value="confirm" id="opTopicValue">
-    <a class="layui-btn layui-btn-primary layui-btn-xs" id="opTopic" value="confirm" lay-event="confirm">确认</a>
+    <div class="opBtnGroup">
+        <input class="layui-hide" value="confirm" id="opTopicValue">
+        <a class="layui-btn layui-btn-primary layui-btn-xs" id="opTopic" lay-event="confirm">确认</a>
+    </div>
 </script>
 
 <script>
@@ -42,7 +44,8 @@
         // 工具条点击事件
         table.on('tool(select-paper)', function (obj) {
             var data = obj.data;
-            if (obj.event === 'confirm') { //修改
+
+            if (obj.event === 'confirm' && $('#opTopic').attr('class').toString().indexOf('layui-btn-disabled') < 0) { //修改
                 var confirmValue = $('#opTopicValue').val();
                 if(confirmValue === 'confirm'){
                     layer.confirm('确认选择该课题？', {title:''}, function () {
@@ -50,6 +53,17 @@
                         //增加 api
                         $('#opTopicValue').val('cancle');
                         $('#opTopic').text('取消');
+                        var child = $("#opTopicValue").parents('table').find('.opBtnGroup');
+                        child.each(function(index, item){
+                            var childBtnOp = item.childNodes.item(3);
+                            if("确认" === childBtnOp.innerHTML){
+                                childBtnOp.className = 'layui-btn layui-btn-primary layui-btn-xs layui-btn-disabled';
+                            }
+                        });
+                        //form.render('checkbox');
+
+
+                        //$('#opTopic').attr('class','');
                         layer.msg('您已选择该课题，等待导师确认');
                     });
                 }else if(confirmValue === 'cancle'){
@@ -61,6 +75,7 @@
                         layer.msg('您已取消该课题');
                     });
                 }
+
 
             }
         });
