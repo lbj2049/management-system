@@ -9,12 +9,12 @@
     <div class="layui-card-body">
         <div class="toolbar layui-toolbar layui-form">
 
-                <div class="layui-inline">
-                    <div id="search-batch-class-id">
-                    </div>
+            <div class="layui-inline">
+                <div id="search-batch-class-id">
                 </div>
-                <input id="topic-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
-                <button id="topic-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+            </div>
+            <input id="topic-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
+            <button id="topic-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
         </div>
         <table class="layui-table" id="topic-table" lay-filter="topic-table"></table>
     </div>
@@ -22,14 +22,22 @@
 
 <!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar">
-    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="pass">通过</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="unpass">不通过</a>
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">查看</a>
+    {{#  if(d.state == 0) { }}
+    <a class="layui-btn layui-btn-xs" lay-event="pass">通过</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="unpass">未通过</a>
+    {{#  } else if(d.state == 1) { }}
+
+    {{#  } else if(d.state == 2) { }}
+    <a class="layui-btn layui-btn-xs" lay-event="pass">通过</a>
+    {{#  } }}
+    <!--0：未审核；1:通过；2：未通过;3:已分发-->
 </script>
 
 <!-- 表单弹窗 -->
 <script type="text/html" id="topic-model">
     <form id="topic-form" lay-filter="topic-form" class="layui-form model-form">
-        <input name="id" type="hidden"/>
+        <input name="stqID" type="hidden"/>
         <div class="layui-form-item">
             <label class="layui-form-label">标题</label>
             <div class="layui-form-mid layui-word-aux">
@@ -45,26 +53,26 @@
         <div class="layui-form-item">
             <label class="layui-form-label">出题人</label>
             <div class="layui-form-mid layui-word-aux">
-                {{teacherName}}
+                {{userName}}
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">提交时间</label>
             <div class="layui-form-mid layui-word-aux">
-                {{subtime}}
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">审核</label>
-            <div class="layui-input-block">
-                <input type="radio" name="status" value="1" title="通过">
-                <input type="radio" name="status" value="2" title="不通过" checked>
+                {{upTime}}
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">回复</label>
             <div class="layui-input-block">
-                <textarea name="msg" placeholder="请输入内容" class="layui-textarea" maxlength="200"></textarea>
+                <textarea name="reContent" placeholder="请输入回复" class="layui-textarea" maxlength="200"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">审核</label>
+            <div class="layui-input-block">
+                <input type="radio" name="state" value="1" title="通过" checked>
+                <input type="radio" name="state" value="2" title="不通过">
             </div>
         </div>
         <div class="layui-form-item model-form-footer">
@@ -74,12 +82,47 @@
     </form>
 </script>
 
+<script type="text/html" id="topic-detail-model">
+    <div id="topic-detail-form" class="layui-form model-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-form-mid layui-word-aux">
+                <label>{{title}}</label>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{content}}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">提交时间</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{upTime}}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">回复</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{reContent}}
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
+        </div>
+    </div>
+</script>
 
-<script type="text/html" id="statusTpl">
-    {{#  if(d.status == 1) { }}
+<script type="text/html" id="stateTpl">
+    {{#  if(d.state == 0) { }}
+    未审核
+    {{#  } else if(d.state == 1) { }}
     通过
-    {{#  } else { }}
+    {{#  } else if(d.state == 2) { }}
     未通过
+    {{#  } else if(d.state == 3) { }}
+    已分发
     {{#  } }}
 </script>
 
@@ -97,79 +140,105 @@
         var upload = layui.upload;
         var selectN = layui.selectN;
 
-        getBatchData('batchId');
-        getClassData('classId');
+        $.ajaxSetup({
+            async: false
+        })
 
-
-
-        //初始化联级
-        getBatchClassData('search-batch-class-id');
         var batch_class_select, batch_class_id;
 
+        initData();
 
-        // 渲染表格
-        table.render({
-            elem: '#topic-table',
-            url: common.base_server + 'topic_query.json',
-            method: 'GET',
-            where: {
-                UUID: auth.getUUID()
-            },
-            height: 'full-250',
-            page: true,
-            cols: [[
-                {type:'numbers'},
-                {field: 'title', title: '标题', templet: '<div><a href="javascript:;" class="layui-table-link" lay-event="detail">{{d.title}}</a></div>'},
-                {field: 'teacherName', title: '出题人'},
-                {field: 'subtime', title: '提交时间'},
-                {field: 'status', title: '审核状态', templet: '#statusTpl'},
-                {field: 'msg', title: '回复'},
-                {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 160}
-            ]]
-        });
+        //页面加载时初始化
+        function initData() {
+            //初始化联级
+            getBatchClassData('search-batch-class-id');
 
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+            // 渲染表格
+            table.render({
+                elem: '#topic-table',
+                url: common.base_server + 'setQuest/getAllTeaQuestList',
+                method: 'POST',
+                where: {
+                    UUID: auth.getUUID(),
+                    batchID: batchID,
+                    classID: classID
+                },
+                request: common.tableRequest,
+                response: common.tableResponse,
+                parseData: common.tableParseData,
+                height: 'full-250',
+                page: true,
+                cols: [[
+                    {type:'numbers'},
+                    {field: 'title', title: '标题', templet: '<div><a href="javascript:;" class="layui-table-link" lay-event="detail">{{d.title}}</a></div>'},
+                    {field: 'userName', title: '出题人'},
+                    {field: 'upTime', title: '提交时间'},
+                    {field: 'state', title: '审核状态', templet: '#stateTpl'},
+                    // {field: 'msg', title: '回复'},
+                    {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 180}
+                ]]
+            });
+
+        }
 
         // 表单提交事件
         form.on('submit(topic-form-submit)', function (data) {
             layer.load(2);
-            api.req('user_state.json', data.field, function (data) {
+            var url = '';
+            if (data.field.stqID) {
+                url = 'setQuest/setCheck';
+            }
+            api.req(url, data.field, function (data) {
                 layer.closeAll('loading');
-                if (data.code == 200) {
-                    layer.msg(data.msg, {icon: 1});
+                if (data.Status == 2000) {
+                    layer.msg(data.Data.Result, {icon: 1});
                     table.reload('topic-table');
                     layer.closeAll('page');
                 } else {
-                    layer.msg(data.msg, {icon: 2});
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
-            }, $('#topic-form').attr('method'));
+            });
             return false;
         });
 
         // 工具条点击事件
         table.on('tool(topic-table)', function (obj) {
             var data = obj.data;
-            if (obj.event === 'pass') { //通过
-                doPass(data.id, 1);
+            if (obj.event === 'detail') { //查看
+                if (data.state == 0 || data.state == 2) {
+                    showEditModel(data)
+                } else {
+                    showDetailModel(data);
+                }
+            } else if (obj.event === 'pass') { //通过
+                doPass(data.stqID, 1);
             } else if (obj.event === 'unpass') { //不通过
-                doPass(data.id, 2);
-            } else {
-                showEditModel(data)
+                doPass(data.stqID, 2);
             }
         });
 
         // 搜索按钮点击事件
         $('#topic-btn-search').click(function () {
             var keyword = $('#topic-edit-search').val();
-            var batchId = formSelects.value('batchId');
-            var classId = formSelects.value('classId');
-            table.reload('topic-table', {where: {keyword: keyword, batchId: batchId, classId: classId}});
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+            table.reload('topic-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
+        });
+
+        // 添加按钮点击事件
+        $('#topic-btn-add').click(function () {
+            showEditModel();
         });
 
         // 显示编辑弹窗
         var showEditModel = function (data) {
             layer.open({
                 type: 1,
-                title: data ? '审核选题' : '添加选题',
+                title: '审核选题',
                 area: '450px',
                 offset: '120px',
                 content: $('#topic-model').html(),
@@ -186,63 +255,40 @@
             });
         };
 
+
+        // 显示编辑弹窗
+        var showDetailModel = function (data) {
+            layer.open({
+                type: 1,
+                title: '查看选题',
+                area: '450px',
+                offset: '120px',
+                content: $('#topic-detail-model').html(),
+                success: function () {
+                    $('#topic-detail-form').vm(data)
+                }
+            });
+        };
+
         //审核操作
-        function doPass(id, status) {
-            //请修改审核接口
-            api.req('user_state.json', {slqID: id, status: status}, function (data) {
-                layer.closeAll('loading');
-                if (data.code == 200) {
-                    layer.msg(data.msg, {icon: 1});
-                    table.reload('topic-table');
-                    layer.closeAll('page');
-                } else {
-                    layer.msg(data.msg, {icon: 2});
-                }
-            }, 'get');
+        function doPass(id, state) {
+            var t = state == 1 ? '通过' : '不通过';
+            layer.confirm('确定[' + t + ']吗？', {title: '提示'}, function (i) {
+                layer.close(i);
+                layer.load(2);
+                //请修改审核接口
+                api.req('setQuest/setCheck', {stqID: id, state: state, reContent: ''}, function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status == 2000) {
+                        layer.msg(data.Data.Result, {icon: 1});
+                        table.reload('topic-table');
+                        layer.closeAll('page');
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
+                });
+            });
         }
-
-        //加载批次下拉框中的值
-        function getBatchData(selectId, vals) {
-
-            formSelects.btns(selectId, [], '');
-            api.req('batch_query.json', {}, function (data) {
-                if (0 == data.code) {
-                    // 渲染多选下拉框
-                    var opvs = new Array();
-                    for (var i = 0; i < data.data.length; i++) {
-                        opvs.push({name: data.data[i].name, value: data.data[i].id});
-                    }
-                    formSelects.data(selectId, 'local', {arr: opvs});
-
-                    if (vals) {
-                        formSelects.value(selectId, vals);
-                    }
-                }
-            }, 'GET');
-        }
-        //加载班级下拉框中的值
-        function getClassData(selectId, vals) {
-
-            formSelects.btns(selectId, [], '');
-            formSelects.config(selectId, {
-                placeholder: '请选择班级'
-            })
-            api.req('class_query.json', {}, function (data) {
-                if (0 == data.code) {
-                    // 渲染多选下拉框
-                    var opvs = new Array();
-                    for (var i = 0; i < data.data.length; i++) {
-                        opvs.push({name: data.data[i].name, value: data.data[i].id});
-                    }
-                    formSelects.data(selectId, 'local', {arr: opvs});
-
-                    if (vals) {
-                        formSelects.value(selectId, vals);
-                    }
-                }
-            }, 'GET');
-        }
-
 
 
         //毕业批次与班级下拉联级
@@ -268,7 +314,7 @@
                                     selected.push(rs[i].batchID);
                                     selected.push(trs[j].classID);
                                 }
-                                topvs.push({name: trs[j].className, id: trs[i].classID})
+                                topvs.push({name: trs[j].className, id: trs[j].classID})
                             }
                             opvs.push({name: rs[i].batchName, id: rs[i].batchID, children: topvs});
                         } else {
@@ -284,6 +330,15 @@
                 }
             });
         }
+        function getIdArr() {
+            var idArr = batch_class_select.values;
+            if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
+                return idArr;
+            } else {
+                layer.msg('请选择毕业批次和班级', {icon: 2});
+                return false
+            }
+        }
         function getSelectNParam(id, opvs, selected) {
             return {
                 //元素容器【必填】
@@ -292,7 +347,7 @@
                 //候选数据【必填】
                 data: opvs,
                 //为真只取最后一个值
-                last:true,
+                // last:true,
                 //默认值
                 selected: selected,
                 //空值项提示，可设置为数组['请选择省','请选择市','请选择县']

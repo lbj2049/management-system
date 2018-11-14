@@ -56,7 +56,7 @@ layui.define(['jquery', 'common'], function (exports) {
                 auth: '3'
             }, {
                 name: '选题管理',
-                url: '#!selected-topic-list',
+                url: '#!topic-select-list',
                 path: 'system/topic-select-list.html',
                 icon: 'icofont-pencil-alt-5',
                 auth: '3'

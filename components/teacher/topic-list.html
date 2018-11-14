@@ -51,12 +51,12 @@
 </script>
 <script type="text/html" id="topic-child-table-bar">
     {{#  if(d.state == 0) { }}
-    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="pass">通过</a>
-    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="unpass">未通过</a>
+    <a class="layui-btn layui-btn-xs" lay-event="pass">通过</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="unpass">未通过</a>
     {{#  } else if(d.state == 1) { }}
 
     {{#  } else if(d.state == 2) { }}
-    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="pass">通过</a>
+    <a class="layui-btn layui-btn-xs" lay-event="pass">通过</a>
     {{#  } }}
 </script>
 
