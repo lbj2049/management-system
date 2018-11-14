@@ -9,8 +9,44 @@
     <div class="layui-card-body">
         <div class="layui-container">
             <div class="layui-row">
-                <div class="layui-col-md4 layui-col-md-offset4">
-                    <table class="layui-table layui-text" id="userinfo">
+                <div class="layui-col-md6 layui-col-md-offset4">
+
+
+                    <form id="class-form" lay-filter="class-form" class="layui-form model-form">
+                        <input name="classID" type="hidden"/>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">学号</label>
+                            <div class="layui-input-block">
+                                <input name="userNo" id="userNo"  placeholder="" type="text" class="layui-input" readonly="readonly" lay-verify="required"  required/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">班级名称</label>
+                            <div class="layui-input-block">
+                                <input name="userName" id="userName"  placeholder="" type="text" class="layui-input" maxlength="6" readonly="readonly" lay-verify="required" required/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">密码</label>
+                            <div class="layui-input-block">
+                                <input name="userPass" id="userPass" type="password" class="layui-input" readonly="readonly" lay-verify="required" required/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">联系电话</label>
+                            <div class="layui-input-block">
+                                <input name="userPhone" id="userPhone" type="text" class="layui-input" maxlength="11" readonly="readonly" onkeyup="this.value=this.value.replace(/\D/g,'')" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item model-form-footer" align="center">
+                            <button id="layui-btn-cancle" class="layui-btn layui-btn-primary"  style="display: none"   type="button" lay-filter="class-form-cancle" lay-submit>取消</button>
+                            <button id="layui-btn-change" class="layui-btn" lay-filter="class-form-change" lay-submit>修改</button>
+                            <button id="layui-btn-save" class="layui-btn"  lay-filter="class-form-submit" style="display: none"  lay-submit>保存</button>
+                        </div>
+                    </form>
+
+
+                   <!-- <table class="layui-table layui-text" id="userinfo">
                         <colgroup>
                             <col width="150">
                             <col>
@@ -29,7 +65,7 @@
                             <td>{{userTel}}</td>
                         </tr>
                         </tbody>
-                    </table>
+                    </table>-->
                 </div>
             </div>
         </div>
@@ -37,13 +73,86 @@
 </div>
 
 <script>
-    layui.use(['carousel', 'auth', 'api', 'table'], function(){
+    layui.use(['carousel', 'form','auth', 'api', 'table'], function(){
         var carousel = layui.carousel;
         var auth = layui.auth;
+        var form = layui.form;
         var api = layui.api;
+        //$('#userinfo').vm(auth.getUser());
 
-        $('#userinfo').vm(auth.getUser());
+        $('#userNo').val(auth.getUser().userNo);
+        $('#userName').val(auth.getUser().loginName);
+        $('#userPass').val(auth.getUser().userName);
+        $('#userPhone').val(auth.getUser().userTel);
+
+        // change msg
+        form.on('submit(class-form-change)', function (data) {
+            $('#userNo').removeAttr("readonly");
+            $('#userName').removeAttr("readonly");
+            $('#userPass').removeAttr("readonly");
+            $('#userPhone').removeAttr("readonly");
+
+            $("#layui-btn-change").css({//设置 取消 按钮样式
+                "display": "none"
+            });
+            $("#layui-btn-cancle").css({//设置 取消 按钮样式
+                "display": "inline"
+            });
+            $("#layui-btn-save").css({//设置 取消 按钮样式
+                "display": "inline"
+            });
+            //光标设置
+            var tmpUserNo=$("#userNo").val();
+            $("#userNo").val("").focus().val(tmpUserNo);
+            return false;
+        });
+
+
+        function disableBtn() {
+            $('#userNo').attr("readonly","readonly");
+            $('#userName').attr("readonly","readonly");
+            $('#userPass').attr("readonly","readonly");
+            $('#userPhone').attr("readonly","readonly");
+
+            $("#layui-btn-change").css({//设置 取消 按钮样式
+                "display": "inline"
+            });
+            $("#layui-btn-cancle").css({//设置 取消 按钮样式
+                "display": "none"
+            });
+            $("#layui-btn-save").css({//设置 取消 按钮样式
+                "display": "none"
+            });
+        };
+
+        form.on('submit(class-form-cancle)', function (data) {
+            disableBtn();
+            return false;
+        });
+
+        form.on('submit(class-form-save)', function (data) {
+
+            var url = '';
+            if (data.field.classID) {
+                url = 'classInfo/updClassInfo';
+            } else {
+                url = 'classInfo/adClassInfo';
+            }
+            api.req(url, data.field, function (data) {
+                if (data.Status == 2000) {
+                    //layer.msg(data.Data.Result, {icon: 1});
+                    disableBtn();
+                } else {
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
+                }
+            });
+
+            return false;
+        });
 
     });
+
+
+
 </script>
 
