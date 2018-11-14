@@ -41,7 +41,7 @@
                         <div class="layui-form-item model-form-footer" align="center">
                             <button id="layui-btn-cancle" class="layui-btn layui-btn-primary"  style="display: none"   type="button" lay-filter="class-form-cancle" lay-submit>取消</button>
                             <button id="layui-btn-change" class="layui-btn" lay-filter="class-form-change" lay-submit>修改</button>
-                            <button id="layui-btn-save" class="layui-btn"  lay-filter="class-form-submit" style="display: none"  lay-submit>保存</button>
+                            <button id="layui-btn-save" class="layui-btn"  lay-filter="class-form-save" style="display: none"  lay-submit>保存</button>
                         </div>
                     </form>
 
@@ -131,7 +131,6 @@
         });
 
         form.on('submit(class-form-save)', function (data) {
-
             var url = '';
             if (data.field.classID) {
                 url = 'classInfo/updClassInfo';
