@@ -12,27 +12,15 @@
             <form class="layui-form" lay-filter="group-form" id="group-form">
                 <div class="layui-col-md12">
                     <div class="layui-form-item">
-                        批次：
                         <div class="layui-inline">
-                            <div class="layui-input-inline">
-                                <select name="batchId" xm-select="batchId" xm-select-radio="" lay-verify="required">
-                                </select>
-                            </div>
-                        </div>
-                        班级：
-                        <div class="layui-inline">
-                            <div class="layui-input-inline">
-                                <select name="classId" xm-select="classId" xm-select-radio="" lay-verify="required">
-                                </select>
+                            <div id="search-batch-class-id">
                             </div>
                         </div>
                         小组名称：
                         <div class="layui-inline">
                             <div class="layui-inline">
-                                <input type="text" name="name" id="name" placeholder="输入名称" autocomplete="off" class="layui-input" required  lay-verify="required">
-                                <input type="hidden" name="id" id="id">
-                                <input type="hidden" name="teacherIds" id="teacherIds">
-                                <input type="hidden" name="studentIds" id="studentIds">
+                                <input type="text" name="groupName" id="groupName" placeholder="输入名称" autocomplete="off" class="layui-input"  lay-verify="required" required>
+                                <input type="hidden" name="groupID" id="groupID">
                             </div>
                         </div>
                     </div>
@@ -43,8 +31,8 @@
                         <div class="layui-card">
                             <div class="layui-card-header">老师列表</div>
                             <div class="layui-card-body ">
-                                <ul p-each="data" id="teachers">
-                                    <li data-type="teacher"><input type="hidden" name="id" p-bind="value:{{id}}"><span>{{realName}}</span></li>
+                                <ul p-each="Data" id="teachers">
+                                    <li data-type="teacher"><input type="hidden" name="id" p-bind="value:{{UUID}}"><span data-type="prefix"></span><span>{{userName}}</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -53,11 +41,9 @@
                         <div class="layui-card">
                             <div class="layui-card-header">组成员</div>
                             <div class="layui-card-body draggable">
-
-                                <ul p-each="data" id="users">
-                                    <li><input type="hidden" name="id" p-bind="value:{{id}}"><span>{{realName}}</span></li>
+                                <ul p-each="Data" id="users">
+                                    <li><input type="hidden" name="id" p-bind="value:{{UUID}}"><span>{{userName}}</span></li>
                                 </ul>
-
                             </div>
                         </div>
                     </div>
@@ -65,8 +51,8 @@
                         <div class="layui-card">
                             <div class="layui-card-header">学生列表</div>
                             <div class="layui-card-body draggable">
-                                <ul p-each="data" id="students">
-                                    <li data-type="student"><input type="hidden" name="id" p-bind="value:{{id}}"><span>{{realName}}</span></li>
+                                <ul p-each="Data" id="students">
+                                    <li data-type="student"><input type="hidden" name="id" p-bind="value:{{UUID}}"><span data-type="prefix"></span><span>{{userName}}</span><span>&nbsp;&nbsp;( {{userNo}} )</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -88,7 +74,7 @@
 <script src="/assets/libs/sortable/jquery.binding.js"/>
 <script type="text/javascript">
 
-    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects'], function () {
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'selectN'], function () {
         var form = layui.form;
         var table = layui.table;
         var common = layui.common;
@@ -97,37 +83,64 @@
         var util = layui.util;
         var api = layui.api;
         var formSelects = layui.formSelects;
+        var selectN = layui.selectN;
 
-        var o = {data:[]};
+        var o = {Data:[]};
 
 
-        var teachers = {data:[]};
-        var students = {data:[]};
-        var users = {data:[]};
+        var teachers = {Data:[]};
+        var students = {Data:[]};
+        var users = {Data:[]};
 
 
         var vmt = $('#teachers').vm(teachers);
         var vms = $('#students').vm(students);
         var vmu = $('#users').vm(users);
+
+
+        $.ajaxSetup({
+            async: false
+        })
+
+        var batch_class_select, batch_class_id;
+
+        initData();
+
+        //页面加载时初始化
+        function initData() {
+            //初始化联级
+            getBatchClassData('search-batch-class-id');
+
+
+            loadData();
+        }
+
         function loadData() {
 
-            getBatchData('batchId');
-            getClassData('classId');
-
-            api.req('teacher_query.json', {}, function (data) {
-                if (data.code == 0) {
-                    vmt.set(data)
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+            var param = {
+                batchID: batchID,
+                classID: classID,
+                stage: 1,
+            }
+            api.req('group/teaList', param, function (data) {
+                if (data.Status == 2000) {
+                    vmt.set(data);
+                } else {
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
-            }, 'GET');
-            api.req('student_query.json', {}, function (data) {
-                if (data.code == 0) {
-                    vms.set(data)
+            });
+            api.req('group/stuList', param, function (data) {
+                if (data.Status == 2000) {
+                    vms.set(data);
+                } else {
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
-            }, 'GET');
+            });
             vmu.set(users)
-
         }
-        loadData();
 
         var edit_data_key = 'topic_open_data';
         var editData = layui.data('GroupEditData').topic_open_data;
@@ -174,7 +187,11 @@
                     return f;
                 },
             },
-            animation: 150
+            sort: false,
+            animation: 150,
+            onRemove: function (evt) {
+                $(evt.item).find('span[data-type="prefix"]').html('老师：');
+            }
         });
         $('#users').sortable({
             group: {
@@ -193,6 +210,10 @@
             },
             onEnd: function (evt) {
                 tsf = 0;
+            },
+            onRemove: function (evt) {
+                console.log(evt.clone)
+                $(evt.item).find('span[data-type="prefix"]').html('');
             }
         });
         $('#students').sortable({
@@ -207,88 +228,148 @@
                     return f;
                 },
             },
-            animation: 150
+            sort: false,
+            animation: 150,
+            onRemove: function (evt) {
+                $(evt.item).find('span[data-type="prefix"]').html('学生：');
+            }
         });
         $('#group-form-reset').click(function () {
-            loadData();
             $('#group-form')[0].reset();
+            initData();
         });
 
         // 表单提交事件
         form.on('submit(group-form-submit)', function (data) {
             layer.load(2);
-            var tids = new Array();
-            var sids = new Array();
+            var tids = [];
+            var sids = [];
+            var UUIDs = [];
             $('#users').find('li').each(function (i, li) {
                 var type = $(li).data('type');
                 var id = $(li).find('input[name=id]').val();
-                if (type == 'teacher') {
-                    tids.push(id)
+                if (type === 'teacher') {
+                    tids.push(id);
+                    UUIDs.push(id);
                 }
-                if (type == 'student') {
-                    sids.push(id)
+                if (type === 'student') {
+                    sids.push(id);
+                    UUIDs.push(id);
                 }
-            })
-            // console.log(tids.join(','), sids.join(','));
-            data.field.teacherIds = tids.join(',');
-            data.field.studentIds = sids.join(',');
-            // console.log(data.field);
-
-            api.req('user_state.json', data.field, function (data) {
+            });
+            if (tids.length === 0) {
                 layer.closeAll('loading');
-                if (data.code == 200) {
-                    layer.msg(data.msg, {icon: 1});
+                layer.msg('请选择老师', {icon: 2});
+                return false;
+            }
+            if (sids.length === 0) {
+                layer.closeAll('loading');
+                layer.msg('请选择学生', {icon: 2});
+                return false;
+            }
+            if (data.field.id) {
+                delete data.field.id;
+            }
+            data.field.UUIDs = UUIDs.join(',');
+
+
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+
+            data.field.batchID = batchID;
+            data.field.classID = classID;
+            data.field.stage = 1;
+
+            var url = '';
+            if (data.field.groupID) {
+                url = 'group/editGroup';
+            } else {
+                url = 'group/adGroup';
+            }
+            api.req(url, data.field, function (data) {
+                layer.closeAll('loading');
+                if (data.Status == 2000) {
+                    layer.msg(data.Data.Result, {icon: 1});
                     $('#group-form-reset').click();
                 } else {
-                    layer.msg(data.msg, {icon: 2});
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
-            }, 'get');
+            });
 
             return false;
         });
 
 
 
-        //加载批次下拉框中的值
-        function getBatchData(selectId, vals) {
 
-            formSelects.btns(selectId, [], '');
-            api.req('batch_query.json', {}, function (data) {
-                if (0 == data.code) {
-                    // 渲染多选下拉框
-                    var opvs = new Array();
-                    for (var i = 0; i < data.data.length; i++) {
-                        opvs.push({name: data.data[i].name, value: data.data[i].id});
-                    }
-                    formSelects.data(selectId, 'local', {arr: opvs});
+        //毕业批次与班级下拉联级
+        function getBatchClassData(selectId, classId) {
+            api.req('batchInfo/BatchLD', {}, function (data) {
+                if (data.Status == 2000) {
 
-                    if (vals) {
-                        formSelects.value(selectId, vals);
+                    var opvs = [];
+                    var selected = [];
+
+                    var rs = data.Data;
+                    for (var i = 0; i < rs.length; i++) {
+                        if (i == 0 && !classId) {
+                            selected.push(rs[i].batchID);
+                        }
+                        var trs = rs[i].classList;
+                        if (trs) {
+                            var topvs = new Array();
+                            for (var j = 0; j < trs.length; j++) {
+                                if ((i == 0 && j == 0) && !classId) {
+                                    selected.push(trs[j].classID);
+                                } else if (classId && classId == trs[j].classID) {
+                                    selected.push(rs[i].batchID);
+                                    selected.push(trs[j].classID);
+                                }
+                                topvs.push({name: trs[j].className, id: trs[j].classID})
+                            }
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID, children: topvs});
+                        } else {
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID});
+                        }
                     }
+                    if (selectId == 'search-batch-class-id')  {
+                        batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
+                    } else {
+                        batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
+                    }
+
                 }
-            }, 'GET');
+            });
         }
-        //加载班级下拉框中的值
-        function getClassData(selectId, vals) {
+        function getIdArr() {
+            var idArr = batch_class_select.values;
+            if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
+                return idArr;
+            } else {
+                layer.msg('请选择毕业批次和班级', {icon: 2});
+                return false
+            }
+        }
+        function getSelectNParam(id, opvs, selected) {
+            return {
+                //元素容器【必填】
+                elem: '#' + id,
+                search:[false,true],
+                //候选数据【必填】
+                data: opvs,
+                //为真只取最后一个值
+                // last:true,
+                //默认值
+                selected: selected,
+                //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
+                tips: ['请选择毕业批次', '请选择班级'],
+                //数据的键名
+                field:{idName:'id',titleName:'name',childName:'children'},
+                //添加验证
+                verify:'required'
 
-            formSelects.btns(selectId, [], '');
-            formSelects.config(selectId, {
-                placeholder: '请选择班级'
-            })
-            api.req('class_query.json', {}, function (data) {
-                if (0 == data.code) {
-                    // 渲染多选下拉框
-                    var opvs = new Array();
-                    for (var i = 0; i < data.data.length; i++) {
-                        opvs.push({name: data.data[i].name, value: data.data[i].id});
-                    }
-                    formSelects.data(selectId, 'local', {arr: opvs});
-
-                    if (vals) {
-                        formSelects.value(selectId, vals);
-                    }
-                }
-            }, 'GET');
+            };
         }
     });
 </script>

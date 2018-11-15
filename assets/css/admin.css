@@ -706,6 +706,7 @@ html {
 .layui-layout-admin .layui-body .draggable ul {
     height: 400px;
     border: 1px solid #EFEFEF;
+    overflow-y: auto;
 }
 
 .layui-layout-admin .layui-body .draggable li {

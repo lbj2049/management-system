@@ -23,7 +23,7 @@ layui.define(function (exports) {
         },
         //table 默认请求参数
         tableRequest: {
-            pageName: 'start', //页码的参数名称，默认：page
+            pageName: 'pageNum', //页码的参数名称，默认：page
             limitName: 'pageSize' //每页数据量的参数名，默认：limit
         },
         //table 返回数据字段映射
