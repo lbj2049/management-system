@@ -1,1 +1,95 @@
-示范文档
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">示范文档</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>示范文档/cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+        <div class="toolbar layui-toolbar layui-form">
+            <input id="topic-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
+            <button id="topic-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+        </div>
+        <table class="layui-table" id="topic-table" lay-filter="topic-table"></table>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="topic-table-bar">
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">查看</a>
+</script>
+
+
+<script>
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload', 'selectN'], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var common = layui.common;
+        var auth = layui.auth;
+        var layer = layui.layer;
+        var util = layui.util;
+        var admin = layui.admin;
+        var api = layui.api;
+        var formSelects = layui.formSelects;
+        var upload = layui.upload;
+        var selectN = layui.selectN;
+
+        $.ajaxSetup({
+            async: true
+        })
+
+        var batch_class_select, batch_class_id;
+
+        initData();
+
+        //页面加载时初始化
+        function initData() {
+            // 渲染表格
+            table.render({
+                elem: '#topic-table',
+                url: common.base_server + 'setQuest/getAllTeaQuestList',
+                method: 'POST',
+                where: {
+                    UUID: auth.getUUID(),
+                },
+                request: common.tableRequest,
+                response: common.tableResponse,
+                parseData: common.tableParseData,
+                height: 'full-250',
+                page: true,
+                cols: [[
+                    {type:'numbers',title:'序号'},
+                    {field: 'title', title: '标题', templet: '<div><a href="javascript:;" class="layui-table-link" lay-event="detail">{{d.title}}</a></div>'},
+                    {field: 'userName', title: '作者'},
+                    {field: 'upTime', title: '班级'},
+                    {field: 'state', title: '负责老师'},
+                    {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 180}
+                ]]
+            });
+
+        }
+
+
+        // 工具条点击事件
+        table.on('tool(topic-table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'detail') { //查看
+                if (data.state == 0 || data.state == 2) {
+                    showEditModel(data)
+                } else {
+                    showDetailModel(data);
+                }
+            }
+        });
+
+        // 搜索按钮点击事件
+        $('#topic-btn-search').click(function () {
+            var keyword = $('#topic-edit-search').val();
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+            table.reload('topic-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
+        });
+    });
+</script>
