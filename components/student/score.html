@@ -1,1 +1,64 @@
-成绩管理
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">成绩管理</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>成绩管理</cite></a>
+        </span>
+    </div>
+
+    <div class="layui-card-body">
+
+        <div class="layui-inline">
+            <label class="layui-form-label">总成绩</label>
+            <div class="layui-input-inline">
+                <input type="text" name="myScore"  class="layui-input" readonly>
+            </div>
+        </div>
+
+
+        <table class="layui-table" id="class-table" lay-filter="class-table"></table>
+
+    </div>
+</div>
+
+
+
+<script>
+    layui.use(['api', 'table', 'util', 'common', 'auth', 'admin', 'formSelects'], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var common = layui.common;
+        var auth = layui.auth;
+        var layer = layui.layer;
+        var util = layui.util;
+        var admin = layui.admin;
+        var api = layui.api;
+        var formSelects = layui.formSelects;
+
+
+        // 渲染表格
+        table.render({
+            elem: '#class-table',
+            url: common.base_server + 'classInfo/getClassList',
+            method: 'POST',
+            where: {
+                UUID: auth.getUUID()
+            },
+            request: common.tableRequest,
+            response: common.tableResponse,
+            parseData: common.tableParseData,
+            height: 'full-250',
+            page: false,
+            cols: [[
+                {type: 'numbers',title:'序号', width: 80},
+                {field: 'achievementLink', title: '环节', width: 80},
+                {field: 'mAchievement', title: '成绩', width: 80},
+                {field: 'mAchievement', title: '批语', width: 160},
+                {field: 'mAchievement', title: '负责老师', width: 160},
+            ]]
+        });
+    })
+
+
+</script>
