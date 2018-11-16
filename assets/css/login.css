@@ -41,6 +41,11 @@ body {
     margin-left: 48px;
 }
 
+.login-body .layui-form-register .layui-form-label {
+    width: 90px;
+    padding: 9px 5px;
+}
+
 .login-body .login-captcha {
     width: 100%;
     cursor: pointer;

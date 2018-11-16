@@ -74,7 +74,7 @@ layui.define(['jquery', 'common'], function(exports){
             });
             // 个人信息
             $('#setInfo').click(function () {
-
+                common.openPath('components/tpl/profile.html', '' , 500, 450);
             });
             // 消息
             $('#btnMessage').click(function () {

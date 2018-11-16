@@ -104,6 +104,7 @@
         var upload = layui.upload;
         var selectN = layui.selectN;
 
+        var editIdArr = [];
         var batch_class_select, batch_class_id;
 
         initData();
@@ -111,8 +112,15 @@
         function initData() {
 
             //初始化联级
-            getBatchClassData('search-batch-class-id');
+            getBatchClassData('search-batch-class-id', loadData, editIdArr);
 
+        }
+
+        function loadData() {
+
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
             // 渲染表格
             table.render({
                 elem: '#topic-table',
@@ -122,7 +130,8 @@
                 method: 'get',
                 where: {
                     UUID: auth.getUUID(),
-                    classID: batch_class_select && batch_class_select.lastValue ? batch_class_select.lastValue : ''
+                    batchID: batchID,
+                    classID: classID
                 },
                 request: common.tableRequest,
                 response: common.tableResponse,
@@ -179,9 +188,9 @@
         // 搜索按钮点击事件
         $('#topic-btn-search').click(function () {
             var keyword = $('#topic-edit-search').val();
-            var batch_class_select = batch_class_select.lastValue;
-            var batchId = formSelects.value('batchId');
-            var classId = formSelects.value('classId');
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
             table.reload('topic-table', {where: {keyword: keyword, batchId: batchId, classId: classId}});
         });
 
@@ -223,43 +232,50 @@
 
 
         //毕业批次与班级下拉联级
-        function getBatchClassData(selectId, classId) {
+        function getBatchClassData(selectId, callback, selected) {
             api.req('batchInfo/BatchLD', {}, function (data) {
-                if (data.state == 2000) {
-
-                    var opvs = new Array();
-                    var selected = new Array();
+                if (data.Status === 2000) {
+                    var opvs = [];
+                    // var selected = [];
 
                     var rs = data.Data;
                     for (var i = 0; i < rs.length; i++) {
-                        if (i == 0 && !classId) {
+                        if (i === 0 && selected.length === 0) {
                             selected.push(rs[i].batchID);
                         }
                         var trs = rs[i].classList;
                         if (trs) {
-                            var topvs = new Array();
+                            var topvs = [];
                             for (var j = 0; j < trs.length; j++) {
-                                if ((i == 0 && j == 0) && !classId) {
-                                    selected.push(trs[j].classID);
-                                } else if (classId && classId == trs[j].classID) {
-                                    selected.push(rs[i].batchID);
+                                if ((i === 0 && j === 0) && selected.length === 1) {
                                     selected.push(trs[j].classID);
                                 }
-                                topvs.push({name: trs[j].className, id: trs[i].classID})
+                                topvs.push({name: trs[j].className, id: trs[j].classID})
                             }
                             opvs.push({name: rs[i].batchName, id: rs[i].batchID, children: topvs});
                         } else {
                             opvs.push({name: rs[i].batchName, id: rs[i].batchID});
                         }
                     }
-                    if (selectId == 'search-batch-class-id')  {
+                    if (selectId === 'search-batch-class-id')  {
                         batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
                     } else {
                         batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
                     }
-
+                    if (typeof callback === "function") {
+                        callback();
+                    }
                 }
             });
+        }
+        function getIdArr() {
+            var idArr = batch_class_select.values;
+            if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
+                return idArr;
+            } else {
+                layer.msg('请选择毕业批次和班级', {icon: 2});
+                return false
+            }
         }
         function getSelectNParam(id, opvs, selected) {
             return {

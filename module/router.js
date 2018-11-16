@@ -101,13 +101,13 @@ layui.define(['jquery', 'common'], function (exports) {
                 auth: '2'
             }, {
                 name: '选题审核',
-                url: '#!topic-list',
-                path: 'teacher/topic-list.html',
+                url: '#!topic-review',
+                path: 'teacher/topic-review.html',
                 icon: 'icofont-listine-dots',
                 auth: '2'
             }, {
                 name: '我的学生作业',
-                url: '#!tudent-work',
+                url: '#!student-work',
                 path: 'teacher/student-work.html',
                 icon: 'icofont-tasks-alt',
                 auth: '2'

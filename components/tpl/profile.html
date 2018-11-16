@@ -1,0 +1,77 @@
+<div class="layui-card-header">
+    <h2 class="header-title">个人信息</h2>
+</div>
+<div class="layui-card-body">
+
+    <div id="profile-detail" class="layui-form model-form">
+    </div>
+</div>
+
+<script type="text/html" id="profileTpl">
+    <div class="layui-form-item">
+        <label class="layui-form-label">用户名:</label>
+        <div class="layui-form-mid layui-word-aux">
+            <label>{{d.loginName}}</label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">姓名:</label>
+        <div class="layui-form-mid layui-word-aux">
+            {{d.userName}}
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电话:</label>
+        <div class="layui-form-mid layui-word-aux">
+            {{d.userTel}}
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">用户角色:</label>
+        <div class="layui-form-mid layui-word-aux">
+            {{#  if(d.userType == 1){ }}
+            学生
+            {{#  } else if(d.userType == 2){ }}
+            老师
+            {{#  } else { }}
+            管理员
+            {{#  } }}
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">注册时间:</label>
+        <div class="layui-form-mid layui-word-aux">
+            {{d.enterTime}}
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态:</label>
+        <div class="layui-form-mid layui-word-aux">
+            {{#  if(d.state == 0){ }}
+            未审核
+            {{#  } else if(d.state == 1){ }}
+            正常
+            {{#  } else if(d.state == 2){ }}
+            停用
+            {{#  } else { }}
+            删除
+            {{#  } }}
+        </div>
+    </div>
+    <div class="layui-form-item model-form-footer">
+        <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
+    </div>
+</script>
+
+<script>
+    layui.use(['auth', 'laytpl'], function () {
+        var auth = layui.auth;
+        var laytpl = layui.laytpl;
+
+        var user = auth.getUser();
+        laytpl($('#profileTpl').html()).render(user, function(html){
+            $('#profile-detail').html(html);
+        });
+
+    });
+</script>
