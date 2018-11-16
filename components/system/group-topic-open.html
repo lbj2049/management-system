@@ -31,8 +31,7 @@
                         <div class="layui-card">
                             <div class="layui-card-header">老师列表</div>
                             <div class="layui-card-body ">
-                                <ul p-each="Data" id="teachers">
-                                    <li data-type="teacher"><input type="hidden" name="id" p-bind="value:{{UUID}}"><span data-type="prefix"></span><span>{{userName}}</span></li>
+                                <ul id="teachers">
                                 </ul>
                             </div>
                         </div>
@@ -41,8 +40,7 @@
                         <div class="layui-card">
                             <div class="layui-card-header">组成员</div>
                             <div class="layui-card-body draggable">
-                                <ul p-each="Data" id="users">
-                                    <li><input type="hidden" name="id" p-bind="value:{{UUID}}"><span>{{userName}}</span></li>
+                                <ul id="users">
                                 </ul>
                             </div>
                         </div>
@@ -51,8 +49,7 @@
                         <div class="layui-card">
                             <div class="layui-card-header">学生列表</div>
                             <div class="layui-card-body draggable">
-                                <ul p-each="Data" id="students">
-                                    <li data-type="student"><input type="hidden" name="id" p-bind="value:{{UUID}}"><span data-type="prefix"></span><span>{{userName}}</span><span>&nbsp;&nbsp;( {{userNo}} )</span></li>
+                                <ul id="students">
                                 </ul>
                             </div>
                         </div>
@@ -70,11 +67,45 @@
     </div>
 </div>
 
+
+<script type="text/html" id="userListTpl1">
+    {{#  layui.each(d.Data, function(index, item){ }}
+    <li data-type="{{d.type}}" >
+        <input type="hidden" name="id" value="{{item.UUID}}">
+        <span data-type="prefix"></span>
+        <span>{{ item.userName }}</span>
+        {{#  if(d.type === 'student'){ }}
+        <span>({{ item.userNo || '' }})</span>
+        {{#  } }}
+    </li>
+    {{#  }); }}
+</script>
+<script type="text/html" id="userListTpl2">
+    {{#  layui.each(d.userList, function(index, item){ }}
+    {{#  if(item.userType === 1){ }}
+    <li data-type="student">
+        <input type="hidden" name="id" value="{{item.UUID}}">
+        <span data-type="prefix">学生：</span>
+        <span>{{ item.userName }}</span>
+        <span>({{ item.userNo || '' }})</span>
+    </li>
+    {{#  } }}
+    {{#  if(item.userType === 2){ }}
+    <li data-type="teacher">
+        <input type="hidden" name="id" value="{{item.UUID}}">
+        <span data-type="prefix">老师：</span>
+        <span>{{ item.userName }}</span>
+    </li>
+    </li>
+    {{#  } }}
+    {{#  }); }}
+</script>
+
 <script src="/assets/libs/sortable/Sortable.min.js"/>
 <script src="/assets/libs/sortable/jquery.binding.js"/>
 <script type="text/javascript">
 
-    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'selectN'], function () {
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'selectN', 'laytpl'], function () {
         var form = layui.form;
         var table = layui.table;
         var common = layui.common;
@@ -84,37 +115,63 @@
         var api = layui.api;
         var formSelects = layui.formSelects;
         var selectN = layui.selectN;
+        var laytpl = layui.laytpl;
 
-        var o = {Data:[]};
+        var stage = 1;
 
+        // 获取编辑数据
+        var edit_data_key = 'topic_open_data';
+        var editData = layui.data('GroupEditData').topic_open_data;
+        var editIdArr = [];
 
-        var teachers = {Data:[]};
-        var students = {Data:[]};
-        var users = {Data:[]};
-
-
-        var vmt = $('#teachers').vm(teachers);
-        var vms = $('#students').vm(students);
-        var vmu = $('#users').vm(users);
-
-
-        $.ajaxSetup({
-            async: false
-        })
-
+        //下拉框选项
         var batch_class_select, batch_class_id;
+
+        //模版数值
+        var htmlTpl1Str = $('#userListTpl1').html();
+        var htmlTpl2Str = $('#userListTpl2').html();
+
+        //移动列表
+        var $teachers = $('#teachers');
+        var $students = $('#students');
+        var $users = $('#users');
+
+        //编辑数据加载
+        if (!$.isEmptyObject(editData)) {
+            var v = JSON.parse(editData);
+
+            layui.data('GroupEditData', {
+                key: edit_data_key, remove: true
+            });
+            var param = {
+                groupID: v.groupID
+            }
+            api.req('group/groupInfo', param, function (data) {
+                if (data.Status === 2000) {
+                    laytpl(htmlTpl2Str).render(data.Data, function(html){
+                        $users.html(html);
+                    });
+                    $('#groupID').val(data.Data.groupID);
+                    $('#groupName').val(data.Data.groupName);
+                    editIdArr.push(data.Data.batchID);
+                    editIdArr.push(data.Data.classID);
+                } else {
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
+                }
+            });
+        }
 
         initData();
 
         //页面加载时初始化
         function initData() {
             //初始化联级
-            getBatchClassData('search-batch-class-id');
+            getBatchClassData('search-batch-class-id', loadData, editIdArr);
 
-
-            loadData();
+            // loadData();
         }
 
+        // 加载老师、学生列表
         function loadData() {
 
             var idArr = getIdArr();
@@ -123,64 +180,39 @@
             var param = {
                 batchID: batchID,
                 classID: classID,
-                stage: 1,
+                stage: stage,
             }
+
             api.req('group/teaList', param, function (data) {
-                if (data.Status == 2000) {
-                    vmt.set(data);
+                if (data.Status === 2000) {
+                    data.type = 'teacher';
+                    laytpl(htmlTpl1Str).render(data, function(html){
+                        $teachers.html(html);
+                    });
                 } else {
                     layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
             });
             api.req('group/stuList', param, function (data) {
-                if (data.Status == 2000) {
-                    vms.set(data);
+                if (data.Status === 2000) {
+                    data.type = 'student';
+                    laytpl(htmlTpl1Str).render(data, function(html){
+                        $students.html(html);
+                    });
                 } else {
                     layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
             });
-            vmu.set(users)
         }
 
-        var edit_data_key = 'topic_open_data';
-        var editData = layui.data('GroupEditData').topic_open_data;
-        if (!$.isEmptyObject(editData)) {
-            var v = JSON.parse(editData);
-
-            console.log(v)
-
-            layui.data('GroupEditData', {
-                key: edit_data_key, remove: true
-            });
-
-            getBatchData('batchId', [v.batchId]);
-            getClassData('classId', [v.classId]);
-            var tids = new Array();
-            var sids = new Array();
-            $.each(v.teachers, function (i, vv) {
-                tids.push(vv.id);
-                users.data.push(vv);
-            })
-            $.each(v.students, function (i, vv) {
-                sids.push(vv.id);
-                users.data.push(vv);
-            })
-            // users.data = v.teachers.concat(v.students);
-
-            $('#id').val(v.id);
-            $('#name').val(v.name);
-            $('#teacherIds').val(tids);
-            $('#studentIds').val(sids);
-            vmu.set(users)
-        }
-
+        // 移动老师和学生
         var tsf = 0; //teachers: 1; students: 2
-        $('#teachers').sortable({
+        $teachers.sortable({
             group: {
                 name: 'teachers',
                 pull: true,
                 put: function () {
-                    var f = tsf == 1;
+                    var f = tsf === 1;
                     if (!f) {
                         // layer.msg('学生不能移动到老师列表', {icon: 2});
                     }
@@ -193,7 +225,7 @@
                 $(evt.item).find('span[data-type="prefix"]').html('老师：');
             }
         });
-        $('#users').sortable({
+        $users.sortable({
             group: {
                 name: 'users',
                 pull: true,
@@ -202,7 +234,7 @@
             animation: 150,
             onStart: function (evt) {
                 var type = $(evt.item).attr('data-type');
-                if (type == 'teacher') {
+                if (type === 'teacher') {
                     tsf = 1;
                 } else {
                     tsf = 2;
@@ -212,16 +244,15 @@
                 tsf = 0;
             },
             onRemove: function (evt) {
-                console.log(evt.clone)
                 $(evt.item).find('span[data-type="prefix"]').html('');
             }
         });
-        $('#students').sortable({
+        $students.sortable({
             group: {
                 name: 'students',
                 pull: true,
                 put: function () {
-                    var f = tsf == 2;
+                    var f = tsf === 2;
                     if (!f) {
                         // layer.msg('老师不能移动到学生列表', {icon: 2});
                     }
@@ -237,6 +268,7 @@
         $('#group-form-reset').click(function () {
             $('#group-form')[0].reset();
             initData();
+            $users.html('');
         });
 
         // 表单提交事件
@@ -245,7 +277,7 @@
             var tids = [];
             var sids = [];
             var UUIDs = [];
-            $('#users').find('li').each(function (i, li) {
+            $users.find('li').each(function (i, li) {
                 var type = $(li).data('type');
                 var id = $(li).find('input[name=id]').val();
                 if (type === 'teacher') {
@@ -272,14 +304,13 @@
             }
             data.field.UUIDs = UUIDs.join(',');
 
-
             var idArr = getIdArr();
             var batchID = idArr[0];
             var classID = idArr[1];
 
             data.field.batchID = batchID;
             data.field.classID = classID;
-            data.field.stage = 1;
+            data.field.stage = stage;
 
             var url = '';
             if (data.field.groupID) {
@@ -289,7 +320,7 @@
             }
             api.req(url, data.field, function (data) {
                 layer.closeAll('loading');
-                if (data.Status == 2000) {
+                if (data.Status === 2000) {
                     layer.msg(data.Data.Result, {icon: 1});
                     $('#group-form-reset').click();
                 } else {
@@ -304,26 +335,22 @@
 
 
         //毕业批次与班级下拉联级
-        function getBatchClassData(selectId, classId) {
+        function getBatchClassData(selectId, callback, selected) {
             api.req('batchInfo/BatchLD', {}, function (data) {
-                if (data.Status == 2000) {
-
+                if (data.Status === 2000) {
                     var opvs = [];
-                    var selected = [];
+                    // var selected = [];
 
                     var rs = data.Data;
                     for (var i = 0; i < rs.length; i++) {
-                        if (i == 0 && !classId) {
+                        if (i === 0 && selected.length === 0) {
                             selected.push(rs[i].batchID);
                         }
                         var trs = rs[i].classList;
                         if (trs) {
-                            var topvs = new Array();
+                            var topvs = [];
                             for (var j = 0; j < trs.length; j++) {
-                                if ((i == 0 && j == 0) && !classId) {
-                                    selected.push(trs[j].classID);
-                                } else if (classId && classId == trs[j].classID) {
-                                    selected.push(rs[i].batchID);
+                                if ((i === 0 && j === 0) && selected.length === 1) {
                                     selected.push(trs[j].classID);
                                 }
                                 topvs.push({name: trs[j].className, id: trs[j].classID})
@@ -333,12 +360,14 @@
                             opvs.push({name: rs[i].batchName, id: rs[i].batchID});
                         }
                     }
-                    if (selectId == 'search-batch-class-id')  {
+                    if (selectId === 'search-batch-class-id')  {
                         batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
                     } else {
                         batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
                     }
-
+                    if (typeof callback === "function") {
+                        callback();
+                    }
                 }
             });
         }

@@ -14,6 +14,7 @@
             </div>
             <input id="group-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
             <button id="group-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+            <button id="group-btn-add" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
         </div>
         <table class="layui-table" id="group-table" lay-filter="group-table"></table>
     </div>
@@ -22,6 +23,7 @@
 <!-- 表格操作列 -->
 <script type="text/html" id="group-table-bar">
     <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
 </script>
 
 
@@ -57,9 +59,9 @@
         var upload = layui.upload;
         var selectN = layui.selectN;
 
-        $.ajaxSetup({
-            async: false
-        })
+        var stage = 1;
+
+        var editIdArr = [];
 
         var batch_class_select, batch_class_id;
 
@@ -68,7 +70,11 @@
         //页面加载时初始化
         function initData() {
             //初始化联级
-            getBatchClassData('search-batch-class-id');
+            getBatchClassData('search-batch-class-id', loadData, editIdArr);
+
+
+        }
+        function loadData() {
 
             var idArr = getIdArr();
             var batchID = idArr[0];
@@ -82,7 +88,7 @@
                     UUID: auth.getUUID(),
                     batchID: batchID,
                     classID: classID,
-                    stage:'1'
+                    stage: stage
                 },
                 request: common.tableRequest,
                 response: common.tableResponse,
@@ -97,18 +103,21 @@
                     {align: 'center', toolbar: '#group-table-bar', title: '操作', width: 160}
                 ]]
             });
-
         }
 
         var edit_data_key = 'topic_open_data';
         // 工具条点击事件
         table.on('tool(group-table)', function (obj) {
             var data = obj.data;
-            layui.data('GroupEditData', {
-                key: edit_data_key,
-                value: JSON.stringify(data)
-            });
-            Q.go('group-topic-open');
+            if (obj.event === 'edit') { //修改
+                layui.data('GroupEditData', {
+                    key: edit_data_key,
+                    value: JSON.stringify(data)
+                });
+                Q.go('group-topic-open');
+            } else if (obj.event === 'del') { //删除
+                doDelete(data);
+            }
         });
 
         // 搜索按钮点击事件
@@ -118,29 +127,48 @@
             var classId = formSelects.value('classId');
             table.reload('group-table', {where: {keyword: keyword, batchId: batchId, classId: classId}});
         });
+		// 添加按钮点击事件
+        $('#group-btn-add').click(function () {
+            Q.go('group-topic-open');
+        });
+
+        // 删除
+        var doDelete = function (data) {
+            layer.confirm('确定要删除吗？', function (i) {
+                layer.close(i);
+                layer.load(2);
+
+                api.req('group/delGroup', {'groupID': data.groupID}, function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status === 2000) {
+                        layer.msg(data.Data.Result, {icon: 1});
+                        table.reload('group-table');
+                        layer.closeAll('page');
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
+                });
+            });
+        };
 
 
         //毕业批次与班级下拉联级
-        function getBatchClassData(selectId, classId) {
+        function getBatchClassData(selectId, callback, selected) {
             api.req('batchInfo/BatchLD', {}, function (data) {
-                if (data.Status == 2000) {
-
-                    var opvs = new Array();
-                    var selected = new Array();
+                if (data.Status === 2000) {
+                    var opvs = [];
+                    // var selected = [];
 
                     var rs = data.Data;
                     for (var i = 0; i < rs.length; i++) {
-                        if (i == 0 && !classId) {
+                        if (i === 0 && selected.length === 0) {
                             selected.push(rs[i].batchID);
                         }
                         var trs = rs[i].classList;
                         if (trs) {
-                            var topvs = new Array();
+                            var topvs = [];
                             for (var j = 0; j < trs.length; j++) {
-                                if ((i == 0 && j == 0) && !classId) {
-                                    selected.push(trs[j].classID);
-                                } else if (classId && classId == trs[j].classID) {
-                                    selected.push(rs[i].batchID);
+                                if ((i === 0 && j === 0) && selected.length === 1) {
                                     selected.push(trs[j].classID);
                                 }
                                 topvs.push({name: trs[j].className, id: trs[j].classID})
@@ -150,12 +178,14 @@
                             opvs.push({name: rs[i].batchName, id: rs[i].batchID});
                         }
                     }
-                    if (selectId == 'search-batch-class-id')  {
+                    if (selectId === 'search-batch-class-id')  {
                         batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
                     } else {
                         batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
                     }
-
+                    if (typeof callback === "function") {
+                        callback();
+                    }
                 }
             });
         }
