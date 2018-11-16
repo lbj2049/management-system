@@ -10,27 +10,6 @@ layui.define(['jquery', 'common'], function (exports) {
                 url: '#!welcome',
                 path: 'welcome.html'
             }, {
-                name: '系统管理',
-                icon: 'layui-icon-set',
-                url: 'javascript:;',
-                subMenus: [{
-                    name: '用户管理',
-                    url: '#!user',  // 这里url不能带斜杠，因为是用递归循环进行关键字注册，带斜杠会被q.js理解为其他注册模式
-                    path: 'system/user.html'
-                }, {
-                    name: '角色管理',
-                    url: '#!role',
-                    path: 'system/role.html'
-                }, {
-                    name: '权限管理',
-                    url: '#!authorities',
-                    path: 'system/authorities.html'
-                }, {
-                    name: '登录日志',
-                    url: '#!login-record',
-                    path: 'system/login-record.html'
-                }]
-            }, {
                 name: '批次管理',
                 url: '#!batch-list',
                 path: 'system/batch-list.html',

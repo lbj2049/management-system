@@ -30,7 +30,7 @@ layui.define(['common', 'api', 'router', 'auth', 'layer', 'laytpl', 'element', '
             if (url && url != '') {
                 $('.layui-layout-admin .layui-nav.layui-nav-top .layui-nav-item').removeClass('layui-nav-itemed');
                 var $a = $('.layui-layout-admin .layui-nav.layui-nav-top a[href="#!' + url + '"]');
-                $a.parent('li').addClass('layui-this');  // 一级菜单
+                $a.parents('li').addClass('layui-this');  // 一级菜单
                 $a.parent('dd').addClass('layui-this');  // 二级菜单
                 // $a.parent('dd').parent('.layui-nav-child').parent('.layui-nav-item').addClass('layui-nav-itemed');  // 二级菜单
             }
