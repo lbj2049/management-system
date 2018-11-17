@@ -123,9 +123,11 @@
         // 搜索按钮点击事件
         $('#group-btn-search').click(function () {
             var keyword = $('#group-edit-search').val();
-            var batchId = formSelects.value('batchId');
-            var classId = formSelects.value('classId');
-            table.reload('group-table', {where: {keyword: keyword, batchId: batchId, classId: classId}});
+
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+            table.reload('group-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
         });
 		// 添加按钮点击事件
         $('#group-btn-add').click(function () {
