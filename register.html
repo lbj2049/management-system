@@ -98,6 +98,9 @@
 <script>
     layui.config({
         base: 'module/'
+    }).extend({
+        formSelects: 'formSelects/formSelects-v4',
+        selectN: 'layui-select-ext/selectN',
     }).use(['common', 'auth', 'form'], function () {
         var $ = layui.jquery;
         var form = layui.form;
