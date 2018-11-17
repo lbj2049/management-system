@@ -24,13 +24,12 @@
 <!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar">
     <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">查看</a>
-    {{#  if(d.state == 0) { }}
-    <a class="layui-btn layui-btn-xs" lay-event="pass">通过</a>
-    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="unpass">未通过</a>
+    {{#  if(d.state == '' && d.type == 0) { }}
+    <a class="layui-btn layui-btn-xs" lay-event="pass">选择</a>
+    {{#  } else if((d.state == 0 || d.state == 2) && d.type == 1) { }}
+    <a class="layui-btn layui-btn-xs" lay-event="unpass">取消选择</a>
     {{#  } else if(d.state == 1) { }}
 
-    {{#  } else if(d.state == 2) { }}
-    <a class="layui-btn layui-btn-xs" lay-event="pass">通过</a>
     {{#  } }}
     <!--0：未审核；1:通过；2：未通过;3:已分发-->
 </script>
@@ -104,7 +103,9 @@
 </script>
 
 <script type="text/html" id="stateTpl">
-    {{#  if(d.state == 0) { }}
+    {{#  if(d.state == '' && d.type == 0) { }}
+    未选择
+    {{#  } else if(d.state == 0) { }}
     未审核
     {{#  } else if(d.state == 1) { }}
     通过
@@ -170,7 +171,7 @@
             }
             api.req(url, data.field, function (data) {
                 layer.closeAll('loading');
-                if (data.Status == 2000) {
+                if (data.Status === 2000) {
                     layer.msg(data.Data.Result, {icon: 1});
                     table.reload('topic-table');
                     layer.closeAll('page');
@@ -185,7 +186,7 @@
         table.on('tool(topic-table)', function (obj) {
             var data = obj.data;
             if (obj.event === 'detail') { //查看
-                if (data.state == 0 || data.state == 2) {
+                if (data.state === 0 || data.state === 2) {
                     showEditModel(data)
                 } else {
                     showDetailModel(data);
@@ -246,14 +247,14 @@
 
         //选择操作
         function doPass(id, type) {
-            var t = type == 1 ? '选择' : '取消选择';
+            var t = type === 1 ? '选择' : '取消选择';
             layer.confirm('确定[' + t + ']吗？', {title: '提示'}, function (i) {
                 layer.close(i);
                 layer.load(2);
                 //请修改审核接口
                 api.req('selQuest/adSelQuest', {stqID: id, type: type}, function (data) {
                     layer.closeAll('loading');
-                    if (data.Status == 2000) {
+                    if (data.Status === 2000) {
                         layer.msg(data.Data.Result, {icon: 1});
                         table.reload('topic-table');
                         layer.closeAll('page');

@@ -3,11 +3,13 @@
         <h2 class="header-title">开题管理</h2>
         <span class="layui-breadcrumb pull-right">
           <a href="#!welcome">首页</a>
+          <a href="#!my-paper">论文管理</a>
           <a><cite>开题管理</cite></a>
         </span>
     </div>
-    <div class="layui-card-body layui-col-md6 layui-col-md-offset4">
+    <div class="layui-card-body layui-col-md6 layui-col-md-offset3" id="topic-info-container">
 
+<!--
         <form id="class-form" lay-filter="class-form" class="layui-form model-form">
             <input name="id" type="hidden"/>
             <div class="layui-form-item">
@@ -59,13 +61,132 @@
                 <button id="layui-btn-save" class="layui-btn"  lay-filter="class-form-submit" style="display: none"  lay-submit>保存</button>
             </div>
         </form>
+-->
 
     </div>
 </div>
 
 
+<script type="text/html" id="topic-info">
 
+    <form id="topic-form" lay-filter="topic-form" class="layui-form topic-form">
+        <input name="stqID" type="hidden" value="{{d.stqID}}"/>
+        <input name="groupID" type="hidden" value="{{d.groupID}}"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">已选题目</label>
+            <div class="layui-form-mid layui-word-aux">
+                <a href="javascript:;" class="topic-title">{{d.title}}</a>
+                {{# if (d.ismodel == 1) { }}
+                <span class="layui-badge layui-bg-green">范文</span>
+                {{# } else { }}
+                <span class="layui-badge layui-bg-gray">非范文</span>
+                {{# } }}
+                <span class="topic-content" style="display: none">{{d.content}}</span>
+            </div>
+        </div>
 
+        <div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">论文标题</label>
+                <div class="layui-input-block">
+                    <input name="spID" type="hidden"/>
+                    <input name="pageTitle" placeholder="请输入论文标题" type="text" class="layui-input" maxlength="400" lay-verify="required" required/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">论文附件</label>
+                <div class="layui-input-block">
+                    <div class="layui-upload">
+                        <button type="button" class="layui-btn select-file">选择文件</button>
+                        <input name="file" type="file" class="layui-upload-file"/>
+                        <input name="fileName" type="hidden"/>
+                        <div class="layui-inline layui-upload-choose"></div>
+                        {{# if( d.upFiles && d.upFiles != ''){ }}
+                        <button type="button" class="layui-btn" id="file-upload">下载</button>
+                        <button type="button" class="layui-btn" id="file-preview">在线浏览</button>
+                        {{# } }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">组号</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{d.groupName}} <a href="javascript:;" id="group-preview" class="layui-btn layui-btn-primary layui-btn-sm">查看小组信息</a>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">负责老师</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{d.teaName}} <span>{{d.teaCTime}}</span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">老师评分</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{d.score}}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">老师评语</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{d.teaContent}}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否被评为范文</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{# if (d.ismodel == 1) { }}
+                范文
+                {{# } else { }}
+                非范文
+                {{# } }}
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+            <button class="layui-btn" lay-filter="topic-form-submit" lay-submit>保存</button>
+        </div>
+    </form>
+
+</script>
+
+<!-- 分组信息 -->
+<script type="text/html" id="group-info">
+    <table class="layui-table">
+        <colgroup>
+            <col width="20">
+            <col width="120">
+            <col width="80">
+            <col>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>组员</th>
+            <th>角色</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#  layui.each(d.Data, function(index, item){ }}
+        <tr>
+            <td>{{ item.modname }}</td>
+            <td>{{ item.userName }}：</td>
+            <td>
+                {{#  if(item.userType === 1){ }}
+                学生
+                {{#  } else if(item.userType === 2){ }}
+                老师
+                {{#  } else { }}
+                管理员
+                {{#  } }}
+            </td>
+        </tr>
+        {{#  }); }}
+        </tbody>
+    </table>
+</script>
 <!-- 表单弹窗 -->
 <script type="text/html" id="topic-group">
 
@@ -129,26 +250,73 @@
 
 
 
-    layui.use(['table', 'form','common', 'auth','upload'], function(){
+    layui.use(['table', 'form', 'api','common', 'auth','upload','laytpl'], function(){
         var table = layui.table;
         var form = layui.form;
+        var api = layui.api;
         var common = layui.common;
         var auth = layui.auth;
         var upload = layui.upload;
+        var laytpl = layui.laytpl;
 
-        table.render({
-            elem: '#select-paper',
-            url: common.base_server + 'select_paper.json',
-            where: {
-                UUID: auth.getUUID()
-            },
-            cols: [[
-                {field:'paperId', width:80, title: '论文ID'}
-                ,{field:'paperName', title: '论文标题',templet: '#paperNameTpl'}
-                ,{align: 'center', toolbar: '#role-table-bar', title: '操作'}
-            ]]
-            ,page: true
-        });
+        var stage = 1;
+
+        initData();
+
+        function initData() {
+            // api.req('stuPage/stuPageInfo', {stage: 1}, function (data) {
+            api.req('student_page_info.json', {stage: 1}, function (data) {
+                layer.closeAll('loading');
+                if (data.Status === 2000) {
+                    laytpl($('#topic-info').html()).render(data.Data, function (html) {
+                        $('#topic-info-container').html(html)
+                        initEvent()
+                    })
+                    layer.closeAll('page');
+                } else {
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
+                }
+            }, 'get');
+        }
+
+        function initEvent() {
+            $('.layui-upload button.select-file').on('click', function () {
+                $(this).next('input[type="file"]').click();
+            });
+            $('.layui-upload input[type="file"]').on('change', function () {
+                var filePath = $(this).val();
+                if (!filePath) return false;
+                var fileName = filePath.substring(filePath.lastIndexOf("\\") + 1);
+
+                if (filePath.indexOf("xls") !== -1 || filePath.indexOf("xlsx") !== -1 || filePath.indexOf("doc") !== -1 || filePath.indexOf("docx") !== -1) {
+                    $(this).next('input[name="fileName"]').val(fileName);
+                    $(this).parents('div.layui-upload').children('.layui-upload-choose').html(fileName);
+                } else {
+                    layer.msg('您选择的上传文件类型有误！', {icon: 2});
+                    return false
+                }
+            });
+            $('#group-preview').click(function () {
+                var groupID = $('#groupID').val();
+                api.req('student_page_info.json', {groupID: groupID}, function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status === 2000) {
+                        laytpl($('#group-info').html()).render(data.Data, function (html) {
+                            layer.open({
+                                type: 1,
+                                title: data ? '修改学生' : '添加学生',
+                                area: '450px',
+                                offset: '120px',
+                                content: html
+                            });
+                        })
+                        layer.closeAll('page');
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
+                }, 'get');
+            });
+        };
 
 
 
@@ -164,8 +332,28 @@
         });
 
         // 表单提交事件
-        form.on('submit(class-form-msg-about-group)', function (data) {
-            showTopicGrpupDetail(data,table,common,auth);
+        form.on('submit(topic-form)', function (data) {
+            layer.load(2);
+            var url = '';
+            if (data.field.stqID) {
+                url = 'stuPage/upLoadFile';
+            } else {
+                url = 'stuPage/upLoadFile';
+            }
+            if (!data.field.fileName) {
+                layer.msg('请选择附件', {icon: 2});
+                return false;
+            }
+            api.req(url, data.field, function (data) {
+                layer.closeAll('loading');
+                if (data.Status == 2000) {
+                    layer.msg(data.Data.Result, {icon: 1});
+                    table.reload('topic-table');
+                    layer.closeAll('page');
+                } else {
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
+                }
+            });
             return false;
         });
 
@@ -207,6 +395,11 @@
 
 
             }
+        });
+
+        $('.topic-class').on('click', function(){
+            var that = this;
+            layer.tips($('.topic-content').html(), that); //在元素的事件回调体中，follow直接赋予this即可
         });
     });
 </script>

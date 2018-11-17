@@ -1,0 +1,18 @@
+{
+  "Status": 2000,
+  "Data": {
+    "ismodel": 0,
+    "stqID": 1,
+    "teaContent": "asdfasdf",
+    "pageTitle": "",
+    "groupID": 9,
+    "title": "test",
+    "spID": "MQ==",
+    "content": "asfasdfasdfasdf",
+    "score": 80,
+    "groupName": "小组八",
+    "teaName": "老师",
+    "teaCTime": "2018-11-11",
+    "upFiles": "/upLoad/1.docx"
+  }
+}
