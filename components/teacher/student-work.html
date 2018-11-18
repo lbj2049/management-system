@@ -40,15 +40,17 @@
         <div class="layui-form-item">
             <label class="layui-form-label">内容</label>
             <div class="layui-form-mid layui-word-aux">
-                {{content}}
+                <pre>{{content}}</pre>
             </div>
         </div>
+        <!--
         <div class="layui-form-item">
             <label class="layui-form-label">出题人</label>
             <div class="layui-form-mid layui-word-aux">
                 {{teacherName}}
             </div>
         </div>
+        -->
         <!--
         <div class="layui-form-item">
             <label class="layui-form-label">提交时间</label>
@@ -78,7 +80,21 @@
 </script>
 
 
+<script type="text/html" id="stageTpl">
+    {{#  if(d.stage == 1) { }}
+    开题
+    {{#  } else if(d.stage == 2) { }}
+    中期检查
+    {{#  } else if(d.stage == 3) { }}
+    答辩
+    {{#  } }}
+</script>
+
 <script type="text/html" id="stateTpl">
+
+    <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview">预览</a>
+
     {{#  if(d.state == 0) { }}
     未提交
     {{#  } else if(d.state == 1) { }}
@@ -137,14 +153,15 @@
                 height: 'full-250',
                 page: true,
                 cols: [[
-                    {type:'numbers'},
-                    {field: 'className', title: '所在组'},
-                    {field: 'studentName', title: '学生姓名'},
-                    {field: 'studentNo', title: '学生学号'},
-                    {field: 'studentTel', title: '学生电话'},
-                    {field: 'state', title: '作业情况', templet: '#stateTpl'},
-                    {field: 'score', title: '打分'},
-                    {field: 'teacherName', title: '审批人'},
+                    {type: 'numbers'},
+                    {field: 'title', title: '选择题目'},
+                    {field: 'userName', title: '学生姓名', width: 110},
+                    {field: 'userNo', title: '学生学号', width: 110},
+                    {field: 'userTel', title: '学生电话', width: 110},
+                    {field: 'stage', title: '环节', templet: '#stageTpl', width: 90},
+                    {field: 'state', title: '作业情况', templet: '#stateTpl', width: 110},
+                    {field: 'score', title: '评分', width: 60},
+                    // {field: 'teacherName', title: '审批人'},
                     {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 160}
                 ]]
             });
@@ -178,6 +195,10 @@
                 doPass(data.id, 1);
             } else if (obj.event === 'unpass') { //不通过
                 doPass(data.id, 2);
+            } else if (obj.event === 'download') {
+                download(data)
+            } else if (obj.event === 'preview') {
+                preview(data)
             } else {
                 showEditModel(data)
             }
@@ -212,6 +233,22 @@
                 }
             });
         };
+
+
+        function preview(data) {
+            window.open('http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=true&_xdoc=' + data.downLoadAddr, 'preview');
+        }
+
+        function download(data) {
+            try {
+                var elemIF = document.createElement("iframe");
+                elemIF.src = data.downLoadAddr;
+                elemIF.style.display = "none";
+                document.body.appendChild(elemIF);
+            } catch (e) {
+
+            }
+        }
 
         //审核操作
         function doPass(id, state) {

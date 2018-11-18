@@ -175,7 +175,7 @@ layui.define(['jquery', 'common'], function (exports) {
             },
             {
                 name: '成绩管理',
-                url: '#!scoreManager',
+                url: '#!score-manager',
                 path: 'student/score.html'
             },
             {

@@ -47,7 +47,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">内容</label>
             <div class="layui-form-mid layui-word-aux">
-                {{content}}
+                <pre>{{content}}</pre>
             </div>
         </div>
         <div class="layui-form-item">
@@ -87,7 +87,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">内容</label>
             <div class="layui-form-mid layui-word-aux">
-                <pre>{{=d.content}}</pre>
+                <pre>{{d.content}}</pre>
             </div>
         </div>
         <div class="layui-form-item">
@@ -137,6 +137,8 @@
         //页面加载时初始化
         function initData() {
 
+            var user = auth.getUser();
+
             // 渲染表格
             table.render({
                 elem: '#topic-table',
@@ -144,6 +146,7 @@
                 method: 'POST',
                 where: {
                     UUID: auth.getUUID(),
+                    classID: user.classID
                 },
                 request: common.tableRequest,
                 response: common.tableResponse,

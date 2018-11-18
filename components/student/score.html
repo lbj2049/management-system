@@ -6,26 +6,25 @@
           <a><cite>成绩管理</cite></a>
         </span>
     </div>
-
     <div class="layui-card-body">
 
-        <div class="layui-inline">
-            <label class="layui-form-label">总成绩</label>
-            <div class="layui-input-inline">
-                <input type="text" name="myScore"  class="layui-input" readonly>
-            </div>
-        </div>
-
-
-        <table class="layui-table" id="class-table" lay-filter="class-table"></table>
-
+        <table class="layui-table" id="score-table" lay-filter="score-table"></table>
     </div>
 </div>
 
 
+<script type="text/html" id="stageTpl">
+    {{#  if(d.stage == 1) { }}
+    开题
+    {{#  } else if(d.stage == 2) { }}
+    中期检查
+    {{#  } else if(d.stage == 3) { }}
+    答辩
+    {{#  } }}
+</script>
 
 <script>
-    layui.use(['api', 'table', 'util', 'common', 'auth', 'admin', 'formSelects'], function () {
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin'], function () {
         var form = layui.form;
         var table = layui.table;
         var common = layui.common;
@@ -34,31 +33,34 @@
         var util = layui.util;
         var admin = layui.admin;
         var api = layui.api;
-        var formSelects = layui.formSelects;
-
 
         // 渲染表格
         table.render({
-            elem: '#class-table',
-            url: common.base_server + 'classInfo/getClassList',
+            elem: '#score-table',
+            url: common.base_server + 'stuPage/getScoreInfo',
             method: 'POST',
             where: {
                 UUID: auth.getUUID()
             },
             request: common.tableRequest,
             response: common.tableResponse,
-            parseData: common.tableParseData,
+            parseData: function(res) { //res 即为原始返回的数据
+                return {
+                    "code": res.Status, //解析接口状态
+                    "msg": res.Data.ErrorDes, //解析提示文本
+                    "data": res.Data.scoreList //解析数据列表
+                };
+            },
             height: 'full-250',
             page: false,
             cols: [[
-                {type: 'numbers',title:'序号', width: 80},
-                {field: 'achievementLink', title: '环节', width: 80},
-                {field: 'mAchievement', title: '成绩', width: 80},
-                {field: 'mAchievement', title: '批语', width: 160},
-                {field: 'mAchievement', title: '负责老师', width: 160},
+                {type: 'numbers', totalRowText: '总分'},
+                {field: 'stage', title: '环节', templet: '#stageTpl'},
+                {field: 'score', title: '成绩', totalRow: true},
+                // {field: 'teaCTime', title: '老师点评时间'},
+                {field: 'teaContent', title: '批语'},
+                {field: 'teaName', title: '负责老师'}
             ]]
         });
-    })
-
-
+    });
 </script>

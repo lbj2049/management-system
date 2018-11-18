@@ -104,6 +104,8 @@
         var upload = layui.upload;
         var selectN = layui.selectN;
 
+        var stage = 1;
+
         var editIdArr = [];
         var batch_class_select, batch_class_id;
 
@@ -124,14 +126,15 @@
             // 渲染表格
             table.render({
                 elem: '#topic-table',
-                // url: common.base_server + 'setQuest/getQuestList',
-                // method: 'POST',
-                url: common.base_server + 'teacher_topic_query.json',
-                method: 'get',
+                url: common.base_server + 'setQuest/getQuestList',
+                method: 'POST',
+                // url: common.base_server + 'teacher_topic_query.json',
+                // method: 'get',
                 where: {
                     UUID: auth.getUUID(),
                     batchID: batchID,
-                    classID: classID
+                    classID: classID,
+                    stage: stage
                 },
                 request: common.tableRequest,
                 response: common.tableResponse,

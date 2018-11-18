@@ -67,7 +67,7 @@
                 <!--<button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>-->
                 <button class="layui-btn" lay-filter="topic-form-submit" lay-submit>保存</button>
                 {{# if(d.subState){ }}
-                <button type="button" class="layui-btn layui-btn-danger" lay-filter="topic-form-del" lay-submit>删除</button>
+                <button type="button" class="layui-btn layui-btn-danger" id="topic-form-del">删除</button>
                 {{# } }}
             </div>
             {{# } }}
@@ -262,7 +262,9 @@
 
             $('.topic-title').on('click', function() {
                 var that = this;
-                layer.tips($('.topic-content').html(), that); //在元素的事件回调体中，follow直接赋予this即可
+                // layer.tips($('.topic-content').html(), that); //在元素的事件回调体中，follow直接赋予this即可
+                layer.alert($('.topic-content').html(), {title: '内容',closeBtn: 0});
+
             });
 
             $('#file-upload').on('click', function() {
@@ -275,9 +277,23 @@
 
                 }
             });
+
             $('#file-preview').on('click', function() {
                 // window.open('https://view.officeapps.live.com/op/view.aspx?src=' + $(this).data('url'), 'preview')
                 window.open('http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=true&_xdoc=' + $(this).data('url'), 'preview')
+            });
+
+
+            $('#topic-form-del').click(function () {
+                api.req('stuPage/delUpLoad', {spID: $('#topic-form > input[name=stqID]').val()}, function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status === 2000) {
+                        layer.closeAll('loading');
+                        initData();
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
+                });
             });
         };
 
