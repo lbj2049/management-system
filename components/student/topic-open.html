@@ -45,7 +45,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">论文标题</label>
                 <div class="layui-input-block">
-                    <input name="pageTitle" placeholder="请输入论文标题" type="text" class="layui-input" maxlength="400" lay-verify="required" required/>
+                    <input name="pageTitle" value="{{d.pageTitle}}" placeholder="请输入论文标题" type="text" class="layui-input" maxlength="400" lay-verify="required" required/>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -57,14 +57,14 @@
                         <input name="fileName" type="hidden"/>
                         <div class="layui-inline layui-upload-choose"></div>
                         {{# if(d.subState){ }}
-                        <button type="button" class="layui-btn" id="file-upload">下载</button>
-                        <button type="button" class="layui-btn" id="file-preview">在线浏览</button>
+                        <button type="button" class="layui-btn" id="file-upload" data-url="{{d.upFiles}}">下载</button>
+                        <button type="button" class="layui-btn" id="file-preview" data-url="{{d.upFiles}}">在线浏览</button>
                         {{# } }}
                     </div>
                 </div>
             </div>
             <div class="layui-form-item model-form-footer">
-                <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+                <!--<button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>-->
                 <button class="layui-btn" lay-filter="topic-form-submit" lay-submit>保存</button>
                 {{# if(d.subState){ }}
                 <button type="button" class="layui-btn layui-btn-danger" lay-filter="topic-form-del" lay-submit>删除</button>
@@ -264,6 +264,21 @@
                 var that = this;
                 layer.tips($('.topic-content').html(), that); //在元素的事件回调体中，follow直接赋予this即可
             });
+
+            $('#file-upload').on('click', function() {
+                try {
+                    var elemIF = document.createElement("iframe");
+                    elemIF.src = $(this).data('url');
+                    elemIF.style.display = "none";
+                    document.body.appendChild(elemIF);
+                } catch (e) {
+
+                }
+            });
+            $('#file-preview').on('click', function() {
+                // window.open('https://view.officeapps.live.com/op/view.aspx?src=' + $(this).data('url'), 'preview')
+                window.open('http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=true&_xdoc=' + $(this).data('url'), 'preview')
+            });
         };
 
         // 表单提交事件
@@ -310,5 +325,9 @@
 
             return false;
         });
+
+
+
+
     });
 </script>
