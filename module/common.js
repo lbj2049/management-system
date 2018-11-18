@@ -1,4 +1,5 @@
-layui.define(function (exports) {
+layui.define(['layer'], function (exports) {
+    var $ = layui.$;
 
     var common = {
         // base_server: 'json/', // 接口地址，实际项目请换成http形式的地址
@@ -19,6 +20,13 @@ layui.define(function (exports) {
                 "msg": res.Data.ErrorDes, //解析提示文本
                 "count": res.Data.total, //解析数据长度
                 "data": res.Data.datas //解析数据列表
+            };
+        },
+        tableParseDataWithNoPage: function(res) { //res 即为原始返回的数据
+            return {
+                "code": res.Status, //解析接口状态
+                "msg": res.Data.ErrorDes, //解析提示文本
+                "data": res.Data //解析数据列表
             };
         },
         //table 默认请求参数
@@ -235,5 +243,86 @@ layui.define(function (exports) {
             });
         }
     };
+
+
+
+    // ewAdmin提供的事件
+    common.events = {
+        flexible: function (e) {  // 折叠侧导航
+            var expand = $('.layui-layout-admin').hasClass('admin-nav-mini');
+            admin.flexible(expand);
+        },
+        refresh: function () {  // 刷新主体部分
+            admin.refresh();
+        },
+        back: function () {  //后退
+            history.back();
+        },
+        theme: function () {  // 设置主题
+            admin.popupRight('components/tpl/theme.html');
+        },
+        fullScreen: function (e) {  // 全屏
+            var ac = 'layui-icon-screen-full', ic = 'layui-icon-screen-restore';
+            var ti = $(this).find('i');
+
+            var isFullscreen = document.fullscreenElement || document.msFullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || false;
+            if (isFullscreen) {
+                var efs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+                if (efs) {
+                    efs.call(document);
+                } else if (window.ActiveXObject) {
+                    var ws = new ActiveXObject('WScript.Shell');
+                    ws && ws.SendKeys('{F11}');
+                }
+                ti.addClass(ac).removeClass(ic);
+            } else {
+                var el = document.documentElement;
+                var rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+                if (rfs) {
+                    rfs.call(el);
+                } else if (window.ActiveXObject) {
+                    var ws = new ActiveXObject('WScript.Shell');
+                    ws && ws.SendKeys('{F11}');
+                }
+                ti.addClass(ic).removeClass(ac);
+            }
+        },
+        // 左滑动tab
+        leftPage: function () {
+            common.rollPage("left");
+        },
+        // 右滑动tab
+        rightPage: function () {
+            common.rollPage();
+        },
+        // 关闭当前选项卡
+        closeThisTabs: function () {
+            var $title = $('.layui-layout-admin .layui-body .layui-tab .layui-tab-title');
+            if ($title.find('li').first().hasClass('layui-this')) {
+                return;
+            }
+            $title.find('li.layui-this').find(".layui-tab-close").trigger("click");
+        },
+        // 关闭其他选项卡
+        closeOtherTabs: function () {
+            $('.layui-layout-admin .layui-body .layui-tab .layui-tab-title li:gt(0):not(.layui-this)').find(".layui-tab-close").trigger("click");
+        },
+        // 关闭所有选项卡
+        closeAllTabs: function () {
+            $('.layui-layout-admin .layui-body .layui-tab .layui-tab-title li:gt(0)').find(".layui-tab-close").trigger("click");
+        },
+        // 关闭所有弹窗
+        closeDialog: function () {
+            layer.closeAll('page');
+        }
+    };
+
+    // 所有ew-event
+    $('body').on('click', '*[ew-event]', function () {
+        var event = $(this).attr('ew-event');
+        var te = common.events[event];
+        te && te.call(this, $(this));
+    });
+
     exports('common', common);
 });

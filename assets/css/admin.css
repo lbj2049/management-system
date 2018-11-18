@@ -486,7 +486,7 @@ html {
     padding-right: 25px;
 }
 
-.model-form-footer {
+.model-form-footer, .model-view-footer {
     text-align: right;
 }
 

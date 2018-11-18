@@ -154,38 +154,52 @@
 
 <!-- 分组信息 -->
 <script type="text/html" id="group-info">
-    <table class="layui-table">
-        <colgroup>
-            <col width="20">
-            <col width="120">
-            <col width="80">
-            <col>
-        </colgroup>
-        <thead>
-        <tr>
-            <th>序号</th>
-            <th>组员</th>
-            <th>角色</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{#  layui.each(d.Data, function(index, item){ }}
-        <tr>
-            <td>{{ item.modname }}</td>
-            <td>{{ item.userName }}：</td>
-            <td>
-                {{#  if(item.userType === 1){ }}
-                学生
-                {{#  } else if(item.userType === 2){ }}
-                老师
-                {{#  } else { }}
-                管理员
+    <div class="layui-card">
+
+        <div class="layui-card-body">
+
+            <table class="layui-table">
+                <colgroup>
+                    <col width="20">
+                    <col width="120">
+                    <col width="80">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>组员</th>
+                    <th>角色</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#  layui.each(d.Data, function(index, item){ }}
+                <tr>
+                    <td>{{ item.modname }}</td>
+                    <td>{{ item.userName }}：</td>
+                    <td>
+                        {{#  if(item.userType === 1){ }}
+                        学生
+                        {{#  } else if(item.userType === 2){ }}
+                        老师
+                        {{#  } else { }}
+                        管理员
+                        {{#  } }}
+                    </td>
+                </tr>
+                {{#  }); }}
+                {{#  if(!d.Data || d.Data.length === 0){ }}
+                <tr>
+                    <td colspan="3">无数据</td>
+                </tr>
                 {{#  } }}
-            </td>
-        </tr>
-        {{#  }); }}
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+            <div class="model-view-footer">
+                <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
+            </div>
+        </div>
+    </div>
 </script>
 <!-- 表单弹窗 -->
 <script type="text/html" id="topic-group">
@@ -301,6 +315,7 @@
                 api.req('student_page_info.json', {groupID: groupID}, function (data) {
                     layer.closeAll('loading');
                     if (data.Status === 2000) {
+                        layer.closeAll('page');
                         laytpl($('#group-info').html()).render(data.Data, function (html) {
                             layer.open({
                                 type: 1,
@@ -310,26 +325,17 @@
                                 content: html
                             });
                         })
-                        layer.closeAll('page');
                     } else {
                         layer.msg(data.Data.ErrorDes, {icon: 2});
                     }
                 }, 'get');
             });
+
+            $('.topic-title').on('click', function() {
+                var that = this;
+                layer.tips($('.topic-content').html(), that); //在元素的事件回调体中，follow直接赋予this即可
+            });
         };
-
-
-
-
-        //指定允许上传的文件类型
-        upload.render({
-            elem: '#layui-btn-uploadordownload'
-            ,url: '/upload/'
-            ,accept: 'file' //普通文件
-            ,done: function(res){
-                console.log(res)
-            }
-        });
 
         // 表单提交事件
         form.on('submit(topic-form)', function (data) {
@@ -355,51 +361,6 @@
                 }
             });
             return false;
-        });
-
-
-
-        // 工具条点击事件
-        table.on('tool(select-paper)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'confirm' && $('#opTopic').attr('class').toString().indexOf('layui-btn-disabled') < 0) { //修改
-                var confirmValue = $('#opTopicValue').val();
-                if(confirmValue === 'confirm'){
-                    layer.confirm('确认选择该课题？', {title:''}, function () {
-                        //提示层
-                        //增加 api
-                        $('#opTopicValue').val('cancle');
-                        $('#opTopic').text('取消');
-                        var child = $("#opTopicValue").parents('table').find('.opBtnGroup');
-                        child.each(function(index, item){
-                            var childBtnOp = item.childNodes.item(3);
-                            if("确认" === childBtnOp.innerHTML){
-                                childBtnOp.className = 'layui-btn layui-btn-primary layui-btn-xs layui-btn-disabled';
-                            }
-                        });
-                        //form.render('checkbox');
-
-
-                        //$('#opTopic').attr('class','');
-                        layer.msg('您已选择该课题，等待导师确认');
-                    });
-                }else if(confirmValue === 'cancle'){
-                    layer.confirm('确认取消该课题？', {title:''}, function () {
-                        //提示层
-                        //增加 api
-                        $('#opTopicValue').val('cancle');
-                        $('#opTopic').text('确认');
-                        layer.msg('您已取消该课题');
-                    });
-                }
-
-
-            }
-        });
-
-        $('.topic-class').on('click', function(){
-            var that = this;
-            layer.tips($('.topic-content').html(), that); //在元素的事件回调体中，follow直接赋予this即可
         });
     });
 </script>

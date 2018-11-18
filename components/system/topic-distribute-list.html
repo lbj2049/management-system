@@ -246,16 +246,13 @@
                 if (v.state == 3) {
                     f = true;
                 }
-                ids.push(v.id);
+                ids.push(v.stqID);
             });
             if (f) {
                 layer.msg('您选择的包含有[已发布]数据<br\>请选择需要发布的数据', {icon: 2});
                 return;
             } else {
-                layer.confirm('确定发布？', {icon: 3, title:'提示'}, function(index) {
-                    doDistribute(ids.join(","), 3);
-                    layer.close(index);
-                });
+                doDistribute(ids.join(","), 3);
             }
         });
 

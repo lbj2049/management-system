@@ -27,7 +27,15 @@
 
 <!-- 表单弹窗 -->
 <script type="text/html" id="topic-child-model">
-    <table class="layui-table" id="topic-child-table" lay-filter="topic-child-table"></table>
+    <div class="layui-card">
+
+        <div class="layui-card-body">
+            <table class="layui-table" id="topic-child-table" lay-filter="topic-child-table"></table>
+            <div class="model-view-footer">
+                <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
+            </div>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="topic-detail-model">
@@ -183,19 +191,24 @@
                 offset: '120px',
                 content: $('#topic-child-model').html(),
                 success: function () {
+                    var idArr = getIdArr();
+                    var batchID = idArr[0];
+                    var classID = idArr[1];
                     table.render({
                         elem: '#topic-child-table',
                         url: common.base_server + 'selQuest/getCheckInfoList',
                         method: 'POST',
                         where: {
                             UUID: auth.getUUID(),
-                            stqID: data.stqID
+                            stqID: data.stqID,
+                            batchID: batchID,
+                            classID: classID
                         },
-                        request: common.tableRequest,
+                        // request: common.tableRequest,
                         response: common.tableResponse,
-                        parseData: common.tableParseData,
-                        height: 'full-250',
-                        page: true,
+                        parseData: common.tableParseDataWithNoPage,
+                        // height: 'full-250',
+                        page: false,
                         cols: [[
                             {type:'numbers'},
                             {field: 'title', title: '标题'},
@@ -258,12 +271,12 @@
             //请修改审核接口
             api.req('selQuest/setState', {slqID: id, state: state}, function (data) {
                 layer.closeAll('loading');
-                if (data.code == 200) {
-                    layer.msg(data.msg, {icon: 1});
+                if (data.Status == 2000) {
+                    layer.msg(data.Data.Result, {icon: 1});
                     table.reload('topic-child-table');
-                    layer.closeAll('page');
+                    // layer.closeAll('page');
                 } else {
-                    layer.msg(data.msg, {icon: 2});
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
             });
         }

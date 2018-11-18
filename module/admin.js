@@ -232,12 +232,14 @@ layui.define(['common', 'auth', 'layer'], function (exports) {
         }
     };
 
+/*
     // 所有ew-event
     $('body').on('click', '*[ew-event]', function () {
         var event = $(this).attr('ew-event');
         var te = admin.events[event];
         te && te.call(this, $(this));
     });
+*/
 
     // 移动设备遮罩层点击事件
     $('.site-mobile-shade').click(function () {
