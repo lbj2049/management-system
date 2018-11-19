@@ -22,61 +22,140 @@
 
 <!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar">
-    <a class="layui-btn layui-btn-xs" lay-event="check-view">批阅</a>
-    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="pass">通过</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="unpass">不通过</a>
+    {{#  if(d.downLoadAddr != '') { }}
+    <a class="layui-btn layui-btn-xs" lay-event="view">查看</a>
+    {{#  } else { }}
+
+    {{#  } }}
 </script>
 
 <!-- 表单弹窗 -->
 <script type="text/html" id="topic-model">
-    <form id="topic-form" lay-filter="topic-form" class="layui-form model-form">
-        <input name="id" type="hidden"/>
-        <div class="layui-form-item">
-            <label class="layui-form-label">标题</label>
-            <div class="layui-form-mid layui-word-aux">
-                <label>{{title}}</label>
+    <div class="layui-card">
+
+        <div class="layui-card-body">
+            <div id="topic-view" class="layui-form model-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">已选题目</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        <a href="javascript:;" class="topic-title">{{d.title}}</a>
+                        {{# if (d.reviewState) { }}
+                        {{# if (d.ismodel == 1) { }}
+                        <span class="layui-badge layui-bg-green">范文</span>
+                        {{# } else { }}
+                        <span class="layui-badge layui-bg-gray">非范文</span>
+                        {{# } }}
+                        {{# } }}
+                        <span class="topic-content" style="display: none"><pre>{{d.content}}</pre></span>
+                    </div>
+                </div>
+
+                <!-- 老师未批阅 -->
+                <div>
+                    {{# if (!d.reviewState) { }}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">论文标题</label>
+                        <div class="layui-form-mid">
+                            {{d.pageTitle}}
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">论文附件</label>
+                        <div class="layui-input-block">
+                            <div class="layui-upload">
+                                {{# if(d.subState){ }}
+                                <button type="button" class="layui-btn" id="file-download"
+                                        data-url="{{d.downLoadAddr}}">下载
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-warm" id="file-preview"
+                                        data-url="{{d.downLoadAddr}}">在线浏览
+                                </button>
+                                {{# } }}
+                            </div>
+                        </div>
+                    </div>
+                    {{# } }}
+                </div>
+
+                <!-- 老师已经批阅 -->
+                <div>
+                    {{# if (d.reviewState) { }}
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">论文标题</label>
+                        <div class="layui-form-mid">
+                            {{d.pageTitle}}
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">论文附件</label>
+                        <div class="layui-input-block">
+                            <div class="layui-upload">
+                                {{# if(d.subState){ }}
+                                <button type="button" class="layui-btn" id="file-download">下载</button>
+                                <button type="button" class="layui-btn layui-btn-warm" id="file-preview">在线浏览</button>
+                                {{# } }}
+                            </div>
+                        </div>
+                    </div>
+                    {{# } }}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">学生名称</label>
+                        <div class="layui-form-mid">
+                            {{d.userName}}
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">学生学号</label>
+                        <div class="layui-form-mid">
+                            {{d.userNo}}
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">学生电话</label>
+                        <div class="layui-form-mid">
+                            {{d.userTel}}
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">阶段</label>
+                        <div class="layui-form-mid">
+                            {{# if(d.stage == 1) { }}
+                            开题
+                            {{# } else if(d.stage == 2) { }}
+                            中期检查
+                            {{# } else if(d.stage == 3) { }}
+                            答辩
+                            {{# } }}
+                        </div>
+                    </div>
+                    {{# if (d.reviewState) { }}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">审核老师</label>
+                        <div class="layui-form-mid layui-word-aux">
+                            {{d.teaName}}
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">老师评分</label>
+                        <div class="layui-form-mid layui-word-aux">
+                            {{d.score}}
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">老师批语</label>
+                        <div class="layui-form-mid layui-word-aux">
+                            {{d.teaContent}}
+                        </div>
+                    </div>
+                    {{# } }}
+                </div>
+                <div class="model-view-footer">
+                    <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
+                </div>
             </div>
         </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">内容</label>
-            <div class="layui-form-mid layui-word-aux">
-                <pre>{{content}}</pre>
-            </div>
-        </div>
-        <!--
-        <div class="layui-form-item">
-            <label class="layui-form-label">出题人</label>
-            <div class="layui-form-mid layui-word-aux">
-                {{teacherName}}
-            </div>
-        </div>
-        -->
-        <!--
-        <div class="layui-form-item">
-            <label class="layui-form-label">提交时间</label>
-            <div class="layui-form-mid layui-word-aux">
-                {{subtime}}
-            </div>
-        </div>
-        -->
-        <div class="layui-form-item">
-            <label class="layui-form-label">审核</label>
-            <div class="layui-input-block">
-                <input type="radio" name="state" value="1" title="通过">
-                <input type="radio" name="state" value="2" title="不通过" checked>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">回复</label>
-            <div class="layui-input-block">
-                <textarea name="msg" placeholder="请输入内容" class="layui-textarea" maxlength="200"></textarea>
-            </div>
-        </div>
-        <div class="layui-form-item model-form-footer">
-            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
-            <button class="layui-btn" lay-filter="topic-form-submit" lay-submit>保存</button>
-        </div>
-    </form>
+    </div>
 </script>
 
 
@@ -91,23 +170,24 @@
 </script>
 
 <script type="text/html" id="stateTpl">
-
+    {{#  if(d.downLoadAddr == '') { }}
+    未提交
+    {{#  } else { }}
     <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>
     <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview">预览</a>
+    {{#  } }}
+</script>
 
-    {{#  if(d.state == 0) { }}
-    未提交
-    {{#  } else if(d.state == 1) { }}
-    已提交
-    {{#  } else if(d.state == 2) { }}
-    已批阅
-    {{#  } else if(d.state == 3) { }}
-    未通过
+<script type="text/html" id="scoreTpl">
+    {{#  if(d.downLoadAddr !== '' && d.score > 0) { }}
+    {{d.score}}
+    {{#  } else { }}
+
     {{#  } }}
 </script>
 
 <script>
-    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload', 'selectN'], function () {
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload', 'selectN', 'laytpl'], function () {
         var form = layui.form;
         var table = layui.table;
         var common = layui.common;
@@ -119,11 +199,13 @@
         var formSelects = layui.formSelects;
         var upload = layui.upload;
         var selectN = layui.selectN;
+        var laytpl = layui.laytpl;
 
         var editIdArr = [];
         var batch_class_select, batch_class_id;
 
         initData();
+
         //初始化数据
         function initData() {
 
@@ -160,7 +242,7 @@
                     {field: 'userTel', title: '学生电话', width: 110},
                     {field: 'stage', title: '环节', templet: '#stageTpl', width: 90},
                     {field: 'state', title: '作业情况', templet: '#stateTpl', width: 110},
-                    {field: 'score', title: '评分', width: 60},
+                    {field: 'score', title: '评分', templet: '#scoreTpl', width: 60},
                     // {field: 'teacherName', title: '审批人'},
                     {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 160}
                 ]]
@@ -188,19 +270,13 @@
         table.on('tool(topic-table)', function (obj) {
             var data = obj.data;
 
-            if (obj.event === 'check-view') { //批阅
+            if (obj.event === 'view') { //批阅
                 // doCheckView(data.id, 1);
-                showEditModel(data)
-            } else if (obj.event === 'pass') { //通过
-                doPass(data.id, 1);
-            } else if (obj.event === 'unpass') { //不通过
-                doPass(data.id, 2);
+                showViewModel(data)
             } else if (obj.event === 'download') {
-                download(data)
+                download(data.downLoadAddr)
             } else if (obj.event === 'preview') {
-                preview(data)
-            } else {
-                showEditModel(data)
+                preview(data.downLoadAddr)
             }
         });
 
@@ -213,56 +289,48 @@
             table.reload('topic-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
         });
 
-        // 显示编辑弹窗
-        var showEditModel = function (data) {
-            layer.open({
-                type: 1,
-                title: data ? '审核选题' : '添加选题',
-                area: '450px',
-                offset: '120px',
-                content: $('#topic-model').html(),
-                success: function () {
-                    $('#topic-form')[0].reset();
-                    $('#topic-form').attr('method', 'GET');
-                    if (data) {
-                        $('#topic-form').vm(data)
-                        form.val('topic-form', data);
-                        $('#topic-form').attr('method', 'GET');
+        // 显示查看弹窗
+        var showViewModel = function (data) {
 
-                    }
-                }
-            });
+            data.subState = data.downLoadAddr !== '' || data.downLoadAddr.length > 0;
+            data.reviewState = data.score !== '' && data.score > 0;
+            laytpl($('#topic-model').html()).render(data, function (html) {
+                layer.open({
+                    type: 1,
+                    title: '查看组成员',
+                    area: '450px',
+                    offset: '120px',
+                    content: html
+                });
+                initEvent()
+            })
         };
 
+        function initEvent() {
+            $('#file-download').on('click', function () {
+                download($(this).data('url'))
+            });
 
-        function preview(data) {
-            window.open('http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=true&_xdoc=' + data.downLoadAddr, 'preview');
+            $('#file-preview').on('click', function () {
+                preview($(this).data('url'))
+            });
         }
 
-        function download(data) {
+
+        function preview(url) {
+            // window.open('https://view.officeapps.live.com/op/view.aspx?src=' + $(this).data('url'), 'preview')
+            window.open('http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=true&_xdoc=' + url, 'preview');
+        }
+
+        function download(url) {
             try {
                 var elemIF = document.createElement("iframe");
-                elemIF.src = data.downLoadAddr;
+                elemIF.src = url;
                 elemIF.style.display = "none";
                 document.body.appendChild(elemIF);
             } catch (e) {
 
             }
-        }
-
-        //审核操作
-        function doPass(id, state) {
-            //请修改审核接口
-            api.req('user_state.json', {id: id, state: state}, function (data) {
-                layer.closeAll('loading');
-                if (data.code == 200) {
-                    layer.msg(data.msg, {icon: 1});
-                    table.reload('topic-table');
-                    layer.closeAll('page');
-                } else {
-                    layer.msg(data.msg, {icon: 2});
-                }
-            }, 'get');
         }
 
 
@@ -292,7 +360,7 @@
                             opvs.push({name: rs[i].batchName, id: rs[i].batchID});
                         }
                     }
-                    if (selectId === 'search-batch-class-id')  {
+                    if (selectId === 'search-batch-class-id') {
                         batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
                     } else {
                         batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
@@ -303,6 +371,7 @@
                 }
             });
         }
+
         function getIdArr() {
             var idArr = batch_class_select.values;
             if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
@@ -312,11 +381,12 @@
                 return false
             }
         }
+
         function getSelectNParam(id, opvs, selected) {
             return {
                 //元素容器【必填】
                 elem: '#' + id,
-                search:[false,true],
+                search: [false, true],
                 //候选数据【必填】
                 data: opvs,
                 //为真只取最后一个值
@@ -326,9 +396,9 @@
                 //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
                 tips: ['请选择毕业批次', '请选择班级'],
                 //数据的键名
-                field:{idName:'id',titleName:'name',childName:'children'},
+                field: {idName: 'id', titleName: 'name', childName: 'children'},
                 //添加验证
-                verify:'required'
+                verify: 'required'
 
             };
         }

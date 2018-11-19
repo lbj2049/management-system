@@ -57,7 +57,7 @@
                         <input name="fileName" type="hidden"/>
                         <div class="layui-inline layui-upload-choose"></div>
                         {{# if(d.subState){ }}
-                        <button type="button" class="layui-btn" id="file-upload" data-url="{{d.upFiles}}">下载</button>
+                        <button type="button" class="layui-btn" id="file-download" data-url="{{d.upFiles}}">下载</button>
                         <button type="button" class="layui-btn" id="file-preview" data-url="{{d.upFiles}}">在线浏览</button>
                         {{# } }}
                     </div>
@@ -89,7 +89,7 @@
                 <div class="layui-input-block">
                     <div class="layui-upload">
                         {{# if(d.subState){ }}
-                        <button type="button" class="layui-btn" id="file-upload">下载</button>
+                        <button type="button" class="layui-btn" id="file-download">下载</button>
                         <button type="button" class="layui-btn" id="file-preview">在线浏览</button>
                         {{# } }}
                     </div>
@@ -190,7 +190,7 @@
 
 
 <script>
-    layui.use(['table', 'form', 'api','common', 'auth','upload','laytpl'], function(){
+    layui.use(['table', 'form', 'api','common', 'auth', 'upload', 'laytpl'], function(){
         var table = layui.table;
         var form = layui.form;
         var api = layui.api;
@@ -267,7 +267,7 @@
 
             });
 
-            $('#file-upload').on('click', function() {
+            $('#file-download').on('click', function() {
                 try {
                     var elemIF = document.createElement("iframe");
                     elemIF.src = $(this).data('url');

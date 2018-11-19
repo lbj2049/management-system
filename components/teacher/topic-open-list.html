@@ -1,9 +1,9 @@
 <div class="layui-card">
     <div class="layui-card-header">
-        <h2 class="header-title">开题管理</h2>
+        <h2 class="header-title">我的学生作业</h2>
         <span class="layui-breadcrumb pull-right">
           <a href="#!welcome">首页</a>
-          <a><cite>开题管理</cite></a>
+          <a><cite>我的学生作业</cite></a>
         </span>
     </div>
     <div class="layui-card-body">
@@ -22,71 +22,197 @@
 
 <!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar">
+    {{#  if(d.downLoadAddr != '' && score == 0) { }}
     <a class="layui-btn layui-btn-xs" lay-event="check-view">批阅</a>
-    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="pass">通过</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="unpass">不通过</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="set-model">设为范文</a>
+    {{#  } else { }}
+
+    {{#  } }}
 </script>
 
 <!-- 表单弹窗 -->
 <script type="text/html" id="topic-model">
     <form id="topic-form" lay-filter="topic-form" class="layui-form model-form">
-        <input name="id" type="hidden"/>
+        <input name="spID" id="spID" type="hidden" value="{{d.spID}}"/>
+
         <div class="layui-form-item">
-            <label class="layui-form-label">标题</label>
+            <label class="layui-form-label">已选题目</label>
             <div class="layui-form-mid layui-word-aux">
-                <label>{{title}}</label>
+                <a href="javascript:;" class="topic-title">{{d.title}}</a>
+                {{# if (d.reviewState) { }}
+                {{# if (d.ismodel == 1) { }}
+                <span class="layui-badge layui-bg-green">范文</span>
+                {{# } else { }}
+                <span class="layui-badge layui-bg-gray">非范文</span>
+                {{# } }}
+                {{# } }}
+                <span class="topic-content" style="display: none"><pre>{{d.content}}</pre></span>
             </div>
         </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">内容</label>
-            <div class="layui-form-mid layui-word-aux">
-                {{content}}
+
+        <!-- 老师未批阅 -->
+        <div>
+            {{# if (!d.reviewState) { }}
+            <div class="layui-form-item">
+                <label class="layui-form-label">论文标题</label>
+                <div class="layui-form-mid">
+                    {{d.pageTitle}}
+                </div>
             </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">出题人</label>
-            <div class="layui-form-mid layui-word-aux">
-                {{teacherName}}
+            <div class="layui-form-item">
+                <label class="layui-form-label">论文附件</label>
+                <div class="layui-input-block">
+                    <div class="layui-upload">
+                        {{# if(d.subState){ }}
+                        <button type="button" class="layui-btn" id="file-download"
+                                data-url="{{d.downLoadAddr}}">下载
+                        </button>
+                        <button type="button" class="layui-btn layui-btn-warm" id="file-preview"
+                                data-url="{{d.downLoadAddr}}">在线浏览
+                        </button>
+                        {{# } }}
+                    </div>
+                </div>
             </div>
+            {{# } }}
         </div>
-        <!--
-        <div class="layui-form-item">
-            <label class="layui-form-label">提交时间</label>
-            <div class="layui-form-mid layui-word-aux">
-                {{subtime}}
+
+        <!-- 老师已经批阅 -->
+        <div>
+            {{# if (d.reviewState) { }}
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">论文标题</label>
+                <div class="layui-form-mid">
+                    {{d.pageTitle}}
+                </div>
             </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">论文附件</label>
+                <div class="layui-input-block">
+                    <div class="layui-upload">
+                        {{# if(d.subState){ }}
+                        <button type="button" class="layui-btn" id="file-download">下载</button>
+                        <button type="button" class="layui-btn layui-btn-warm" id="file-preview">在线浏览</button>
+                        {{# } }}
+                    </div>
+                </div>
+            </div>
+            {{# } }}
+            <div class="layui-form-item">
+                <label class="layui-form-label">小组名称</label>
+                <div class="layui-form-mid">
+                    {{d.groupName}}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">学生名称</label>
+                <div class="layui-form-mid">
+                    {{d.userName}}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">学生学号</label>
+                <div class="layui-form-mid">
+                    {{d.userNo}}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">学生电话</label>
+                <div class="layui-form-mid">
+                    {{d.userTel}}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">阶段</label>
+                <div class="layui-form-mid">
+                    {{# if(d.stage == 1) { }}
+                    开题
+                    {{# } else if(d.stage == 2) { }}
+                    中期检查
+                    {{# } else if(d.stage == 3) { }}
+                    答辩
+                    {{# } }}
+                </div>
+            </div>
+            {{# if (d.reviewState) { }}
+            <div class="layui-form-item">
+                <label class="layui-form-label">审核老师</label>
+                <div class="layui-form-mid layui-word-aux">
+                    {{d.teaName}}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">老师评分</label>
+                <div class="layui-form-mid layui-word-aux">
+                    {{d.score}}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">老师批语</label>
+                <div class="layui-form-mid layui-word-aux">
+                    {{d.teaContent}}
+                </div>
+            </div>
+            {{# } }}
         </div>
-        -->
+        {{# if(d.subState){ }}
         <div class="layui-form-item">
-            <label class="layui-form-label">审核</label>
+            <label class="layui-form-label">评分</label>
             <div class="layui-input-block">
-                <input type="radio" name="state" value="1" title="通过">
-                <input type="radio" name="state" value="2" title="不通过" checked>
+                <textarea name="score" placeholder="请输入评分" class="layui-textarea" maxlength="200"></textarea>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">回复</label>
+            <label class="layui-form-label">批语</label>
             <div class="layui-input-block">
-                <textarea name="msg" placeholder="请输入内容" class="layui-textarea" maxlength="200"></textarea>
+                <textarea name="teaContent" placeholder="请输入批语" class="layui-textarea" maxlength="200"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否范文</label>
+            <div class="layui-input-block">
+                <input type="radio" name="ismodel" value="1" title="设为范文">
+                <input type="radio" name="ismodel" value="2" title="普通论文" checked>
             </div>
         </div>
         <div class="layui-form-item model-form-footer">
             <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
             <button class="layui-btn" lay-filter="topic-form-submit" lay-submit>保存</button>
         </div>
+        {{# else { }}
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
+        </div>
+        {{# } }}
     </form>
 </script>
 
 
+<script type="text/html" id="stageTpl">
+    {{#  if(d.stage == 1) { }}
+    开题
+    {{#  } else if(d.stage == 2) { }}
+    中期检查
+    {{#  } else if(d.stage == 3) { }}
+    答辩
+    {{#  } }}
+</script>
+
 <script type="text/html" id="stateTpl">
-    {{#  if(d.state == 0) { }}
+    {{#  if(d.downLoadAddr == '') { }}
     未提交
-    {{#  } else if(d.state == 1) { }}
-    已提交
-    {{#  } else if(d.state == 2) { }}
-    已批阅
-    {{#  } else if(d.state == 3) { }}
-    未通过
+    {{#  } else { }}
+    <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview">预览</a>
+    {{#  } }}
+</script>
+
+<script type="text/html" id="scoreTpl">
+    {{#  if(d.downLoadAddr !== '' && d.score > 0) { }}
+    {{d.score}}
+    {{#  } else { }}
+
     {{#  } }}
 </script>
 
@@ -126,10 +252,8 @@
             // 渲染表格
             table.render({
                 elem: '#topic-table',
-                url: common.base_server + 'setQuest/getQuestList',
+                url: common.base_server + 'stuPage/stuWorkList',
                 method: 'POST',
-                // url: common.base_server + 'teacher_topic_query.json',
-                // method: 'get',
                 where: {
                     UUID: auth.getUUID(),
                     batchID: batchID,
@@ -142,14 +266,15 @@
                 height: 'full-250',
                 page: true,
                 cols: [[
-                    {type:'numbers'},
-                    {field: 'className', title: '所在组'},
-                    {field: 'studentName', title: '学生姓名'},
-                    {field: 'studentNo', title: '学生学号'},
-                    {field: 'studentTel', title: '学生电话'},
-                    {field: 'state', title: '作业情况', templet: '#stateTpl'},
-                    {field: 'score', title: '打分'},
-                    {field: 'teacherName', title: '审批人'},
+                    {type: 'numbers'},
+                    {field: 'title', title: '选择题目'},
+                    {field: 'userName', title: '学生姓名', width: 110},
+                    {field: 'userNo', title: '学生学号', width: 110},
+                    {field: 'userTel', title: '学生电话', width: 110},
+                    {field: 'stage', title: '环节', templet: '#stageTpl', width: 90},
+                    {field: 'state', title: '作业情况', templet: '#stateTpl', width: 110},
+                    {field: 'score', title: '评分', templet: '#scoreTpl', width: 60},
+                    // {field: 'teacherName', title: '审批人'},
                     {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 160}
                 ]]
             });
@@ -159,7 +284,7 @@
         // 表单提交事件
         form.on('submit(topic-form-submit)', function (data) {
             layer.load(2);
-            api.req('user_state.json', data.field, function (data) {
+            api.req('stuPage/checkByTea', data.field, function (data) {
                 layer.closeAll('loading');
                 if (data.code == 200) {
                     layer.msg(data.msg, {icon: 1});
@@ -179,10 +304,12 @@
             if (obj.event === 'check-view') { //批阅
                 // doCheckView(data.id, 1);
                 showEditModel(data)
-            } else if (obj.event === 'pass') { //通过
-                doPass(data.id, 1);
-            } else if (obj.event === 'unpass') { //不通过
-                doPass(data.id, 2);
+            } else if (obj.event === 'set-model') { //设为范文
+                doModel(data.id, 1);
+            } else if (obj.event === 'download') {
+                download(data.downLoadAddr)
+            } else if (obj.event === 'preview') {
+                preview(data.downLoadAddr)
             } else {
                 showEditModel(data)
             }
@@ -194,14 +321,16 @@
             var idArr = getIdArr();
             var batchID = idArr[0];
             var classID = idArr[1];
-            table.reload('topic-table', {where: {keyword: keyword, batchId: batchId, classId: classId}});
+            table.reload('topic-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
         });
 
         // 显示编辑弹窗
         var showEditModel = function (data) {
+            data.subState = data.downLoadAddr !== '' || data.downLoadAddr.length > 0;
+            data.reviewState = data.score !== '' && data.score > 0;
             layer.open({
                 type: 1,
-                title: data ? '审核选题' : '添加选题',
+                title: '批阅论文',
                 area: '450px',
                 offset: '120px',
                 content: $('#topic-model').html(),
@@ -209,17 +338,45 @@
                     $('#topic-form')[0].reset();
                     $('#topic-form').attr('method', 'GET');
                     if (data) {
-                        $('#topic-form').vm(data)
+                        // $('#topic-form').vm(data)
                         form.val('topic-form', data);
                         $('#topic-form').attr('method', 'GET');
 
                     }
+                    initEvent()
                 }
             });
         };
 
+        function initEvent() {
+            $('#file-download').on('click', function () {
+                download($(this).data('url'))
+            });
+
+            $('#file-preview').on('click', function () {
+                preview($(this).data('url'))
+            });
+        }
+
+
+        function preview(url) {
+            // window.open('https://view.officeapps.live.com/op/view.aspx?src=' + $(this).data('url'), 'preview')
+            window.open('http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=true&_xdoc=' + url, 'preview');
+        }
+
+        function download(url) {
+            try {
+                var elemIF = document.createElement("iframe");
+                elemIF.src = url;
+                elemIF.style.display = "none";
+                document.body.appendChild(elemIF);
+            } catch (e) {
+
+            }
+        }
+
         //审核操作
-        function doPass(id, state) {
+        function doModel(id, state) {
             //请修改审核接口
             api.req('user_state.json', {id: id, state: state}, function (data) {
                 layer.closeAll('loading');
