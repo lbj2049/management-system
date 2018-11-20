@@ -1,0 +1,342 @@
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">系统通知</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>系统通知</cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form toolbar">
+            <div class="layui-inline">
+                <div id="search-batch-class-id">
+                </div>
+            </div>
+            <input id="notice-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
+            <button id="notice-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+            <button id="notice-btn-add" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+        </div>
+
+        <table class="layui-table" id="notice-table" lay-filter="notice-table"></table>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="notice-table-bar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="notice-model">
+    <form id="notice-form" lay-filter="notice-form" class="layui-form model-form">
+        <input name="nID" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input name="title" placeholder="请输入标题" type="text" class="layui-input" maxlength="200" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-input-block">
+                <textarea name="content" placeholder="请输入内容" class="layui-textarea" maxlength="600" lay-verify="required" required></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">附件</label>
+            <div class="layui-input-block">
+                <div class="layui-upload">
+                    <button type="button" class="layui-btn select-file">选择文件</button>
+                    <input name="file" type="file" class="layui-upload-file" id="file"/>
+                    <input name="fileName" type="hidden"/>
+                    <div class="layui-inline layui-upload-choose"></div>
+                    <button type="button" class="layui-btn" id="file-download" data-url="{{d.upFiles}}">下载</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+            <button class="layui-btn" lay-filter="notice-form-submit" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+
+<script>
+    layui.use(['api', 'form', 'table', 'laytpl', 'util', 'common', 'auth', 'admin', 'formSelects', 'selectN'], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var common = layui.common;
+        var auth = layui.auth;
+        var layer = layui.layer;
+        var util = layui.util;
+        var admin = layui.admin;
+        var api = layui.api;
+        var laytpl = layui.laytpl;
+        var formSelects = layui.formSelects;
+        var selectN = layui.selectN;
+
+
+        // 获取编辑数据
+        var editIdArr = [];
+
+        //下拉框选项
+        var batch_class_select, batch_class_id;
+
+
+        initData();
+
+        //页面加载时初始化
+        function initData() {
+            //初始化联级
+            getBatchClassData('search-batch-class-id', loadData, editIdArr);
+
+            // loadData();
+        }
+
+        // 加载老师、学生列表
+        function loadData() {
+
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+
+            // 渲染表格
+            table.render({
+                elem: '#notice-table',
+                url: common.base_server + 'notice/noticeList',
+                method: 'POST',
+                where: {
+                    UUID: auth.getUUID(),
+                    batchID: batchID,
+                    classID: classID,
+                },
+                request: common.tableRequest,
+                response: common.tableResponse,
+                parseData: common.tableParseData,
+                height: 'full-250',
+                page: true,
+                cols: [[
+                    {type: 'numbers'},
+                    {field: 'title', title: '标题', width: 240},
+                    {field: 'content', title: '内容'},
+                    {field: 'upTime', title: '发布时间', width: 160},
+                    {align: 'center', toolbar: '#notice-table-bar', title: '操作', width: 120}
+                ]]
+            });
+        }
+
+
+        // 表单提交事件
+        form.on('submit(notice-form-submit)', function (data) {
+            layer.load(2);
+            var url = '';
+            if (data.field.nID) {
+                url = 'notice/editNotice';
+            } else {
+                url = 'notice/adNotice';
+            }
+
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+
+            var formData = new FormData($('#notice-form')[0]);
+            formData.append('UUID', auth.getUUID());
+            formData.append('batchID', batchID);
+            formData.append('classID', classID);
+
+            api.ajax({
+                url: common.base_server + url,
+                data: formData,
+                type: 'POST',
+                cache: false,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status === 2000) {
+                        if (data.Data.Result) {
+                            layer.msg(data.Data.Result, {icon: 1});
+                        } else {
+                            layer.msg('保存成功', {icon: 1});
+                        }
+                        initData();
+                        // table.reload('topic-table');
+                        layer.closeAll('page');
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
+                }
+            });
+            return false;
+        });
+
+
+        // 添加按钮点击事件
+        $('#notice-btn-add').click(function () {
+            showEditModel();
+        });
+
+        // 工具条点击事件
+        table.on('tool(notice-table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                showEditModel(data);
+            } else if (obj.event === 'del') {
+                doDelete(data);
+            }
+        });
+
+        // 搜索按钮点击事件
+        $('#notice-btn-search').click(function () {
+            var keyword = $('#notice-search-value').val();
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+            table.reload('notice-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
+        });
+
+        // 显示查看弹窗
+        var showEditModel = function (data) {
+            layer.open({
+                type: 1,
+                title: data ? '修改班级' : '添加班级',
+                area: '450px',
+                offset: '120px',
+                content: $('#notice-model').html(),
+                success: function () {
+                    $('#notice-form')[0].reset();
+                    $('#notice-form').attr('method', 'GET');
+                    if (data) {
+                        data.subState = false
+                        form.val('notice-form', data);
+                        $('#notice-form').attr('method', 'GET');
+
+                    } else {
+                        $('#file-download').hide();
+                    }
+                    initEvent()
+                }
+            });
+        };
+
+        // 删除
+        var doDelete = function (data) {
+            layer.confirm('确定要删除吗？', function (i) {
+                layer.close(i);
+                layer.load(2);
+
+                api.req('notice/delNotice', {nID: data.nID}, function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status === 2000) {
+                        layer.msg(data.Data.Result, {icon: 1});
+                        table.reload('notice-table');
+                        layer.closeAll('page');
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
+                });
+            });
+        };
+
+
+        function initEvent() {
+            $('.layui-upload button.select-file').on('click', function () {
+                $(this).next('input[type="file"]').click();
+            });
+            $('.layui-upload input[type="file"]').on('change', function () {
+                var filePath = $(this).val();
+                if (!filePath) return false;
+                var fileName = filePath.substring(filePath.lastIndexOf("\\") + 1);
+
+                if (filePath.indexOf("xls") !== -1 || filePath.indexOf("xlsx") !== -1 || filePath.indexOf("doc") !== -1 || filePath.indexOf("docx") !== -1) {
+                    $(this).next('input[name="fileName"]').val(fileName);
+                    $(this).parents('div.layui-upload').children('.layui-upload-choose').html(fileName);
+                } else {
+                    layer.msg('您选择的上传文件类型有误！', {icon: 2});
+                    return false
+                }
+            });
+            $('#file-download').on('click', function() {
+                try {
+                    var elemIF = document.createElement("iframe");
+                    elemIF.src = $(this).data('url');
+                    elemIF.style.display = "none";
+                    document.body.appendChild(elemIF);
+                } catch (e) {
+
+                }
+            });
+        }
+
+        //毕业批次与班级下拉联级
+        function getBatchClassData(selectId, callback, selected) {
+            api.req('batchInfo/BatchLD', {}, function (data) {
+                if (data.Status === 2000) {
+                    var opvs = [];
+                    // var selected = [];
+
+                    var rs = data.Data;
+                    for (var i = 0; i < rs.length; i++) {
+                        if (i === 0 && selected.length === 0) {
+                            selected.push(rs[i].batchID);
+                        }
+                        var trs = rs[i].classList;
+                        if (trs) {
+                            var topvs = [];
+                            for (var j = 0; j < trs.length; j++) {
+                                if ((i === 0 && j === 0) && selected.length === 1) {
+                                    selected.push(trs[j].classID);
+                                }
+                                topvs.push({name: trs[j].className, id: trs[j].classID})
+                            }
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID, children: topvs});
+                        } else {
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID});
+                        }
+                    }
+                    if (selectId === 'search-batch-class-id')  {
+                        batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
+                    } else {
+                        batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
+                    }
+                    if (typeof callback === "function") {
+                        callback();
+                    }
+                }
+            });
+        }
+        function getIdArr() {
+            var idArr = batch_class_select.values;
+            if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
+                return idArr;
+            } else {
+                layer.msg('请选择毕业批次和班级', {icon: 2});
+                return false
+            }
+        }
+        function getSelectNParam(id, opvs, selected) {
+            return {
+                //元素容器【必填】
+                elem: '#' + id,
+                search:[false,true],
+                //候选数据【必填】
+                data: opvs,
+                //为真只取最后一个值
+                // last:true,
+                //默认值
+                selected: selected,
+                //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
+                tips: ['请选择毕业批次', '请选择班级'],
+                //数据的键名
+                field:{idName:'id',titleName:'name',childName:'children'},
+                //添加验证
+                verify:'required'
+
+            };
+        }
+    });
+</script>

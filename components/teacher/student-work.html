@@ -64,12 +64,8 @@
                         <div class="layui-input-block">
                             <div class="layui-upload">
                                 {{# if(d.subState){ }}
-                                <button type="button" class="layui-btn" id="file-download"
-                                        data-url="{{d.downLoadAddr}}">下载
-                                </button>
-                                <button type="button" class="layui-btn layui-btn-warm" id="file-preview"
-                                        data-url="{{d.downLoadAddr}}">在线浏览
-                                </button>
+                                <button type="button" class="layui-btn" id="file-download" data-url="{{d.downLoadAddr}}">下载</button>
+                                <button type="button" class="layui-btn layui-btn-warm" id="file-preview" data-url="{{d.downLoadAddr}}">在线浏览</button>
                                 {{# } }}
                             </div>
                         </div>
@@ -92,8 +88,8 @@
                         <div class="layui-input-block">
                             <div class="layui-upload">
                                 {{# if(d.subState){ }}
-                                <button type="button" class="layui-btn" id="file-download">下载</button>
-                                <button type="button" class="layui-btn layui-btn-warm" id="file-preview">在线浏览</button>
+                                <button type="button" class="layui-btn" id="file-download" data-url="{{d.downLoadAddr}}">下载</button>
+                                <button type="button" class="layui-btn layui-btn-warm" id="file-preview" data-url="{{d.downLoadAddr}}">在线浏览</button>
                                 {{# } }}
                             </div>
                         </div>
@@ -297,7 +293,7 @@
             laytpl($('#topic-model').html()).render(data, function (html) {
                 layer.open({
                     type: 1,
-                    title: '查看组成员',
+                    title: '查看论文',
                     area: '450px',
                     offset: '120px',
                     content: html

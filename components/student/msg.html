@@ -1,36 +1,121 @@
 <div class="layui-carousel" id="msg-list">
-    <div carousel-item  p-each="data">
-        <div>{{content}}</div>
-    </div>
+
 </div>
+<script  type="text/html" id="notice-new-list">
+    <div carousel-item>
+    {{#  layui.each(d.list, function(index, item){ }}
+    <div class="notice-new-show" data-v="{{item.nID}}" style="cursor: pointer;">{{item.content}}</div>
+    {{#  }); }}
+    {{#  if(d.list.length === 0){ }}
+    暂无通知
+    {{#  } }}
+    </div>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="notice-new-detail-model">
+    <div id="notice-new-detail-form" class="layui-form model-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{d.title}}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-form-mid layui-word-aux">
+                <pre>{{d.content}}</pre>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">附件</label>
+            <div class="layui-input-block">
+                <div class="layui-upload">
+                    {{# if(d.downLoadAddr){ }}
+                    <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr}}">下载</button>
+                    {{# } }}
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
+        </div>
+    </div>
+</script>
+
 <script>
-    layui.use(['carousel', 'auth', 'api'], function(){
+    layui.use(['carousel', 'auth', 'api', 'laytpl'], function(){
         var carousel = layui.carousel;
         var auth = layui.auth;
         var api = layui.api;
+        var laytpl = layui.laytpl;
+
+        var user = auth.getUser();
 
 
+        var v = {list:[]};
         function getMsg() {
 
-            api.req('user_msg.json', {
-                userId: auth.getUser().id
+            api.req('notice/newNoticeInfo', {
+                UUID: auth.getUUID(),
+                classID: user.classID
             }, function (data) {
-                if (data.code == 0) {
-                    $('#msg-list').vm(data);
-
-                    //建造实例
-                    carousel.render({
-                        elem: '#msg-list'
-                        ,width: '100%' //设置容器宽度
-                        ,height:'24px'
-                        ,arrow: 'none' //始终不显示箭头
-                        ,anim: 'updown' //切换动画方式
-                        ,indicator: 'none'
-                    });
+                if (data.Status === 2000) {
+                    v.list = []
+                    v.list.push(data.Data)
+                    // $('#msg-list').vm(data);
+                    laytpl($('#notice-new-list').html()).render(v, function (html) {
+                        $('#msg-list').html(html);
+                        //建造实例
+                        carousel.render({
+                            elem: '#msg-list'
+                            ,width: '100%' //设置容器宽度
+                            ,height:'24px'
+                            ,arrow: 'none' //始终不显示箭头
+                            ,anim: 'updown' //切换动画方式
+                            ,indicator: 'none'
+                        });
+                        initEvent()
+                    })
+                } else {
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
-            }, 'GET');
+            });
         }
-        setInterval(getMsg(), 1000);
+        setInterval(getMsg(), 60000);
 
+        function initEvent() {
+            $('.notice-new-show').click(function () {
+                var nID = $(this).data('v');
+                for (var i = 0; i < v.list.length; i++) {
+                    if (v.list[i] && v.list[i].nID && v.list[i].nID === nID) {
+                        showViewModel(v.list[i])
+                    }
+                }
+            });
+        }
+        var showViewModel = function (data) {
+            laytpl($('#notice-detail-model').html()).render(data, function (html) {
+                layer.open({
+                    type: 1,
+                    title: '查看通知',
+                    area: '450px',
+                    offset: '120px',
+                    content: html
+                });
+
+                $('.file-download').on('click', function() {
+                    try {
+                        var elemIF = document.createElement("iframe");
+                        elemIF.src = $(this).data('url');
+                        elemIF.style.display = "none";
+                        document.body.appendChild(elemIF);
+                    } catch (e) {
+
+                    }
+                });
+            });
+        };
     });
 </script>

@@ -24,7 +24,7 @@
                 <a href="javascript:;" class="topic-title">{{d.title}}</a>
                 {{# if (d.reviewState) { }}
                 {{# if (d.ismodel == 1) { }}
-                <span class="layui-badge layui-bg-green">范文</span>
+                <span class="layui-badge">范文</span>
                 {{# } else { }}
                 <span class="layui-badge layui-bg-gray">非范文</span>
                 {{# } }}
@@ -79,9 +79,8 @@
 
             <div class="layui-form-item">
                 <label class="layui-form-label">论文标题</label>
-                <div class="layui-input-block">
-                    <input name="spID" type="hidden"/>
-                    <input name="pageTitle" placeholder="请输入论文标题" type="text" class="layui-input" maxlength="400" lay-verify="required" required/>
+                <div class="layui-form-mid layui-word-aux">
+                    {{d.pageTitle}}
                 </div>
             </div>
             <div class="layui-form-item">
@@ -89,8 +88,8 @@
                 <div class="layui-input-block">
                     <div class="layui-upload">
                         {{# if(d.subState){ }}
-                        <button type="button" class="layui-btn" id="file-download">下载</button>
-                        <button type="button" class="layui-btn" id="file-preview">在线浏览</button>
+                        <button type="button" class="layui-btn" id="file-download" data-url="{{d.upFiles}}">下载</button>
+                        <button type="button" class="layui-btn" id="file-preview" data-url="{{d.upFiles}}">在线浏览</button>
                         {{# } }}
                     </div>
                 </div>
@@ -285,7 +284,7 @@
 
 
             $('#topic-form-del').click(function () {
-                api.req('stuPage/delUpLoad', {spID: $('#topic-form > input[name=stqID]').val()}, function (data) {
+                api.req('stuPage/delUpLoad', {spID: $('#topic-form > input[name=spID]').val()}, function (data) {
                     layer.closeAll('loading');
                     if (data.Status === 2000) {
                         layer.closeAll('loading');
