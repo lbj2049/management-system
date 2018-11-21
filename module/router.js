@@ -32,7 +32,8 @@ layui.define(['jquery', 'common'], function (exports) {
                 url: '#!teacher-list',
                 path: 'system/teacher-list.html',
                 icon: 'icofont-man-in-glasses',
-                auth: '3'
+                auth: '3',
+                hr: true
             }, {
                 name: '选题管理',
                 url: '#!topic-select-list',
@@ -44,7 +45,8 @@ layui.define(['jquery', 'common'], function (exports) {
                 url: '#!topic-distribute-list',
                 path: 'system/topic-distribute-list.html',
                 icon: 'icofont-tasks-alt',
-                auth: '3'
+                auth: '3',
+                hr: true
             }, {
                 name: '开题分组',
                 url: '#!group-topic-open',
@@ -80,7 +82,8 @@ layui.define(['jquery', 'common'], function (exports) {
                 url: '#!group-last-reply-list',
                 path: 'system/group-last-reply-list.html',
                 icon: 'icofont-listing-number',
-                auth: '3'
+                auth: '3',
+                hr: true
             }, {
                 name: '成绩统计',
                 url: '#!scoreManager',
@@ -110,7 +113,8 @@ layui.define(['jquery', 'common'], function (exports) {
                 url: '#!student-work',
                 path: 'teacher/student-work.html',
                 icon: 'icofont-tasks-alt',
-                auth: '2'
+                auth: '2',
+                hr: true
             }, {
                 name: '开题管理',
                 url: '#!topic-open-list',

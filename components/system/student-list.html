@@ -68,7 +68,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">密码</label>
             <div class="layui-input-block">
-                <input name="loginPwd" placeholder="请输入密码" type="password" class="layui-input" autocomplete="off" maxlength="20" lay-verify="required" required/>
+                <input name="loginPwd" placeholder="请输入密码" type="password" class="layui-input" autocomplete="off" maxlength="20"/>
             </div>
         </div>
         <div class="layui-form-item">
@@ -204,6 +204,7 @@
                 method: 'POST',
                 where: {
                     UUID: auth.getUUID(),
+                    batchID: batchID,
                     classID: classID
                 },
                 request: common.tableRequest,
@@ -288,13 +289,17 @@
         form.on('submit(student-form-submit)', function (data) {
             layer.load(2);
             var url = '';
-            data.field.classID = batch_class_id.lastValue;
-            var url = '';
             if (data.field.UUID) {
                 url = 'userInfo/editUserInfo';
             } else {
                 url = 'userInfo/editUserInfo';
             }
+
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+            data.field.batchID = batchID;
+            data.field.classID = classID;
             api.ajax({
                 url: common.base_server + url,
                 data: data.field,
@@ -355,9 +360,9 @@
                     if (data) {
                         form.val('student-form', data);
                         $('#student-form').attr('method', 'GET');
-
                         getBatchClassData('batch-class-id', data.classID);
                     } else {
+                        $('#student-form').find("input[type=password]").attr('lay-verify', 'required');
                         getBatchClassData('batch-class-id');
                     }
                 }
@@ -488,6 +493,15 @@
 
                 }
             });
+        }
+        function getIdArr() {
+            var idArr = batch_class_select.values;
+            if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
+                return idArr;
+            } else {
+                layer.msg('请选择毕业批次和班级', {icon: 2});
+                return false
+            }
         }
         function getSelectNParam(id, opvs, selected) {
             return {

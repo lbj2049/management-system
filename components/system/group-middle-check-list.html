@@ -114,7 +114,7 @@
                     key: edit_data_key,
                     value: JSON.stringify(data)
                 });
-                Q.go('group-topic-open');
+                Q.go('group-middle-check');
             } else if (obj.event === 'del') { //删除
                 doDelete(data);
             }

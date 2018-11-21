@@ -1,0 +1,312 @@
+
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">成绩统计</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>成绩统计</cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+
+        <div class="layui-form toolbar">
+            <div class="layui-inline">
+                <div id="search-batch-class-id">
+                </div>
+            </div>
+            <input id="score-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
+            <button id="score-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+        </div>
+
+
+        <div class="layui-tab layui-tab-brief">
+            <ul class="layui-tab-title">
+                <li class="layui-this">成绩列表</li>
+                <li>图表统计</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <table class="layui-table" id="score-table" lay-filter="score-table"></table>
+                </div>
+                <div class="layui-tab-item">
+                    <div class="layui-row">
+                        <div class="layui-col-md4">
+                            <div id="score-bar-1" style="width: 300px;height: 300px;"></div>
+                        </div>
+                        <div class="layui-col-md4">
+                            <div id="score-bar-2" style="width: 300px;height: 300px;"></div>
+                        </div>
+                        <div class="layui-col-md4">
+                            <div id="score-bar-3" style="width: 300px;height: 300px;"></div>
+                        </div>
+                    </div>
+                    <div class="layui-row">
+                        <div class="layui-col-md12">
+                            <div id="score-line" style="width: 900px;height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/assets/libs/echarts/echarts.common.min.js"></script>
+<script>
+    layui.use(['api', 'form', 'table', 'laytpl', 'util', 'common', 'auth', 'admin', 'selectN', 'element'], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var common = layui.common;
+        var auth = layui.auth;
+        var layer = layui.layer;
+        var util = layui.util;
+        var admin = layui.admin;
+        var api = layui.api;
+        var laytpl = layui.laytpl;
+        var selectN = layui.selectN;
+        var element = layui.element;
+
+        var editIdArr = [];
+
+        var batch_class_select, batch_class_id;
+
+        initData();
+
+        //页面加载时初始化
+        function initData() {
+            //初始化联级
+            getBatchClassData('search-batch-class-id', loadData, editIdArr);
+        }
+        function loadData() {
+
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+            // 渲染表格
+            table.render({
+                elem: '#score-table',
+                url: common.base_server + 'score/scoreList',
+                method: 'POST',
+                where: {
+                    UUID: auth.getUUID(),
+                    batchID: batchID,
+                    classID: classID
+                },
+                request: common.tableRequest,
+                response: common.tableResponse,
+                parseData: common.tableParseData,
+                height: 'full-310',
+                page: true,
+                cols: [[
+                    {type: 'numbers'},
+                    {field: 'userName', title: '学生名称'},
+                    {field: 'userNo', title: '学生学号'},
+                    {field: 'score1', title: '开题成绩'},
+                    {field: 'score2', title: '中期检查成绩'},
+                    {field: 'score3', title: '答辩成绩'},
+                    {field: 'sysScore', title: '系统核算总成绩'},
+                ]]
+            });
+
+
+            var scoreBar1 = echarts.init($('#score-bar-1')[0]);
+            var scoreBar2 = echarts.init($('#score-bar-2')[0]);
+            var scoreBar3 = echarts.init($('#score-bar-3')[0]);
+            var scoreLine = echarts.init($('#score-line')[0]);
+            var y1 = [];
+            var y2 = [];
+            var y3 = [];
+            var x = [];
+            api.req('score/getRatioByStage', {stage: 1, batchID: batchID, classID: classID}, function (data) {
+                if (data.Status === 2000) {
+                    var vs = [];
+                    $.each(data.Data, function (m, v) {
+                        x.push(v.title);
+                        vs.push({value:v.ratio?v.ratio:0, name:v.title});
+                        y1.push(v.ratio?v.ratio:0);
+                    });
+                    var option = getEchartsBarOption();
+                    option.series[0].data = vs;
+                    option.title.text = '开题成绩';
+                    scoreBar1.setOption(option);
+
+                    var lineOption = getEchartsLineOption();
+                    lineOption.xAxis.data = x;
+                    lineOption.series[0].data = y1;
+                    // lineOption.series[1].data = y2;
+                    // lineOption.series[2].data = y3;
+                    scoreLine.setOption(lineOption);
+                }
+            });
+            api.req('score/getRatioByStage', {stage: 2, batchID: batchID, classID: classID}, function (data) {
+                if (data.Status === 2000) {
+                    var vs = [];
+                    var x = [];
+                    $.each(data.Data, function (m, v) {
+                        x.push(v.title);
+                        vs.push({value:v.ratio?v.ratio:0, name:v.title});
+                        y2.push(v.ratio?v.ratio:0);
+                    });
+                    var option = getEchartsBarOption();
+                    option.series[0].data = vs;
+                    option.title.text = '中期检查成绩';
+                    scoreBar2.setOption(option);
+
+                    var lineOption = getEchartsLineOption();
+                    lineOption.xAxis.data = x;
+                    // lineOption.series[0].data = y1;
+                    lineOption.series[1].data = y2;
+                    // lineOption.series[2].data = y3;
+                    scoreLine.setOption(lineOption);
+                }
+            });
+            api.req('score/getRatioByStage', {stage: 3, batchID: batchID, classID: classID}, function (data) {
+                if (data.Status === 2000) {
+                    var vs = [];
+                    var x = [];
+                    $.each(data.Data, function (m, v) {
+                        x.push(v.title);
+                        vs.push({value:v.ratio?v.ratio:0, name:v.title});
+                        y3.push(v.ratio?v.ratio:0);
+                    });
+                    var option = getEchartsBarOption();
+                    option.series[0].data = vs;
+                    option.title.text = '答辩成绩';
+                    scoreBar3.setOption(option);
+
+                    var lineOption = getEchartsLineOption();
+                    lineOption.xAxis.data = x;
+                    // lineOption.series[0].data = y1;
+                    // lineOption.series[1].data = y2;
+                    lineOption.series[2].data = y3;
+                    scoreLine.setOption(lineOption);
+                }
+            });
+        }
+
+        // 搜索按钮点击事件
+        $('#score-btn-search').click(function () {
+            var keyword = $('#score-search-value').val();
+            table.reload('score-table', {where: {keyword: keyword}});
+        });
+
+
+        function getEchartsBarOption() {
+             return {
+                title : {
+                    text: '',
+                    x:'center'
+                },
+                tooltip : {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                series : [
+                    {
+                        name: '',
+                        type: 'pie',
+                        radius : '40%',
+                        center: ['50%', '60%'],
+                        data:[
+                        ],
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+        }
+        function getEchartsLineOption() {
+            return {
+                xAxis: {
+                    type: 'category',
+                    data: []
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: [],
+                    type: 'line'
+                },{
+                    data: [],
+                    type: 'line'
+                },{
+                    data: [],
+                    type: 'line'
+                }]
+            };
+        }
+
+        //毕业批次与班级下拉联级
+        function getBatchClassData(selectId, callback, selected) {
+            api.req('batchInfo/BatchLD', {}, function (data) {
+                if (data.Status === 2000) {
+                    var opvs = [];
+                    // var selected = [];
+
+                    var rs = data.Data;
+                    for (var i = 0; i < rs.length; i++) {
+                        if (i === 0 && selected.length === 0) {
+                            selected.push(rs[i].batchID);
+                        }
+                        var trs = rs[i].classList;
+                        if (trs) {
+                            var topvs = [];
+                            for (var j = 0; j < trs.length; j++) {
+                                if ((i === 0 && j === 0) && selected.length === 1) {
+                                    selected.push(trs[j].classID);
+                                }
+                                topvs.push({name: trs[j].className, id: trs[j].classID})
+                            }
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID, children: topvs});
+                        } else {
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID});
+                        }
+                    }
+                    if (selectId === 'search-batch-class-id')  {
+                        batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
+                    } else {
+                        batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
+                    }
+                    if (typeof callback === "function") {
+                        callback();
+                    }
+                }
+            });
+        }
+        function getIdArr() {
+            var idArr = batch_class_select.values;
+            if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
+                return idArr;
+            } else {
+                layer.msg('请选择毕业批次和班级', {icon: 2});
+                return false
+            }
+        }
+        function getSelectNParam(id, opvs, selected) {
+            return {
+                //元素容器【必填】
+                elem: '#' + id,
+                search:[false,true],
+                //候选数据【必填】
+                data: opvs,
+                //为真只取最后一个值
+                // last:true,
+                //默认值
+                selected: selected,
+                //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
+                tips: ['请选择毕业批次', '请选择班级'],
+                //数据的键名
+                field:{idName:'id',titleName:'name',childName:'children'},
+                //添加验证
+                verify:'required'
+
+            };
+        }
+    });
+</script>
