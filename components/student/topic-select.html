@@ -146,7 +146,7 @@
                 method: 'POST',
                 where: {
                     UUID: auth.getUUID(),
-                    classID: user.classID
+                    keyword:"",
                 },
                 request: common.tableRequest,
                 response: common.tableResponse,
@@ -165,6 +165,12 @@
             });
 
         }
+
+        // 搜索按钮点击事件
+        $('#layui-btn icon-btn').click(function () {
+            var keyword = $('#layui-input search-input').val();
+            table.reload('topic-table', {where: {keyword: keyword}});
+        });
 
         // 表单提交事件
         form.on('submit(topic-form-submit)', function (data) {

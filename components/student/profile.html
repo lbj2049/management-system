@@ -21,21 +21,21 @@
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">班级名称</label>
+                            <label class="layui-form-label">用户名</label>
                             <div class="layui-input-block">
                                 <input name="userName" id="userName"  placeholder="" type="text" class="layui-input" maxlength="6" readonly="readonly" lay-verify="required" required/>
                             </div>
                         </div>
-                        <div class="layui-form-item">
+                       <!-- <div class="layui-form-item">
                             <label class="layui-form-label">密码</label>
                             <div class="layui-input-block">
-                                <input name="userPass" id="userPass" type="password" class="layui-input" readonly="readonly" lay-verify="required" required/>
+                                <input name="loginPwd" id="userPass" type="password" class="layui-input" readonly="readonly" lay-verify="required" required/>
                             </div>
-                        </div>
+                        </div>-->
                         <div class="layui-form-item">
                             <label class="layui-form-label">联系电话</label>
                             <div class="layui-input-block">
-                                <input name="userPhone" id="userPhone" type="text" class="layui-input" maxlength="11" readonly="readonly" onkeyup="this.value=this.value.replace(/\D/g,'')" />
+                                <input name="userTel" id="userPhone" type="text" class="layui-input" maxlength="11" readonly="readonly" onkeyup="this.value=this.value.replace(/\D/g,'')" />
                             </div>
                         </div>
                         <div class="layui-form-item model-form-footer" align="center">
@@ -46,26 +46,26 @@
                     </form>
 
 
-                   <!-- <table class="layui-table layui-text" id="userinfo">
-                        <colgroup>
-                            <col width="150">
-                            <col>
-                        </colgroup>
-                        <tbody>
-                        <tr>
-                            <td align="right">学号</td>
-                            <td>{{userNo}}</td>
-                        </tr>
-                        <tr>
-                            <td align="right">姓名</td>
-                            <td>{{userName}}</td>
-                        </tr>
-                        <tr>
-                            <td align="right">联系电话</td>
-                            <td>{{userTel}}</td>
-                        </tr>
-                        </tbody>
-                    </table>-->
+                    <!-- <table class="layui-table layui-text" id="userinfo">
+                         <colgroup>
+                             <col width="150">
+                             <col>
+                         </colgroup>
+                         <tbody>
+                         <tr>
+                             <td align="right">学号</td>
+                             <td>{{userNo}}</td>
+                         </tr>
+                         <tr>
+                             <td align="right">姓名</td>
+                             <td>{{userName}}</td>
+                         </tr>
+                         <tr>
+                             <td align="right">联系电话</td>
+                             <td>{{userTel}}</td>
+                         </tr>
+                         </tbody>
+                     </table>-->
                 </div>
             </div>
         </div>
@@ -79,10 +79,11 @@
         var form = layui.form;
         var api = layui.api;
         //$('#userinfo').vm(auth.getUser());
-
+       // alert(Object.keys(auth.getUser()));
+       // alert(Object.values(auth.getUser()));
         $('#userNo').val(auth.getUser().userNo);
         $('#userName').val(auth.getUser().loginName);
-        $('#userPass').val(auth.getUser().userName);
+        //$('#userPass').val(auth.getUser().loginPwd);
         $('#userPhone').val(auth.getUser().userTel);
 
         // change msg
@@ -123,6 +124,7 @@
             $("#layui-btn-save").css({//设置 取消 按钮样式
                 "display": "none"
             });
+
         };
 
         form.on('submit(class-form-cancle)', function (data) {
@@ -131,15 +133,16 @@
         });
 
         form.on('submit(class-form-save)', function (data) {
-            var url = '';
-            if (data.field.classID) {
-                url = 'classInfo/updClassInfo';
-            } else {
-                url = 'classInfo/adClassInfo';
-            }
+
+            var url = 'userInfo/editUserInfo';
+
+            data.field.loginName = auth.getUser().loginName;
+            data.field.userSex = auth.getUser().userSex;
+
             api.req(url, data.field, function (data) {
+
                 if (data.Status == 2000) {
-                    //layer.msg(data.Data.Result, {icon: 1});
+                    layer.msg(data.Data.Result, {icon: 1});
                     disableBtn();
                 } else {
                     layer.msg(data.Data.ErrorDes, {icon: 2});
