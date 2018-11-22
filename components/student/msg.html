@@ -62,8 +62,8 @@
                 classID: user.classID
             }, function (data) {
                 if (data.Status === 2000) {
-                    v.list = []
-                    v.list.push(data.Data)
+                    v.list = data.Data
+                    // v.list.push(data.Data)
                     // $('#msg-list').vm(data);
                     laytpl($('#notice-new-list').html()).render(v, function (html) {
                         $('#msg-list').html(html);
@@ -96,7 +96,7 @@
             });
         }
         var showViewModel = function (data) {
-            laytpl($('#notice-detail-model').html()).render(data, function (html) {
+            laytpl($('#notice-new-detail-model').html()).render(data, function (html) {
                 layer.open({
                     type: 1,
                     title: '查看通知',

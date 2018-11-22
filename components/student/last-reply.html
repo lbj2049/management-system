@@ -88,8 +88,8 @@
                 <div class="layui-input-block">
                     <div class="layui-upload">
                         {{# if(d.subState){ }}
-                        <button type="button" class="layui-btn" id="file-download">下载</button>
-                        <button type="button" class="layui-btn" id="file-preview">在线浏览</button>
+                        <button type="button" class="layui-btn" id="file-download" data-url="{{d.upFiles}}">下载</button>
+                        <button type="button" class="layui-btn" id="file-preview" data-url="{{d.upFiles}}">在线浏览</button>
                         {{# } }}
                     </div>
                 </div>

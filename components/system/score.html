@@ -1,5 +1,3 @@
-
-
 <div class="layui-card">
     <div class="layui-card-header">
         <h2 class="header-title">成绩统计</h2>
@@ -77,7 +75,9 @@
             //初始化联级
             getBatchClassData('search-batch-class-id', loadData, editIdArr);
         }
+
         function loadData() {
+            var keyword = $('#score-search-value').val();
 
             var idArr = getIdArr();
             var batchID = idArr[0];
@@ -88,6 +88,7 @@
                 url: common.base_server + 'score/scoreList',
                 method: 'POST',
                 where: {
+                    keyword: keyword,
                     UUID: auth.getUUID(),
                     batchID: batchID,
                     classID: classID
@@ -109,106 +110,64 @@
             });
 
 
-            var scoreBar1 = echarts.init($('#score-bar-1')[0]);
-            var scoreBar2 = echarts.init($('#score-bar-2')[0]);
-            var scoreBar3 = echarts.init($('#score-bar-3')[0]);
-            var scoreLine = echarts.init($('#score-line')[0]);
-            var y1 = [];
-            var y2 = [];
-            var y3 = [];
-            var x = [];
             api.req('score/getRatioByStage', {stage: 1, batchID: batchID, classID: classID}, function (data) {
                 if (data.Status === 2000) {
                     var vs = [];
                     $.each(data.Data, function (m, v) {
-                        x.push(v.title);
-                        vs.push({value:v.ratio?v.ratio:0, name:v.title});
-                        y1.push(v.ratio?v.ratio:0);
+                        vs.push({value: v.ratio ? v.ratio : 0, name: v.title});
                     });
-                    var option = getEchartsBarOption();
-                    option.series[0].data = vs;
-                    option.title.text = '开题成绩';
-                    scoreBar1.setOption(option);
-
-                    var lineOption = getEchartsLineOption();
-                    lineOption.xAxis.data = x;
-                    lineOption.series[0].data = y1;
-                    // lineOption.series[1].data = y2;
-                    // lineOption.series[2].data = y3;
-                    scoreLine.setOption(lineOption);
+                    if (vs && vs.length > 0)
+                        setEchartsBar('score-bar-1', '开题成绩', vs);
                 }
             });
             api.req('score/getRatioByStage', {stage: 2, batchID: batchID, classID: classID}, function (data) {
                 if (data.Status === 2000) {
                     var vs = [];
-                    var x = [];
                     $.each(data.Data, function (m, v) {
-                        x.push(v.title);
-                        vs.push({value:v.ratio?v.ratio:0, name:v.title});
-                        y2.push(v.ratio?v.ratio:0);
+                        vs.push({value: v.ratio ? v.ratio : 0, name: v.title});
                     });
-                    var option = getEchartsBarOption();
-                    option.series[0].data = vs;
-                    option.title.text = '中期检查成绩';
-                    scoreBar2.setOption(option);
-
-                    var lineOption = getEchartsLineOption();
-                    lineOption.xAxis.data = x;
-                    // lineOption.series[0].data = y1;
-                    lineOption.series[1].data = y2;
-                    // lineOption.series[2].data = y3;
-                    scoreLine.setOption(lineOption);
+                    if (vs && vs.length > 0)
+                    setEchartsBar('score-bar-2', '中期检查成绩', vs);
                 }
             });
             api.req('score/getRatioByStage', {stage: 3, batchID: batchID, classID: classID}, function (data) {
                 if (data.Status === 2000) {
                     var vs = [];
-                    var x = [];
                     $.each(data.Data, function (m, v) {
-                        x.push(v.title);
-                        vs.push({value:v.ratio?v.ratio:0, name:v.title});
-                        y3.push(v.ratio?v.ratio:0);
+                        vs.push({value: v.ratio ? v.ratio : 0, name: v.title});
                     });
-                    var option = getEchartsBarOption();
-                    option.series[0].data = vs;
-                    option.title.text = '答辩成绩';
-                    scoreBar3.setOption(option);
-
-                    var lineOption = getEchartsLineOption();
-                    lineOption.xAxis.data = x;
-                    // lineOption.series[0].data = y1;
-                    // lineOption.series[1].data = y2;
-                    lineOption.series[2].data = y3;
-                    scoreLine.setOption(lineOption);
+                    if (vs && vs.length > 0)
+                        setEchartsBar('score-bar-3', '答辩成绩', vs);
                 }
             });
         }
 
         // 搜索按钮点击事件
         $('#score-btn-search').click(function () {
-            var keyword = $('#score-search-value').val();
-            table.reload('score-table', {where: {keyword: keyword}});
+            loadData();
         });
 
 
-        function getEchartsBarOption() {
-             return {
-                title : {
-                    text: '',
-                    x:'center'
+        function setEchartsBar(ele, title, data) {
+            var e = echarts.init(document.getElementById(ele))
+
+            var op = {
+                title: {
+                    text: title,
+                    x: 'center'
                 },
-                tooltip : {
+                tooltip: {
                     trigger: 'item',
-                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    formatter: "{a} [{b}] : {c}人 ({d}%)"
                 },
-                series : [
+                series: [
                     {
-                        name: '',
+                        name: '成绩',
                         type: 'pie',
-                        radius : '40%',
+                        minAngle: '3',
+                        radius: '40%',
                         center: ['50%', '60%'],
-                        data:[
-                        ],
+                        data: data,
                         itemStyle: {
                             emphasis: {
                                 shadowBlur: 10,
@@ -218,28 +177,8 @@
                         }
                     }
                 ]
-            };
-        }
-        function getEchartsLineOption() {
-            return {
-                xAxis: {
-                    type: 'category',
-                    data: []
-                },
-                yAxis: {
-                    type: 'value'
-                },
-                series: [{
-                    data: [],
-                    type: 'line'
-                },{
-                    data: [],
-                    type: 'line'
-                },{
-                    data: [],
-                    type: 'line'
-                }]
-            };
+            }
+            e.setOption(op);
         }
 
         //毕业批次与班级下拉联级
@@ -268,7 +207,7 @@
                             opvs.push({name: rs[i].batchName, id: rs[i].batchID});
                         }
                     }
-                    if (selectId === 'search-batch-class-id')  {
+                    if (selectId === 'search-batch-class-id') {
                         batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
                     } else {
                         batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
@@ -279,6 +218,7 @@
                 }
             });
         }
+
         function getIdArr() {
             var idArr = batch_class_select.values;
             if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
@@ -288,11 +228,12 @@
                 return false
             }
         }
+
         function getSelectNParam(id, opvs, selected) {
             return {
                 //元素容器【必填】
                 elem: '#' + id,
-                search:[false,true],
+                search: [false, true],
                 //候选数据【必填】
                 data: opvs,
                 //为真只取最后一个值
@@ -302,9 +243,9 @@
                 //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
                 tips: ['请选择毕业批次', '请选择班级'],
                 //数据的键名
-                field:{idName:'id',titleName:'name',childName:'children'},
+                field: {idName: 'id', titleName: 'name', childName: 'children'},
                 //添加验证
-                verify:'required'
+                verify: 'required'
 
             };
         }
