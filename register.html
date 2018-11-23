@@ -120,7 +120,14 @@
 
         // 表单提交
         form.on('submit(register-submit)', function (obj) {
+
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+
             var field = obj.field;
+            field.batchID = batchID;
+            field.classID = classID;
 
             layer.load(2);
             $.ajax({

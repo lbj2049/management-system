@@ -8,6 +8,10 @@
     </div>
     <div class="layui-card-body">
         <div class="layui-form toolbar">
+            <div class="layui-inline">
+                <div id="search-batch-class-id">
+                </div>
+            </div>
             <input id="teacher-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
             <button id="teacher-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
             <button id="teacher-btn-add" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
@@ -42,6 +46,13 @@
         <input name="state" type="hidden" value="1"/>
         <input name="userType" type="hidden" value="2"/>
         <div class="layui-form-item">
+            <label class="layui-form-label">毕业批次/班级</label>
+            <div class="layui-input-block">
+                <div id="batch-class-id">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
             <label class="layui-form-label">用户名</label>
             <div class="layui-input-block">
                 <input name="loginName" placeholder="请输入用户" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
@@ -50,7 +61,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">密码</label>
             <div class="layui-input-block">
-                <input name="loginPwd" placeholder="请输入密码" type="password" class="layui-input" autocomplete="off" maxlength="20" lay-verify="required" required/>
+                <input name="loginPwd" placeholder="请输入密码" type="password" class="layui-input" autocomplete="off" maxlength="20"/>
             </div>
         </div>
         <div class="layui-form-item">
@@ -98,7 +109,7 @@
     {{#  } }}
 </script>
 <script>
-    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin'], function () {
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'selectN'], function () {
         var form = layui.form;
         var table = layui.table;
         var common = layui.common;
@@ -107,31 +118,53 @@
         var util = layui.util;
         var admin = layui.admin;
         var api = layui.api;
+        var selectN = layui.selectN;
 
-        // 渲染表格
-        table.render({
-            elem: '#teacher-table',
-            url: common.base_server + 'userInfo/getTeaList',
-            method: 'POST',
-            where: {
-                UUID: auth.getUUID()
-            },
-            request: common.tableRequest,
-            response: common.tableResponse,
-            parseData: common.tableParseData,
-            height: 'full-250',
-            page: true,
-            cols: [[
-                {type: 'checkbox'},
-                {field: 'loginName', title: '用户名'},
-                // {field: 'loginPwd', title: '密码'},
-                {field: 'userName', title: '姓名'},
-                {field: 'userTel', title: '电话'},
-                {field: 'userSex', title: '性别', templet: '#user-sex'},
-                {field: 'state', title: '状态', templet: '#user-tpl-state'},
-                {align: 'center', toolbar: '#teacher-table-bar', title: '操作', width: 160}
-            ]]
-        });
+        var editIdArr = [];
+        var batch_class_select, batch_class_id;
+
+        initData();
+
+        //初始化数据
+        function initData() {
+
+            //初始化联级
+            getBatchClassData('search-batch-class-id', loadData, editIdArr);
+
+        }
+
+        function loadData() {
+
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+            // 渲染表格
+            table.render({
+                elem: '#teacher-table',
+                url: common.base_server + 'userInfo/getTeaList',
+                method: 'POST',
+                where: {
+                    UUID: auth.getUUID(),
+                    batchID: batchID,
+                    classID: classID
+                },
+                request: common.tableRequest,
+                response: common.tableResponse,
+                parseData: common.tableParseData,
+                height: 'full-250',
+                page: true,
+                cols: [[
+                    {type: 'checkbox'},
+                    {field: 'loginName', title: '用户名'},
+                    // {field: 'loginPwd', title: '密码'},
+                    {field: 'userName', title: '姓名'},
+                    {field: 'userTel', title: '电话'},
+                    {field: 'userSex', title: '性别', templet: '#user-sex'},
+                    {field: 'state', title: '状态', templet: '#user-tpl-state'},
+                    {align: 'center', toolbar: '#teacher-table-bar', title: '操作', width: 160}
+                ]]
+            });
+        }
 
         // 添加按钮点击事件
         $('#teacher-btn-add').click(function () {
@@ -180,6 +213,14 @@
 
         // 表单提交事件
         form.on('submit(teacher-form-submit)', function (data) {
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+
+            var field = data.field;
+            field.batchID = batchID;
+            field.classID = classID;
+
             layer.load(2);
             var url = '';
             if (data.field.UUID) {
@@ -189,7 +230,7 @@
             }
             api.ajax({
                 url: common.base_server + url,
-                data: data.field,
+                data: field,
                 type: 'POST',
                 dataType: 'json',
                 success: function (data) {
@@ -246,6 +287,11 @@
                     if (data) {
                         form.val('teacher-form', data);
                         $('#teacher-form').attr('method', 'GET');
+                        var seelctId = [data.batchID, data.classID];
+                        getBatchClassData('batch-class-id', '', seelctId);
+                    } else {
+                        $('#teacher-form').find("input[type=password]").attr('lay-verify', 'required');
+                        getBatchClassData('batch-class-id', '', editIdArr);
                     }
                 }
             });
@@ -296,6 +342,77 @@
                     }
                 }
             });
+        }
+
+
+
+        //毕业批次与班级下拉联级
+        function getBatchClassData(selectId, callback, selected) {
+            api.req('batchInfo/BatchLD', {}, function (data) {
+                if (data.Status === 2000) {
+                    var opvs = [];
+                    // var selected = [];
+
+                    var rs = data.Data;
+                    for (var i = 0; i < rs.length; i++) {
+                        if (i === 0 && selected.length === 0) {
+                            selected.push(rs[i].batchID);
+                        }
+                        var trs = rs[i].classList;
+                        if (trs) {
+                            var topvs = [];
+                            for (var j = 0; j < trs.length; j++) {
+                                if ((i === 0 && j === 0) && selected.length === 1) {
+                                    selected.push(trs[j].classID);
+                                }
+                                topvs.push({name: trs[j].className, id: trs[j].classID})
+                            }
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID, children: topvs});
+                        } else {
+                            opvs.push({name: rs[i].batchName, id: rs[i].batchID});
+                        }
+                    }
+                    if (selectId === 'search-batch-class-id') {
+                        batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
+                    } else {
+                        batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
+                    }
+                    if (typeof callback === "function") {
+                        callback();
+                    }
+                }
+            });
+        }
+
+        function getIdArr() {
+            var idArr = batch_class_select.values;
+            if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
+                return idArr;
+            } else {
+                layer.msg('请选择毕业批次和班级', {icon: 2});
+                return false
+            }
+        }
+
+        function getSelectNParam(id, opvs, selected) {
+            return {
+                //元素容器【必填】
+                elem: '#' + id,
+                search: [false, true],
+                //候选数据【必填】
+                data: opvs,
+                //为真只取最后一个值
+                // last:true,
+                //默认值
+                selected: selected,
+                //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
+                tips: ['请选择毕业批次', '请选择班级'],
+                //数据的键名
+                field: {idName: 'id', titleName: 'name', childName: 'children'},
+                //添加验证
+                verify: 'required'
+
+            };
         }
     });
 </script>

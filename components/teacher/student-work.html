@@ -166,7 +166,7 @@
 </script>
 
 <script type="text/html" id="stateTpl">
-    {{#  if(d.downLoadAddr == '') { }}
+    {{#  if(!d.downLoadAddr || d.downLoadAddr == '') { }}
     未提交
     {{#  } else { }}
     <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>

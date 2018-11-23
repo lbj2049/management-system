@@ -16,6 +16,8 @@
                             <div id="search-batch-class-id">
                             </div>
                         </div>
+                        <a href="javascript:;" id="group-btn-search" class="layui-btn icon-btn">查询</a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
                         小组名称：
                         <div class="layui-inline">
                             <div class="layui-inline">
@@ -191,6 +193,7 @@
                     });
                 } else {
                     layer.msg(data.Data.ErrorDes, {icon: 2});
+                    $teachers.html('');
                 }
             });
             api.req('group/stuList', param, function (data) {
@@ -201,6 +204,7 @@
                     });
                 } else {
                     layer.msg(data.Data.ErrorDes, {icon: 2});
+                    $students.html('');
                 }
             });
         }
@@ -271,6 +275,12 @@
             $users.html('');
         });
 
+        // 搜索按钮点击事件
+        $('#group-btn-search').click(function () {
+            loadData()
+            $users.html('');
+        });
+
         // 表单提交事件
         form.on('submit(group-form-submit)', function (data) {
             layer.load(2);
@@ -330,8 +340,6 @@
 
             return false;
         });
-
-
 
 
         //毕业批次与班级下拉联级
