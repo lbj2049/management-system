@@ -1,9 +1,9 @@
 <div class="layui-card">
     <div class="layui-card-header">
-        <h2 class="header-title">批次管理</h2>
+        <h2 class="header-title">年级管理</h2>
         <span class="layui-breadcrumb pull-right">
           <a href="#!welcome">首页</a>
-          <a><cite>批次管理</cite></a>
+          <a><cite>年级管理</cite></a>
         </span>
     </div>
     <div class="layui-card-body">
@@ -29,9 +29,9 @@
     <form id="batch-form" lay-filter="batch-form" class="layui-form model-form">
         <input name="batchID" type="hidden"/>
         <div class="layui-form-item">
-            <label class="layui-form-label">批次</label>
+            <label class="layui-form-label">年级</label>
             <div class="layui-input-block">
-                <input name="batchName" placeholder="请输入批次" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
+                <input name="batchName" placeholder="请输入年级" type="text" class="layui-input" maxlength="20" lay-verify="required" required/>
             </div>
         </div>
         <div class="layui-form-item model-form-footer">
@@ -68,7 +68,7 @@
             cols: [[
                 {type: 'numbers'},
                 // {field: 'batchID', title: 'batchID', width: 120},
-                {field: 'batchName', title: '批次'},
+                {field: 'batchName', title: '年级'},
                 {align: 'center', toolbar: '#batch-table-bar', title: '操作', width: 120}
             ]]
         });
@@ -120,7 +120,7 @@
         var showEditModel = function (data) {
             layer.open({
                 type: 1,
-                title: data ? '修改批次' : '添加批次',
+                title: data ? '修改年级' : '添加年级',
                 area: '450px',
                 offset: '120px',
                 content: $('#batch-model').html(),

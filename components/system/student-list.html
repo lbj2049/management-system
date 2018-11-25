@@ -53,7 +53,7 @@
         <input name="state" type="hidden" value="1"/>
         <input name="userType" type="hidden" value="1"/>
         <div class="layui-form-item">
-            <label class="layui-form-label">毕业批次/班级</label>
+            <label class="layui-form-label">年级/专业</label>
             <div class="layui-input-block">
                 <div id="batch-class-id">
                 </div>
@@ -195,7 +195,7 @@
                 batchID = idArr[0]
                 classID = idArr[1]
             } else {
-                layer.msg('请选择毕业批次和班级', {icon: 2});
+                layer.msg('请选择年级和专业', {icon: 2});
             }
             // 渲染表格
             table.render({
@@ -214,8 +214,8 @@
                 page: true,
                 cols: [[
                     {type: 'checkbox'},
-                    // {field: 'batchName', title: '毕业批次', width: 160},
-                    // {field: 'className', title: '班级'},
+                    // {field: 'batchName', title: '年级', width: 160},
+                    // {field: 'className', title: '专业'},
                     {field: 'loginName', title: '用户名'},
                     // {field: 'loginPwd', title: '密码'},
                     {field: 'userName', title: '姓名'},
@@ -455,7 +455,7 @@
         }
 
 
-        //毕业批次与班级下拉联级
+        //年级与专业下拉联级
         function getBatchClassData(selectId, classId) {
             api.req('batchInfo/BatchLD', {}, function (data) {
                 if (data.Status == 2000) {
@@ -499,7 +499,7 @@
             if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
                 return idArr;
             } else {
-                layer.msg('请选择毕业批次和班级', {icon: 2});
+                layer.msg('请选择年级和专业', {icon: 2});
                 return false
             }
         }
@@ -515,7 +515,7 @@
                 //默认值
                 selected: selected,
                 //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
-                tips: ['请选择毕业批次', '请选择班级'],
+                tips: ['请选择年级', '请选择专业'],
                 //数据的键名
                 field:{idName:'id',titleName:'name',childName:'children'},
                 //添加验证

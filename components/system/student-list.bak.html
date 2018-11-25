@@ -1,9 +1,9 @@
 <div class="layui-card">
     <div class="layui-card-header">
-        <h2 class="header-title">班级管理</h2>
+        <h2 class="header-title">专业管理</h2>
         <span class="layui-breadcrumb pull-right">
           <a href="#!welcome">首页</a>
-          <a><cite>班级管理</cite></a>
+          <a><cite>专业管理</cite></a>
         </span>
     </div>
     <div class="layui-card-body">
@@ -36,14 +36,14 @@
     <form id="student-form" lay-filter="student-form" class="layui-form model-form">
         <input name="id" type="hidden"/>
         <div class="layui-form-item">
-            <label class="layui-form-label">批次</label>
+            <label class="layui-form-label">年级</label>
             <div class="layui-input-block">
                 <select name="batchId" xm-select="batchId" xm-select-radio="" lay-verify="required">
                 </select>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">班级名称</label>
+            <label class="layui-form-label">专业名称</label>
             <div class="layui-input-block">
                 <select name="classId" xm-select="classId" xm-select-radio="" lay-verify="required">
                 </select>
@@ -170,8 +170,8 @@
             page: true,
             cols: [[
                 {type:'checkbox'},
-                {field: 'batchName', title: '毕业批次', width: 160},
-                {field: 'className', title: '班级'},
+                {field: 'batchName', title: '年级', width: 160},
+                {field: 'className', title: '专业'},
                 {field: 'username', title: '用户名'},
                 {field: 'password', title: '密码'},
                 {field: 'realName', title: '姓名'},
@@ -342,7 +342,7 @@
             }, 'get');
         }
 
-        //加载批次下拉框中的值
+        //加载年级下拉框中的值
         function getBatchData(selectId, vals) {
 
             formSelects.btns(selectId, [], '');
@@ -361,7 +361,7 @@
                 }
             }, 'GET');
         }
-        //加载班级下拉框中的值
+        //加载专业下拉框中的值
         function getClassData(selectId, vals) {
 
             formSelects.btns(selectId, [], '');

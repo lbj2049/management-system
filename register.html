@@ -28,7 +28,7 @@
                     <input name="state" type="hidden" value="0"/>
                     <input name="userType" type="hidden" value="1"/>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">毕业批次/班级</label>
+                        <label class="layui-form-label">年级/专业</label>
                         <div class="layui-input-block">
                             <div class="layui-inline">
                                 <div id="search-batch-class-id">
@@ -155,7 +155,7 @@
             return false;
         });
 
-        //毕业批次与班级下拉联级
+        //年级与专业下拉联级
         function getBatchClassData(selectId, callback, selected) {
             $.ajax({
                 url: common.base_server + 'batchInfo/BatchLD',
@@ -203,7 +203,7 @@
             if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
                 return idArr;
             } else {
-                layer.msg('请选择毕业批次和班级', {icon: 2});
+                layer.msg('请选择年级和专业', {icon: 2});
                 return false
             }
         }
@@ -219,7 +219,7 @@
                 //默认值
                 selected: selected,
                 //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
-                tips: ['请选择毕业批次', '请选择班级'],
+                tips: ['请选择年级', '请选择专业'],
                 //数据的键名
                 field:{idName:'id',titleName:'name',childName:'children'},
                 //添加验证

@@ -10,13 +10,13 @@ layui.define(['jquery', 'common'], function (exports) {
                 url: '#!welcome',
                 path: 'welcome.html'
             }, {
-                name: '批次管理',
+                name: '年级管理',
                 url: '#!batch-list',
                 path: 'system/batch-list.html',
                 icon: 'icofont-listing-box',
                 auth: '3'
             }, {
-                name: '班级管理',
+                name: '专业管理',
                 url: '#!class-list',
                 path: 'system/class-list.html',
                 icon: 'layui-icon-flag',
