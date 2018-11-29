@@ -568,10 +568,19 @@ html {
 .layui-layout-admin .layui-body .draggable {
     /*height: 400px;*/
 }
+.layui-layout-admin .layui-body .draggable .user-group-selected {
+    overflow: hidden;
+}
+.layui-layout-admin .layui-body .draggable .user-group-selected .selected {
+    overflow: hidden;
+}
 .layui-layout-admin .layui-body .draggable ul {
     height: 400px;
     border: 1px solid #EFEFEF;
     overflow-y: auto;
+}
+.layui-layout-admin .layui-body .draggable ul.user-group {
+    height: 200px;
 }
 
 .layui-layout-admin .layui-body .draggable li {

@@ -28,30 +28,75 @@
                     </div>
                 </div>
                 <hr/>
-                <div class="draggable">
-                    <div class="layui-col-md4">
+                <div class="draggable-full">
+                    <div class="layui-col-md3">
                         <div class="layui-card">
                             <div class="layui-card-header">老师列表</div>
-                            <div class="layui-card-body ">
-                                <ul id="teachers">
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="layui-col-md4">
-                        <div class="layui-card">
-                            <div class="layui-card-header">组成员</div>
                             <div class="layui-card-body draggable">
-                                <ul id="users">
+                                <ul id="teachers" class="user-list">
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="layui-col-md4">
+                    <div class="layui-col-md6">
+                        <div class="layui-col-md6">
+                            <div class="layui-card">
+                                <div class="layui-card-header">小组1</div>
+                                <div class="layui-card-body draggable">
+                                    <div class="user-group-selected">
+                                        <div class="layui-col-md6 selected teacher">老师:<span class="count"></span></div>
+                                        <div class="layui-col-md6 selected student">学生:<span class="count"></span></div>
+                                    </div>
+                                    <ul id="users-1" class="user-group">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md6">
+                            <div class="layui-card">
+                                <div class="layui-card-header">小组2</div>
+                                <div class="layui-card-body draggable">
+                                    <div class="user-group-selected">
+                                        <div class="layui-col-md6 selected teacher">老师:<span class="count"></span></div>
+                                        <div class="layui-col-md6 selected student">学生:<span class="count"></span></div>
+                                    </div>
+                                    <ul id="users-2" class="user-group">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md6">
+                            <div class="layui-card">
+                                <div class="layui-card-header">小组3</div>
+                                <div class="layui-card-body draggable">
+                                    <div class="user-group-selected">
+                                        <div class="layui-col-md6 selected teacher">老师:<span class="count"></span></div>
+                                        <div class="layui-col-md6 selected student">学生:<span class="count"></span></div>
+                                    </div>
+                                    <ul id="users-3" class="user-group">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md6">
+                            <div class="layui-card">
+                                <div class="layui-card-header">小组4</div>
+                                <div class="layui-card-body draggable">
+                                    <div class="user-group-selected">
+                                        <div class="layui-col-md6 selected teacher">老师:<span class="count"></span></div>
+                                        <div class="layui-col-md6 selected student">学生:<span class="count"></span></div>
+                                    </div>
+                                    <ul id="users-4" class="user-group">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
                         <div class="layui-card">
                             <div class="layui-card-header">学生列表</div>
                             <div class="layui-card-body draggable">
-                                <ul id="students">
+                                <ul id="students" class="user-list">
                                 </ul>
                             </div>
                         </div>
@@ -167,6 +212,13 @@
 
         //页面加载时初始化
         function initData() {
+            function initHeight() {
+                var h = $(window).height() - 370;
+                $('.draggable-full .draggable ul.user-list').height(h);
+                $('.draggable-full .draggable ul.user-group').height(h/2 - 56);
+            }
+
+            initHeight();
             //初始化联级
             getBatchClassData('search-batch-class-id', loadData, editIdArr);
 
