@@ -115,7 +115,7 @@
 </div>
 
 
-<script type="text/html" id="userListTpl1">
+<script type="text/html" id="userListTpl0">
     {{#  layui.each(d.Data, function(index, item){ }}
     <li data-type="{{d.type}}" >
         <input type="hidden" name="id" value="{{item.UUID}}">
@@ -125,6 +125,26 @@
         <span>({{ item.userNo || '' }})</span>
         {{#  } }}
     </li>
+    {{#  }); }}
+</script>
+
+<script type="text/html" id="userListTpl1">
+    {{#  layui.each(d.Data, function(index, item){ }}
+    <li data-type="teacher" >
+        <input type="hidden" name="id" value="{{item.UUID}}">
+        <span data-type="prefix"></span>
+        <span>{{ item.userName }}</span>
+    </li>
+
+        {{#  layui.each(item.stuList, function(index, suni){ }}
+        <li data-type="student" >
+            <input type="hidden" name="id" value="{{suni.UUID}}">
+            <span data-type="prefix"></span>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;{{ suni.userName }}</span>
+            <span>({{ suni.userNo || '' }})</span>
+        </li>
+        {{#  }); }}
+
     {{#  }); }}
 </script>
 <script type="text/html" id="userListTpl2">
@@ -175,13 +195,15 @@
         var batch_class_select, batch_class_id;
 
         //模版数值
+        var htmlTpl0Str = $('#userListTpl0').html();
         var htmlTpl1Str = $('#userListTpl1').html();
         var htmlTpl2Str = $('#userListTpl2').html();
 
         //移动列表
         var $teachers = $('#teachers');
         var $students = $('#students');
-        var $users = $('#users');
+        // var $users = $('#users');
+        var $users = $('.user-group');
 
         //编辑数据加载
         if (!$.isEmptyObject(editData)) {
@@ -240,7 +262,7 @@
             api.req('group/teaList', param, function (data) {
                 if (data.Status === 2000) {
                     data.type = 'teacher';
-                    laytpl(htmlTpl1Str).render(data, function(html){
+                    laytpl(htmlTpl0Str).render(data, function(html){
                         $teachers.html(html);
                     });
                 } else {
@@ -248,7 +270,7 @@
                     $teachers.html('');
                 }
             });
-            api.req('group/stuList', param, function (data) {
+            api.req('group/stuList2', param, function (data) {
                 if (data.Status === 2000) {
                     data.type = 'student';
                     laytpl(htmlTpl1Str).render(data, function(html){
@@ -301,6 +323,9 @@
             },
             onRemove: function (evt) {
                 $(evt.item).find('span[data-type="prefix"]').html('');
+            },
+            onAdd: function (evt) {
+                console.info(evt);
             }
         });
         $students.sortable({
