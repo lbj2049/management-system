@@ -118,7 +118,7 @@
 <script type="text/html" id="userListTpl0">
     {{#  layui.each(d.Data, function(index, item){ }}
     <li data-type="{{d.type}}" >
-        <input type="hidden" name="id" value="{{item.UUID}}">
+        <input type="hidden" name="id" value="{{item.userid}}">
         <span data-type="prefix"></span>
         <span>{{ item.userName }}</span>
         {{#  if(d.type === 'student'){ }}
@@ -130,15 +130,15 @@
 
 <script type="text/html" id="userListTpl1">
     {{#  layui.each(d.Data, function(index, item){ }}
-    <li data-type="teacher" >
-        <input type="hidden" name="id" value="{{item.UUID}}">
+    <li data-type="teacher" data-id="{{item.userid}}">
+        <input type="hidden" name="id" value="{{item.userid}}">
         <span data-type="prefix"></span>
         <span>{{ item.userName }}</span>
     </li>
 
         {{#  layui.each(item.stuList, function(index, suni){ }}
-        <li data-type="student" >
-            <input type="hidden" name="id" value="{{suni.UUID}}">
+        <li data-type="student" data-pid="{{item.userid}}">
+            <input type="hidden" name="id" value="{{suni.userid}}">
             <span data-type="prefix"></span>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;{{ suni.userName }}</span>
             <span>({{ suni.userNo || '' }})</span>
@@ -151,7 +151,7 @@
     {{#  layui.each(d.userList, function(index, item){ }}
     {{#  if(item.userType === 1){ }}
     <li data-type="student">
-        <input type="hidden" name="id" value="{{item.UUID}}">
+        <input type="hidden" name="id" value="{{item.userid}}">
         <span data-type="prefix">学生：</span>
         <span>{{ item.userName }}</span>
         <span>({{ item.userNo || '' }})</span>
@@ -159,7 +159,7 @@
     {{#  } }}
     {{#  if(item.userType === 2){ }}
     <li data-type="teacher">
-        <input type="hidden" name="id" value="{{item.UUID}}">
+        <input type="hidden" name="id" value="{{item.userid}}">
         <span data-type="prefix">老师：</span>
         <span>{{ item.userName }}</span>
     </li>
@@ -254,8 +254,10 @@
             var batchID = idArr[0];
             var classID = idArr[1];
             var param = {
-                batchID: batchID,
-                classID: classID,
+                // batchID: batchID,
+                // classID: classID,
+                batchID: 1,
+                classID: 1,
                 stage: stage,
             }
 
@@ -301,6 +303,11 @@
             animation: 150,
             onRemove: function (evt) {
                 $(evt.item).find('span[data-type="prefix"]').html('老师：');
+
+                var $to = $(evt.to);
+
+                var tn = $to.find('li[data-type="teacher"]').length;
+                $to.parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(tn);
             }
         });
         $users.sortable({
@@ -323,9 +330,14 @@
             },
             onRemove: function (evt) {
                 $(evt.item).find('span[data-type="prefix"]').html('');
-            },
-            onAdd: function (evt) {
-                console.info(evt);
+
+
+                var $from = $(evt.from);
+
+                var tn = $from.find('li[data-type="teacher"]').length;
+                var sn = $from.find('li[data-type="student"]').length;
+                $from.parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(tn);
+                $from.parents("div.draggable").find('.user-group-selected .selected.student .count').html(sn);
             }
         });
         $students.sortable({
@@ -343,7 +355,28 @@
             sort: false,
             animation: 150,
             onRemove: function (evt) {
-                $(evt.item).find('span[data-type="prefix"]').html('学生：');
+
+                var $to = $(evt.to);
+
+                var tn = $to.find('li[data-type="teacher"]').length;
+                var sn = $to.find('li[data-type="student"]').length;
+
+                var type = $(evt.item).data('type');
+                var id = $(evt.item).data('id');
+                if (type === 'teacher') {
+                    var sunli = $(evt.from).find('li[data-pid="' + id + '"]');
+                    sunli.find('span[data-type="prefix"]').html('学生：');
+
+                    sn = sn + sunli.length;
+
+                    $(evt.item).after(sunli);
+                    $(evt.item).find('span[data-type="prefix"]').html('老师：');
+                } else {
+                    $(evt.item).find('span[data-type="prefix"]').html('学生：');
+                }
+
+                $to.parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(tn);
+                $to.parents("div.draggable").find('.user-group-selected .selected.student .count').html(sn);
             }
         });
         $('#group-form-reset').click(function () {
