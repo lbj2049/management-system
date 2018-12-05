@@ -213,7 +213,7 @@
 
         // 表单提交事件
         form.on('submit(teacher-form-submit)', function (data) {
-            var idArr = getIdArr();
+            var idArr = getIdArr('batch_class_id');
             var batchID = idArr[0];
             var classID = idArr[1];
 
@@ -270,7 +270,10 @@
         // 搜索按钮点击事件
         $('#teacher-btn-search').click(function () {
             var keyword = $('#teacher-search-value').val();
-            table.reload('teacher-table', {where: {keyword: keyword}});
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
+            table.reload('teacher-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
         });
 
         // 显示编辑弹窗
@@ -384,8 +387,8 @@
             });
         }
 
-        function getIdArr() {
-            var idArr = batch_class_select.values;
+        function getIdArr(selectId) {
+            var idArr = selectId === 'batch_class_id' ? batch_class_id.values : batch_class_select.values;
             if (idArr && Array.isArray(idArr) && idArr.length === 2 && idArr[0] > 0 && idArr[1] > 0) {
                 return idArr;
             } else {
