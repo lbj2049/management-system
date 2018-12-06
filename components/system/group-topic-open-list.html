@@ -14,8 +14,8 @@
             </div>
             <input id="group-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
             <button id="group-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
-            <button id="group-btn-edit" class="layui-btn icon-btn layui-btn-warm"><i class="layui-icon">&#xe654;</i>编辑</button>
-            <button id="group-btn-del" class="layui-btn icon-btn layui-btn-danger"><i class="layui-icon">&#xe654;</i>删除</button>
+            <button id="group-btn-edit" class="layui-btn icon-btn layui-btn-warm">编辑</button>
+            <button id="group-btn-del" class="layui-btn icon-btn layui-btn-danger">删除</button>
             <!--<button id="group-btn-add" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>-->
         </div>
         <table class="layui-table" id="group-table" lay-filter="group-table"></table>
@@ -78,7 +78,7 @@
             // 渲染表格
             table.render({
                 elem: '#group-table',
-                url: common.base_server + 'group/groupInfoList',
+                url: common.base_server + 'group/groupInfoList2',
                 method: 'POST',
                 where: {
                     UUID: auth.getUUID(),
@@ -88,9 +88,9 @@
                 },
                 request: common.tableRequest,
                 response: common.tableResponse,
-                parseData: common.tableParseData,
+                parseData: common.tableParseDataWithNoPage,
                 height: 'full-250',
-                page: true,
+                page: false,
                 cols: [[
                     {type:'numbers'},
                     {field: 'groupName', title: '组别', width: 160},

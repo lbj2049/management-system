@@ -200,23 +200,32 @@
         //编辑数据加载
         var ef = !$.isEmptyObject(editData);
         if (ef) {
-            var v = JSON.parse(editData);
+            var param = JSON.parse(editData);
 
             layui.data('GroupEditData', {
                 key: edit_data_key, remove: true
             });
-            var param = {
-                groupID: v.groupID
-            }
-            api.req('group/groupInfo', param, function (data) {
+            editIdArr.push(param.batchID);
+            editIdArr.push(param.classID);
+            param.stage = stage
+            api.req('group/editGroupInfo2', param, function (data) {
                 if (data.Status === 2000) {
-                    laytpl(htmlTpl2Str).render(data.Data, function(html){
-                        $users.html(html);
+                    $(data.Data).each(function(k, gpData){
+                        $users.each(function (i, group) {
+                            if (i === k) {
+                                $this = $(this);
+
+                                var gi = $(group).parents("div.layui-card.form-user-group").find('input[name="groupID"]').val(gpData.groupID)
+                                var gn = $(group).parents("div.layui-card.form-user-group").find('input[name="groupName"]').val(gpData.groupName)
+                                var tn = $(group).parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(gpData.teaNum)
+                                var sn = $(group).parents("div.draggable").find('.user-group-selected .selected.student .count').html(gpData.stuNum)
+
+                                laytpl(htmlTpl2Str).render(gpData, function(html){
+                                    $this.html(html);
+                                });
+                            }
+                        });
                     });
-                    $('#groupID').val(data.Data.groupID);
-                    $('#groupName').val(data.Data.groupName);
-                    editIdArr.push(data.Data.batchID);
-                    editIdArr.push(data.Data.classID);
                 } else {
                     layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
@@ -351,7 +360,6 @@
 
                 var $to = $(evt.to);
 
-                var tn = $to.find('li[data-type="teacher"]').length;
                 var sn = $to.find('li[data-type="student"]').length;
 
                 var type = $(evt.item).data('type');
@@ -361,12 +369,13 @@
                     sunli.find('span[data-type="prefix"]').html('学生：');
 
                     sn = sn + sunli.length;
-
-                    $(evt.item).after(sunli);
-                    $(evt.item).find('span[data-type="prefix"]').html('老师：');
+                    // evt.item = sunli
+                    $(evt.item).replaceWith(sunli);
+                    // $(evt.item).find('span[data-type="prefix"]').html('老师：');
                 } else {
                     $(evt.item).find('span[data-type="prefix"]').html('学生：');
                 }
+                var tn = $to.find('li[data-type="teacher"]').length;
 
                 $to.parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(tn);
                 $to.parents("div.draggable").find('.user-group-selected .selected.student .count').html(sn);
@@ -414,6 +423,7 @@
                     s.push(g.join(';'))
                 }
             });
+            console.log(s.join('|'))
 
 
             var idArr = getIdArr();
