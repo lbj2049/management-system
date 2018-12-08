@@ -1,0 +1,132 @@
+
+<div class="layui-form topic-form">
+    <input name="stqID" id="stqID" type="hidden" value="{{d.stqID}}"/>
+    <input name="groupID" id="groupID" type="hidden" value="{{d.groupID}}"/>
+    <input name="spID" id="spID" type="hidden" value="{{d.spID}}"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">已选题目</label>
+        <div class="layui-form-mid layui-word-aux">
+            <a href="javascript:;" class="topic-title">{{d.title}}</a>
+            {{# if (d.reviewState) { }}
+            {{# if (d.ismodel == 1) { }}
+            <span class="layui-badge">范文</span>
+            {{# } else { }}
+            <span class="layui-badge layui-bg-gray">非范文</span>
+            {{# } }}
+            {{# } }}
+            <span class="topic-content" style="display: none"><pre>{{d.content}}</pre></span>
+        </div>
+    </div>
+    <!--
+    <div class="layui-form-item">
+        <label class="layui-form-label">组号</label>
+        <div class="layui-form-mid">
+            {{d.groupName}} <a href="javascript:;" id="group-preview" class="layui-badge layui-bg-blue">查看小组信息</a>
+        </div>
+    </div>
+    -->
+
+    <!-- 老师批阅 -->
+    <div id="topic-content">
+
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">{{d.label1}}</label>
+                <div class="layui-form-mid layui-word-aux">
+                    {{d.pageTitle1}}
+                </div>
+            </div>
+            <div class="layui-inline pull-right">
+                <div class="layui-upload">
+                    {{# if(d.subState1){ }}
+                    <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr1}}">下载</button>
+                    <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr1}}">预览</button>
+                    {{# } }}
+                </div>
+            </div>
+        </div>
+        {{# if(d.stage === 1 || d.stage === 2){ }}
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">{{d.label2}}</label>
+                <div class="layui-form-mid layui-word-aux">
+                    {{d.pageTitle2}}
+                </div>
+            </div>
+            <div class="layui-inline pull-right">
+                <div class="layui-upload">
+                    {{# if(d.subState2){ }}
+                    <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr2}}">下载</button>
+                    <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr2}}">预览</button>
+                    {{# } }}
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">{{d.label3}}</label>
+                <div class="layui-form-mid layui-word-aux">
+                    {{d.pageTitle3}}
+                </div>
+            </div>
+            <div class="layui-inline pull-right">
+                <div class="layui-upload">
+                    {{# if(d.subState3){ }}
+                    <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr3}}">下载</button>
+                    <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr3}}">预览</button>
+                    {{# } }}
+                </div>
+            </div>
+        </div>
+        {{# } }}
+        {{# if(d.stage === 1){ }}
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">{{d.label4}}</label>
+                <div class="layui-form-mid layui-word-aux">
+                    {{d.pageTitle4}}
+                </div>
+            </div>
+            <div class="layui-inline pull-right">
+                <div class="layui-upload">
+                    {{# if(d.subState4){ }}
+                    <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr4}}">下载</button>
+                    <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr4}}">预览</button>
+                    {{# } }}
+                </div>
+            </div>
+        </div>
+        {{# } }}
+    </div>
+
+    <!-- 老师已经批阅 -->
+    <div>
+
+
+        {{# if (d.reviewState) { }}
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">负责老师</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{d.teaName}} <span>{{d.teaCTime}}</span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">老师评分</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{d.score}}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">老师评语</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{d.teaContent}}
+            </div>
+        </div>
+        {{# } }}
+    </div>
+    <div class="layui-form-item" style="text-align: center">
+        <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
+    </div>
+</div>

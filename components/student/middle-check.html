@@ -7,7 +7,7 @@
           <a><cite>中期检查管理</cite></a>
         </span>
     </div>
-    <div class="layui-card-body layui-col-md6 layui-col-md-offset3" id="topic-info-container">
+    <div class="layui-card-body layui-col-md8 layui-col-md-offset2" id="topic-info-container">
 
     </div>
 </div>
@@ -43,30 +43,136 @@
         <div>
             {{# if (!d.reviewState) { }}
             <div class="layui-form-item">
-                <label class="layui-form-label">论文标题</label>
-                <div class="layui-input-block">
-                    <input name="pageTitle" value="{{d.pageTitle}}" placeholder="请输入论文标题" type="text" class="layui-input" maxlength="400" lay-verify="required" required/>
+                <div class="layui-inline">
+                    <label class="layui-form-label">翻译原文</label>
+                    <div class="layui-input-block">
+                        <input name="pageTitle1" value="{{d.pageTitle1}}" placeholder="请输入翻译原文" type="text" class="layui-input" maxlength="400"/>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-block">
+                        <div class="layui-upload">
+                            <button type="button" class="layui-btn select-file">选择文件</button>
+                            <input name="file1" type="file" class="layui-upload-file" id="file1" data-fileindex="1"/>
+                            <input name="fileName1" type="hidden" data-state="1"/>
+                            <div class="layui-inline layui-upload-choose"></div>
+                            {{# if(d.subState1){ }}
+                            <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr1}}">下载</button>
+                            <button type="button" class="layui-btn file-preview layui-btn-warm" data-url="{{d.downLoadAddr1}}">预览</button>
+                            <button type="button" class="layui-btn file-del layui-btn-danger" data-fileindex="1" data-url="{{d.downLoadAddr1}}">删除</button>
+                            {{# } }}
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="layui-form-item">
-                <label class="layui-form-label">论文附件</label>
-                <div class="layui-input-block">
+                <div class="layui-inline">
+                    <label class="layui-form-label">文献翻译</label>
+                    <div class="layui-input-block">
+                        <input name="pageTitle2" value="{{d.pageTitle2}}" placeholder="请输入文献翻译" type="text" class="layui-input" maxlength="400"/>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-block">
+                        <div class="layui-upload">
+                            <button type="button" class="layui-btn select-file">选择文件</button>
+                            <input name="file2" type="file" class="layui-upload-file" id="file2" data-fileindex="2"/>
+                            <input name="fileName2" type="hidden" data-state="1"/>
+                            <div class="layui-inline layui-upload-choose"></div>
+                            {{# if(d.subState2){ }}
+                            <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr2}}">下载</button>
+                            <button type="button" class="layui-btn file-preview layui-btn-warm" data-url="{{d.downLoadAddr2}}">预览</button>
+                            <button type="button" class="layui-btn file-del layui-btn-danger" data-fileindex="2" data-url="{{d.downLoadAddr2}}">删除</button>
+                            {{# } }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">实习报告</label>
+                    <div class="layui-input-block">
+                        <input name="pageTitle3" value="{{d.pageTitle3}}" placeholder="请输入实习报告" type="text" class="layui-input" maxlength="400"/>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-block">
+                        <div class="layui-upload">
+                            <button type="button" class="layui-btn select-file">选择文件</button>
+                            <input name="file3" type="file" class="layui-upload-file" id="file3" data-fileindex="3"/>
+                            <input name="fileName3" type="hidden" data-state="1"/>
+                            <div class="layui-inline layui-upload-choose"></div>
+                            {{# if(d.subState3){ }}
+                            <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr3}}">下载</button>
+                            <button type="button" class="layui-btn file-preview layui-btn-warm" data-url="{{d.downLoadAddr3}}">预览</button>
+                            <button type="button" class="layui-btn file-del layui-btn-danger" data-fileindex="3" data-url="{{d.downLoadAddr3}}">删除</button>
+                            {{# } }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{# } }}
+
+
+            {{# if (d.reviewState) { }}
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">翻译原文</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        {{d.pageTitle1}}
+                    </div>
+                </div>
+                <div class="layui-inline">
                     <div class="layui-upload">
-                        <button type="button" class="layui-btn select-file">选择文件</button>
-                        <input name="file" type="file" class="layui-upload-file" id="file"/>
-                        <input name="fileName" type="hidden"/>
-                        <div class="layui-inline layui-upload-choose"></div>
-                        {{# if(d.subState){ }}
-                        <button type="button" class="layui-btn" id="file-download" data-url="{{d.upFiles}}">下载</button>
-                        <button type="button" class="layui-btn" id="file-preview" data-url="{{d.upFiles}}">在线浏览</button>
+                        {{# if(d.subState1){ }}
+                        <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr1}}">下载</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr1}}">预览</button>
                         {{# } }}
                     </div>
                 </div>
             </div>
-            <div class="layui-form-item model-form-footer">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">文献翻译</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        {{d.pageTitle2}}
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-upload">
+                        {{# if(d.subState2){ }}
+                        <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr2}}">下载</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr2}}">预览</button>
+                        {{# } }}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">实习报告</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        {{d.pageTitle3}}
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-upload">
+                        {{# if(d.subState3){ }}
+                        <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr3}}">下载</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr3}}">预览</button>
+                        {{# } }}
+                    </div>
+                </div>
+            </div>
+            {{# } }}
+
+            {{# if (!d.reviewState) { }}
+            <div class="layui-form-item" style="text-align: center">
                 <!--<button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>-->
                 <button class="layui-btn" lay-filter="topic-form-submit" lay-submit>保存</button>
-                {{# if(d.subState){ }}
+                {{# if(d.subState1 || d.subState2 || d.subState3){ }}
                 <button type="button" class="layui-btn layui-btn-danger" id="topic-form-del">删除</button>
                 {{# } }}
             </div>
@@ -75,25 +181,10 @@
 
         <!-- 老师已经批阅 -->
         <div>
+
+
             {{# if (d.reviewState) { }}
 
-            <div class="layui-form-item">
-                <label class="layui-form-label">论文标题</label>
-                <div class="layui-form-mid layui-word-aux">
-                    {{d.pageTitle}}
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">论文附件</label>
-                <div class="layui-input-block">
-                    <div class="layui-upload">
-                        {{# if(d.subState){ }}
-                        <button type="button" class="layui-btn" id="file-download" data-url="{{d.upFiles}}">下载</button>
-                        <button type="button" class="layui-btn" id="file-preview" data-url="{{d.upFiles}}">在线浏览</button>
-                        {{# } }}
-                    </div>
-                </div>
-            </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">负责老师</label>
                 <div class="layui-form-mid layui-word-aux">
@@ -203,11 +294,12 @@
         initData();
 
         function initData() {
-            api.req('stuPage/stuPageInfo', {stage: stage}, function (data) {
+            api.req('stuPage/stuPageInfo2', {stage: stage}, function (data) {
+            // api.req('student_page_info.json', {stage: 1}, function (data) {
                 layer.closeAll('loading');
                 if (data.Status === 2000) {
                     var paperData = data.Data;
-                    paperData.subState = paperData.upFiles || paperData.upFiles.length > 0;
+                    paperData.subState1 = paperData.downLoadAddr1 && paperData.downLoadAddr1.length > 0;
                     paperData.reviewState = paperData.score !== '' && paperData.score > 0;
                     laytpl($('#topic-info').html()).render(paperData, function (html) {
                         $('#topic-info-container').html(html)
@@ -225,12 +317,15 @@
                 $(this).next('input[type="file"]').click();
             });
             $('.layui-upload input[type="file"]').on('change', function () {
+                var fileindex = $(this).data('fileindex');
                 var filePath = $(this).val();
                 if (!filePath) return false;
                 var fileName = filePath.substring(filePath.lastIndexOf("\\") + 1);
 
                 if (filePath.indexOf("xls") !== -1 || filePath.indexOf("xlsx") !== -1 || filePath.indexOf("doc") !== -1 || filePath.indexOf("docx") !== -1) {
-                    $(this).next('input[name="fileName"]').val(fileName);
+                    var $fn = $(this).next('input[name="fileName' + fileindex + '"]');
+                    $fn.val(fileName);
+                    $fn.data('state', 0);
                     $(this).parents('div.layui-upload').children('.layui-upload-choose').html(fileName);
                 } else {
                     layer.msg('您选择的上传文件类型有误！', {icon: 2});
@@ -265,7 +360,7 @@
 
             });
 
-            $('#file-download').on('click', function() {
+            $('.file-download').on('click', function() {
                 try {
                     var elemIF = document.createElement("iframe");
                     elemIF.src = $(this).data('url');
@@ -276,9 +371,21 @@
                 }
             });
 
-            $('#file-preview').on('click', function() {
+            $('.file-preview').on('click', function() {
                 // window.open('https://view.officeapps.live.com/op/view.aspx?src=' + $(this).data('url'), 'preview')
                 window.open('http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=true&_xdoc=' + $(this).data('url'), 'preview')
+            });
+
+            $('.file-del').on('click', function() {
+                api.req('stuPage/delUpLoad2', {spID: $('#topic-form > input[name=spID]').val(), target: $(this).data('fileindex')}, function (data) {
+                    layer.closeAll('loading');
+                    if (data.Status === 2000) {
+                        layer.closeAll('loading');
+                        initData();
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
+                });
             });
 
 
@@ -300,16 +407,21 @@
             layer.load(2);
             var url = '';
             if (data.field.stqID) {
-                url = 'stuPage/upLoadFile';
+                url = 'stuPage/upLoadFile2';
             } else {
-                url = 'stuPage/upLoadFile';
+                url = 'stuPage/upLoadFile2';
             }
-            if (!data.field.fileName) {
-                layer.msg('请选择附件', {icon: 2});
+            var formData = new FormData($('#topic-form')[0]);
+            var fs1 = $('input[name="fileName1"]').data('state') === 1;
+            if ((data.field.pageTitle1 && !data.field.fileName1 && !fs1) || (!data.field.pageTitle1 && data.field.fileName1 && !fs1)) {
+                layer.msg('填写的毕业论文信息不完整', {icon: 2});
                 return false;
+            } else if ((!data.field.pageTitle1 && !data.field.fileName1) || fs1) {
+                formData.delete("pageTitle1");
+                formData.delete("file1");
+                formData.delete("fileName1");
             }
 
-            var formData = new FormData($('#topic-form')[0]);
             formData.append('UUID', auth.getUUID())
             formData.append('stage', stage);
             api.ajax({
@@ -322,7 +434,7 @@
                 dataType: 'json',
                 success: function (data) {
                     layer.closeAll('loading');
-                    if (data.Status == 2000) {
+                    if (data.Status === 2000) {
                         if (data.Data.Result) {
                             layer.msg(data.Data.Result, {icon: 1});
                         } else {

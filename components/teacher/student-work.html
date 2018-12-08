@@ -16,17 +16,31 @@
             <input id="topic-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
             <button id="topic-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
         </div>
-        <table class="layui-table" id="topic-table" lay-filter="topic-table"></table>
+
+        <div class="layui-tab" style="margin-top: 10px">
+            <ul class="layui-tab-title">
+                <li class="layui-this">开题</li>
+                <li>中期检查</li>
+                <li>答辩</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <table class="layui-table" id="topic-table-1" lay-filter="topic-table"></table>
+                </div>
+                <div class="layui-tab-item">
+                    <table class="layui-table" id="topic-table-2" lay-filter="topic-table"></table>
+                </div>
+                <div class="layui-tab-item">
+                    <table class="layui-table" id="topic-table-3" lay-filter="topic-table"></table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar">
-    {{#  if(d.downLoadAddr != '') { }}
     <a class="layui-btn layui-btn-xs" lay-event="view">查看</a>
-    {{#  } else { }}
-
-    {{#  } }}
 </script>
 
 <!-- 表单弹窗 -->
@@ -41,7 +55,7 @@
                         <a href="javascript:;" class="topic-title">{{d.title}}</a>
                         {{# if (d.reviewState) { }}
                         {{# if (d.ismodel == 1) { }}
-                        <span class="layui-badge layui-bg-green">范文</span>
+                        <span class="layui-badge">范文</span>
                         {{# } else { }}
                         <span class="layui-badge layui-bg-gray">非范文</span>
                         {{# } }}
@@ -64,8 +78,8 @@
                         <div class="layui-input-block">
                             <div class="layui-upload">
                                 {{# if(d.subState){ }}
-                                <button type="button" class="layui-btn" id="file-download" data-url="{{d.downLoadAddr}}">下载</button>
-                                <button type="button" class="layui-btn layui-btn-warm" id="file-preview" data-url="{{d.downLoadAddr}}">在线浏览</button>
+                                <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr}}">下载</button>
+                                <button type="button" class="layui-btn layui-btn-warm file-preview" data-url="{{d.downLoadAddr}}">在线浏览</button>
                                 {{# } }}
                             </div>
                         </div>
@@ -88,8 +102,8 @@
                         <div class="layui-input-block">
                             <div class="layui-upload">
                                 {{# if(d.subState){ }}
-                                <button type="button" class="layui-btn" id="file-download" data-url="{{d.downLoadAddr}}">下载</button>
-                                <button type="button" class="layui-btn layui-btn-warm" id="file-preview" data-url="{{d.downLoadAddr}}">在线浏览</button>
+                                <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr}}">下载</button>
+                                <button type="button" class="layui-btn layui-btn-warm file-preview" data-url="{{d.downLoadAddr}}">在线浏览</button>
                                 {{# } }}
                             </div>
                         </div>
@@ -155,6 +169,25 @@
 </script>
 
 
+
+<!-- 表格操作列 -->
+<script type="text/html" id="topic-table-bar1">
+    <a class="layui-btn layui-btn-xs" lay-event="download1">下载</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview1">预览</a>
+</script>
+<script type="text/html" id="topic-table-bar2">
+    <a class="layui-btn layui-btn-xs" lay-event="download2">下载</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview2">预览</a>
+</script>
+<script type="text/html" id="topic-table-bar3">
+    <a class="layui-btn layui-btn-xs" lay-event="download3">下载</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview3">预览</a>
+</script>
+<script type="text/html" id="topic-table-bar4">
+    <a class="layui-btn layui-btn-xs" lay-event="download4">下载</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview4">预览</a>
+</script>
+
 <script type="text/html" id="stageTpl">
     {{#  if(d.stage == 1) { }}
     开题
@@ -165,22 +198,34 @@
     {{#  } }}
 </script>
 
-<script type="text/html" id="stateTpl">
-    {{#  if(!d.downLoadAddr || d.downLoadAddr == '') { }}
+<script type="text/html" id="stateTpl1">
+    {{#  if(!(d.downLoadAddr1 && d.downLoadAddr1.length > 0 && d.downLoadAddr2 && d.downLoadAddr2.length > 0 && d.downLoadAddr3 && d.downLoadAddr3.length > 0 && d.downLoadAddr4 && d.downLoadAddr4.length > 0)) { }}
     未提交
+    {{#  } else if (!(d.score > 0)) { }}
+    未审核
     {{#  } else { }}
-    <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>
-    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview">预览</a>
+    已审核
+    {{#  } }}
+</script>
+<script type="text/html" id="stateTpl2">
+    {{#  if(!(d.downLoadAddr1 && d.downLoadAddr1.length > 0 && d.downLoadAddr2 && d.downLoadAddr2.length > 0 && d.downLoadAddr3 && d.downLoadAddr3.length > 0)) { }}
+    未提交
+    {{#  } else if (!(d.score > 0)) { }}
+    未审核
+    {{#  } else { }}
+    已审核
+    {{#  } }}
+</script>
+<script type="text/html" id="stateTpl3">
+    {{#  if(!(d.downLoadAddr1 && d.downLoadAddr1.length > 0)) { }}
+    未提交
+    {{#  } else if (!(d.score > 0)) { }}
+    未审核
+    {{#  } else { }}
+    已审核
     {{#  } }}
 </script>
 
-<script type="text/html" id="scoreTpl">
-    {{#  if(d.downLoadAddr !== '' && d.score > 0) { }}
-    {{d.score}}
-    {{#  } else { }}
-
-    {{#  } }}
-</script>
 
 <script>
     layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload', 'selectN', 'laytpl'], function () {
@@ -211,38 +256,75 @@
         }
 
         function loadData() {
+            console.log(1)
 
             var idArr = getIdArr();
             var batchID = idArr[0];
             var classID = idArr[1];
-            // 渲染表格
-            table.render({
-                elem: '#topic-table',
-                url: common.base_server + 'stuPage/myStuWorkList',
-                method: 'POST',
-                where: {
-                    UUID: auth.getUUID(),
-                    batchID: batchID,
-                    classID: classID
-                },
-                request: common.tableRequest,
-                response: common.tableResponse,
-                parseData: common.tableParseData,
-                height: 'full-250',
-                page: true,
-                cols: [[
-                    {type: 'numbers'},
-                    {field: 'title', title: '选择题目'},
-                    {field: 'userName', title: '学生姓名', width: 110},
-                    {field: 'userNo', title: '学生学号', width: 110},
-                    {field: 'userTel', title: '学生电话', width: 110},
-                    {field: 'stage', title: '环节', templet: '#stageTpl', width: 90},
-                    {field: 'state', title: '作业情况', templet: '#stateTpl', width: 110},
-                    {field: 'score', title: '评分', templet: '#scoreTpl', width: 60},
-                    // {field: 'teacherName', title: '审批人'},
-                    {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 160}
-                ]]
-            });
+
+            for (var i = 1; i < 4; i++) {
+
+                var colArr;
+                if (i === 1) {
+                    colArr = [
+                        {type: 'numbers'},
+                        {field: 'title', title: '选择题目'},
+                        {field: 'userName', title: '学生姓名', width: 92},
+                        {field: 'userNo', title: '学生学号', width: 108},
+                        {field: 'userTel', title: '学生电话', width: 92},
+                        {align: 'center', toolbar: '#topic-table-bar1', title: '开题报告', width: 108},
+                        {align: 'center', toolbar: '#topic-table-bar2', title: '文献综述', width: 108},
+                        {align: 'center', toolbar: '#topic-table-bar3', title: '任务书', width: 108},
+                        {align: 'center', toolbar: '#topic-table-bar4', title: '计划进度', width: 108},
+                        {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 72}
+                    ];
+                }
+                if (i === 2) {
+                    colArr = [
+                        {type: 'numbers'},
+                        {field: 'title', title: '选择题目'},
+                        {field: 'userName', title: '学生姓名', width: 92},
+                        {field: 'userNo', title: '学生学号', width: 108},
+                        {field: 'userTel', title: '学生电话', width: 92},
+                        {align: 'center', toolbar: '#topic-table-bar1', title: '翻译原文', width: 108},
+                        {align: 'center', toolbar: '#topic-table-bar2', title: '文献翻译', width: 108},
+                        {align: 'center', toolbar: '#topic-table-bar3', title: '实习报告', width: 108},
+                        {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 72}
+                    ];
+                }
+                if (i === 3) {
+                    colArr = [
+                        {type: 'numbers'},
+                        {field: 'title', title: '选择题目'},
+                        {field: 'userName', title: '学生姓名', width: 92},
+                        {field: 'userNo', title: '学生学号', width: 108},
+                        {field: 'userTel', title: '学生电话', width: 92},
+                        {align: 'center', toolbar: '#topic-table-bar1', title: '毕业论文', width: 108},
+                        {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 72}
+                    ];
+                }
+
+                // 渲染表格
+                table.render({
+                    elem: '#topic-table-' + i,
+                    url: common.base_server + 'stuPage/myStuWorkList2',
+                    method: 'POST',
+                    where: {
+                        UUID: auth.getUUID(),
+                        batchID: batchID,
+                        classID: classID,
+                        stage: i
+                    },
+                    request: common.tableRequest,
+                    response: common.tableResponse,
+                    parseData: common.tableParseData,
+                    height: 'full-328',
+                    page: true,
+                    cols: [
+                        colArr
+                    ]
+                });
+            }
         }
 
 
@@ -266,13 +348,24 @@
         table.on('tool(topic-table)', function (obj) {
             var data = obj.data;
 
-            if (obj.event === 'view') { //批阅
-                // doCheckView(data.id, 1);
+            if (obj.event === 'download1') {
+                download(data.downLoadAddr1)
+            } else if (obj.event === 'preview1') {
+                preview(data.downLoadAddr1)
+            } else if (obj.event === 'download2') {
+                download(data.downLoadAddr2)
+            } else if (obj.event === 'preview2') {
+                preview(data.downLoadAddr2)
+            } else if (obj.event === 'download3') {
+                download(data.downLoadAddr3)
+            } else if (obj.event === 'preview3') {
+                preview(data.downLoadAddr4)
+            } else if (obj.event === 'download4') {
+                download(data.downLoadAddr4)
+            } else if (obj.event === 'preview4') {
+                preview(data.downLoadAddr4)
+            } else if (obj.event === 'view') {
                 showViewModel(data)
-            } else if (obj.event === 'download') {
-                download(data.downLoadAddr)
-            } else if (obj.event === 'preview') {
-                preview(data.downLoadAddr)
             }
         });
 
@@ -282,32 +375,61 @@
             var idArr = getIdArr();
             var batchID = idArr[0];
             var classID = idArr[1];
-            table.reload('topic-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
+            table.reload('topic-table-1', {where: {keyword: keyword, batchID: batchID, classID: classID}});
+            table.reload('topic-table-2', {where: {keyword: keyword, batchID: batchID, classID: classID}});
+            table.reload('topic-table-3', {where: {keyword: keyword, batchID: batchID, classID: classID}});
+            // table.reload('topic-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
         });
 
         // 显示查看弹窗
         var showViewModel = function (data) {
 
-            data.subState = data.downLoadAddr !== '' || data.downLoadAddr.length > 0;
+            data.subState1 = data.downLoadAddr1 && data.downLoadAddr1.length > 0;
+            data.subState2 = data.downLoadAddr2 && data.downLoadAddr2.length > 0;
+            data.subState3 = data.downLoadAddr3 && data.downLoadAddr3.length > 0;
+            data.subState4 = data.downLoadAddr4 && data.downLoadAddr4.length > 0;
+            // data.reviewState = data.state === 2;
+            if (data.stage === 1) {
+                data.label1 = '开题报告'
+                data.label2 = '文献综述'
+                data.label3 = '任务书'
+                data.label4 = '计划进度'
+            } else if (data.stage === 2) {
+                data.label1 = '翻译原文'
+                data.label2 = '文献翻译'
+                data.label3 = '实习报告'
+            } else if (data.stage === 3) {
+                data.label1 = '毕业论文'
+            }
             data.reviewState = data.score !== '' && data.score > 0;
-            laytpl($('#topic-model').html()).render(data, function (html) {
-                layer.open({
-                    type: 1,
-                    title: '查看论文',
-                    area: '450px',
-                    offset: '120px',
-                    content: html
-                });
-                initEvent()
+            $.get('/components/tpl/topic-view.html', function (hs) {
+                laytpl(hs).render(data, function (html) {
+                    layer.open({
+                        type: 1,
+                        title: '查看论文',
+                        area: '450px',
+                        offset: '120px',
+                        content: html
+                    });
+                    initEvent()
+                })
             })
         };
 
         function initEvent() {
-            $('#file-download').on('click', function () {
+
+            $('.topic-title').on('click', function() {
+                var that = this;
+                // layer.tips($('.topic-content').html(), that); //在元素的事件回调体中，follow直接赋予this即可
+                layer.alert($('.topic-content').html(), {title: '内容',closeBtn: 0});
+
+            });
+
+            $('.file-download').on('click', function () {
                 download($(this).data('url'))
             });
 
-            $('#file-preview').on('click', function () {
+            $('.file-preview').on('click', function () {
                 preview($(this).data('url'))
             });
         }

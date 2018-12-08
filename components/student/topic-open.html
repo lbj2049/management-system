@@ -52,13 +52,13 @@
                 <div class="layui-inline">
                     <div class="layui-input-block">
                         <div class="layui-upload">
-                            <button type="button" class="layui-btn select-file">选择文件</button>
+                            <button type="button" class="layui-btn  select-file">选择文件</button>
                             <input name="file1" type="file" class="layui-upload-file" id="file1" data-fileindex="1"/>
                             <input name="fileName1" type="hidden" data-state="1"/>
                             <div class="layui-inline layui-upload-choose"></div>
                             {{# if(d.subState1){ }}
                             <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr1}}">下载</button>
-                            <button type="button" class="layui-btn file-preview" data-url="{{d.downLoadAddr1}}">在线浏览</button>
+                            <button type="button" class="layui-btn file-preview layui-btn-warm" data-url="{{d.downLoadAddr1}}">预览</button>
                             <button type="button" class="layui-btn file-del layui-btn-danger" data-fileindex="1" data-url="{{d.downLoadAddr1}}">删除</button>
                             {{# } }}
                         </div>
@@ -82,7 +82,7 @@
                             <div class="layui-inline layui-upload-choose"></div>
                             {{# if(d.subState2){ }}
                             <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr2}}">下载</button>
-                            <button type="button" class="layui-btn file-preview" data-url="{{d.downLoadAddr2}}">在线浏览</button>
+                            <button type="button" class="layui-btn file-preview layui-btn-warm" data-url="{{d.downLoadAddr2}}">预览</button>
                             <button type="button" class="layui-btn file-del layui-btn-danger" data-fileindex="2" data-url="{{d.downLoadAddr2}}">删除</button>
                             {{# } }}
                         </div>
@@ -105,10 +105,8 @@
                             <input name="fileName3" type="hidden" data-state="1"/>
                             <div class="layui-inline layui-upload-choose"></div>
                             {{# if(d.subState3){ }}
-                            <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr3}}">下载
-                            </button>
-                            <button type="button" class="layui-btn file-preview" data-url="{{d.downLoadAddr3}}">在线浏览
-                            </button>
+                            <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr3}}">下载</button>
+                            <button type="button" class="layui-btn file-preview layui-btn-warm" data-url="{{d.downLoadAddr3}}">预览</button>
                             <button type="button" class="layui-btn file-del layui-btn-danger" data-fileindex="3" data-url="{{d.downLoadAddr3}}">删除</button>
                             {{# } }}
                         </div>
@@ -132,7 +130,7 @@
                             <div class="layui-inline layui-upload-choose"></div>
                             {{# if(d.subState4){ }}
                             <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr4}}">下载</button>
-                            <button type="button" class="layui-btn file-preview" data-url="{{d.downLoadAddr4}}">在线浏览</button>
+                            <button type="button" class="layui-btn file-preview layui-btn-warm" data-url="{{d.downLoadAddr4}}">预览</button>
                             <button type="button" class="layui-btn file-del layui-btn-danger" data-fileindex="4" data-url="{{d.downLoadAddr4}}">删除</button>
                             {{# } }}
                         </div>
@@ -143,70 +141,67 @@
 
 
             {{# if (d.reviewState) { }}
+
             <div class="layui-form-item">
-                <label class="layui-form-label">开题报告</label>
-                <div class="layui-form-mid layui-word-aux">
-                    {{d.pageTitle1}}
+                <div class="layui-inline">
+                    <label class="layui-form-label">开题报告</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        {{d.pageTitle1}}
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">开题报告附件</label>
-                <div class="layui-input-block">
+                <div class="layui-inline">
                     <div class="layui-upload">
                         {{# if(d.subState1){ }}
-                        <button type="button" class="layui-btn" id="file-download" data-url="{{d.downLoadAddr1}}">下载</button>
-                        <button type="button" class="layui-btn" id="file-preview" data-url="{{d.downLoadAddr1}}">在线浏览</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr1}}">下载</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr1}}">预览</button>
                         {{# } }}
                     </div>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">文献综述</label>
-                <div class="layui-form-mid layui-word-aux">
-                    {{d.pageTitle2}}
+                <div class="layui-inline">
+                    <label class="layui-form-label">文献综述</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        {{d.pageTitle2}}
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">论文文献综述附件</label>
-                <div class="layui-input-block">
+                <div class="layui-inline">
                     <div class="layui-upload">
                         {{# if(d.subState2){ }}
-                        <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr2}}">下载</button>
-                        <button type="button" class="layui-btn file-preview" data-url="{{d.downLoadAddr2}}">在线浏览</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr2}}">下载</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr2}}">预览</button>
                         {{# } }}
                     </div>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">任务书</label>
-                <div class="layui-form-mid layui-word-aux">
-                    {{d.pageTitle3}}
+                <div class="layui-inline">
+                    <label class="layui-form-label">任务书</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        {{d.pageTitle3}}
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">任务书</label>
-                <div class="layui-input-block">
+                <div class="layui-inline">
                     <div class="layui-upload">
                         {{# if(d.subState3){ }}
-                        <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr3}}">下载</button>
-                        <button type="button" class="layui-btn file-preview" data-url="{{d.downLoadAddr3}}">在线浏览</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr3}}">下载</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr3}}">预览</button>
                         {{# } }}
                     </div>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">计划进度</label>
-                <div class="layui-form-mid layui-word-aux">
-                    {{d.pageTitle4}}
+                <div class="layui-inline">
+                    <label class="layui-form-label">计划进度</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        {{d.pageTitle4}}
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">计划进度</label>
-                <div class="layui-input-block">
+                <div class="layui-inline">
                     <div class="layui-upload">
                         {{# if(d.subState4){ }}
-                        <button type="button" class="layui-btn file-download" data-url="{{d.downLoadAddr4}}">下载</button>
-                        <button type="button" class="layui-btn file-preview" data-url="{{d.downLoadAddr4}}">在线浏览</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr4}}">下载</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr4}}">预览</button>
                         {{# } }}
                     </div>
                 </div>
@@ -339,7 +334,7 @@
         initData();
 
         function initData() {
-            api.req('stuPage/stuPageInfo2', {stage: 1}, function (data) {
+            api.req('stuPage/stuPageInfo2', {stage: stage}, function (data) {
             // api.req('student_page_info.json', {stage: 1}, function (data) {
                 layer.closeAll('loading');
                 if (data.Status === 2000) {

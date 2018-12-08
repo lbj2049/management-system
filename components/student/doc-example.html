@@ -12,7 +12,7 @@
             <button id="topic-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
         </div>
 
-        <div class="layui-tab">
+        <div class="layui-tab" style="margin-top: 10px">
             <ul class="layui-tab-title">
                 <li class="layui-this">开题</li>
                 <li>中期检查</li>
@@ -174,7 +174,9 @@
         // 搜索按钮点击事件
         $('#topic-btn-search').click(function () {
             var keyword = $('#topic-search-value').val();
-            table.reload('topic-table', {where: {keyword: keyword}});
+            table.reload('topic-table-1', {where: {keyword: keyword, batchID: user.batchID, classID: user.classID}});
+            table.reload('topic-table-2', {where: {keyword: keyword, batchID: user.batchID, classID: user.classID}});
+            table.reload('topic-table-3', {where: {keyword: keyword, batchID: user.batchID, classID: user.classID}});
         });
 
 

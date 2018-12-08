@@ -17,41 +17,78 @@
                             </div>
                         </div>
                         <a href="javascript:;" id="group-btn-search" class="layui-btn icon-btn">查询</a>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        小组名称：
-                        <div class="layui-inline">
-                            <div class="layui-inline">
-                                <input type="text" name="groupName" id="groupName" placeholder="输入名称" autocomplete="off" class="layui-input"  lay-verify="required" required>
-                                <input type="hidden" name="groupID" id="groupID">
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <hr/>
-                <div class="draggable">
-                    <div class="layui-col-md4">
+                <div class="draggable-full">
+                    <div class="layui-col-md3">
                         <div class="layui-card">
                             <div class="layui-card-header">老师列表</div>
-                            <div class="layui-card-body ">
-                                <ul id="teachers">
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="layui-col-md4">
-                        <div class="layui-card">
-                            <div class="layui-card-header">组成员</div>
                             <div class="layui-card-body draggable">
-                                <ul id="users">
+                                <ul id="teachers" class="user-list">
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="layui-col-md4">
+                    <div class="layui-col-md6">
+                        <div class="layui-col-md6">
+                            <div class="layui-card form-user-group">
+                                <div class="layui-card-header"><input type="text" name="groupName" placeholder="输入名称" value="小组1" autocomplete="off" class="layui-input"  lay-verify="required" required><input type="hidden" name="groupID"></div>
+                                <div class="layui-card-body draggable">
+                                    <div class="user-group-selected">
+                                        <div class="layui-col-md6 selected teacher">老师:<span class="count"></span></div>
+                                        <div class="layui-col-md6 selected student">学生:<span class="count"></span></div>
+                                    </div>
+                                    <ul id="users-1" class="user-group">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md6">
+                            <div class="layui-card form-user-group">
+                                <div class="layui-card-header"><input type="text" name="groupName" placeholder="输入名称" value="小组2" autocomplete="off" class="layui-input"  lay-verify="required" required><input type="hidden" name="groupID"></div>
+                                <div class="layui-card-body draggable">
+                                    <div class="user-group-selected">
+                                        <div class="layui-col-md6 selected teacher">老师:<span class="count"></span></div>
+                                        <div class="layui-col-md6 selected student">学生:<span class="count"></span></div>
+                                    </div>
+                                    <ul id="users-2" class="user-group">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md6">
+                            <div class="layui-card form-user-group">
+                                <div class="layui-card-header"><input type="text" name="groupName" placeholder="输入名称" value="小组3" autocomplete="off" class="layui-input"  lay-verify="required" required><input type="hidden" name="groupID"></div>
+                                <div class="layui-card-body draggable">
+                                    <div class="user-group-selected">
+                                        <div class="layui-col-md6 selected teacher">老师:<span class="count"></span></div>
+                                        <div class="layui-col-md6 selected student">学生:<span class="count"></span></div>
+                                    </div>
+                                    <ul id="users-3" class="user-group">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md6">
+                            <div class="layui-card form-user-group">
+                                <div class="layui-card-header"><input type="text" name="groupName" placeholder="输入名称" value="小组4" autocomplete="off" class="layui-input"  lay-verify="required" required><input type="hidden" name="groupID"></div>
+                                <div class="layui-card-body draggable">
+                                    <div class="user-group-selected">
+                                        <div class="layui-col-md6 selected teacher">老师:<span class="count"></span></div>
+                                        <div class="layui-col-md6 selected student">学生:<span class="count"></span></div>
+                                    </div>
+                                    <ul id="users-4" class="user-group">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
                         <div class="layui-card">
                             <div class="layui-card-header">学生列表</div>
                             <div class="layui-card-body draggable">
-                                <ul id="students">
+                                <ul id="students" class="user-list">
                                 </ul>
                             </div>
                         </div>
@@ -70,10 +107,10 @@
 </div>
 
 
-<script type="text/html" id="userListTpl1">
+<script type="text/html" id="userListTpl0">
     {{#  layui.each(d.Data, function(index, item){ }}
     <li data-type="{{d.type}}" >
-        <input type="hidden" name="id" value="{{item.UUID}}">
+        <input type="hidden" name="id" value="{{item.userid}}">
         <span data-type="prefix"></span>
         <span>{{ item.userName }}</span>
         {{#  if(d.type === 'student'){ }}
@@ -82,11 +119,31 @@
     </li>
     {{#  }); }}
 </script>
+
+<script type="text/html" id="userListTpl1">
+    {{#  layui.each(d.Data, function(index, item){ }}
+    <li data-type="teacher" data-id="{{item.userid}}">
+        <input type="hidden" name="id" value="{{item.userid}}">
+        <span data-type="prefix"></span>
+        <span>{{ item.userName }}</span>
+    </li>
+
+        {{#  layui.each(item.stuList, function(index, suni){ }}
+        <li data-type="student" data-pid="{{item.userid}}">
+            <input type="hidden" name="id" value="{{suni.userid}}">
+            <span data-type="prefix"></span>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;{{ suni.userName }}</span>
+            <span>({{ suni.userNo || '' }})</span>
+        </li>
+        {{#  }); }}
+
+    {{#  }); }}
+</script>
 <script type="text/html" id="userListTpl2">
     {{#  layui.each(d.userList, function(index, item){ }}
     {{#  if(item.userType === 1){ }}
     <li data-type="student">
-        <input type="hidden" name="id" value="{{item.UUID}}">
+        <input type="hidden" name="id" value="{{item.userid}}">
         <span data-type="prefix">学生：</span>
         <span>{{ item.userName }}</span>
         <span>({{ item.userNo || '' }})</span>
@@ -94,7 +151,7 @@
     {{#  } }}
     {{#  if(item.userType === 2){ }}
     <li data-type="teacher">
-        <input type="hidden" name="id" value="{{item.UUID}}">
+        <input type="hidden" name="id" value="{{item.userid}}">
         <span data-type="prefix">老师：</span>
         <span>{{ item.userName }}</span>
     </li>
@@ -130,33 +187,46 @@
         var batch_class_select, batch_class_id;
 
         //模版数值
+        var htmlTpl0Str = $('#userListTpl0').html();
         var htmlTpl1Str = $('#userListTpl1').html();
         var htmlTpl2Str = $('#userListTpl2').html();
 
         //移动列表
         var $teachers = $('#teachers');
         var $students = $('#students');
-        var $users = $('#users');
+        // var $users = $('#users');
+        var $users = $('.user-group');
 
         //编辑数据加载
-        if (!$.isEmptyObject(editData)) {
-            var v = JSON.parse(editData);
+        var ef = !$.isEmptyObject(editData);
+        if (ef) {
+            var param = JSON.parse(editData);
 
             layui.data('GroupEditData', {
                 key: edit_data_key, remove: true
             });
-            var param = {
-                groupID: v.groupID
-            }
-            api.req('group/groupInfo', param, function (data) {
+            editIdArr.push(param.batchID);
+            editIdArr.push(param.classID);
+            param.stage = stage
+            api.req('group/editGroupInfo2', param, function (data) {
                 if (data.Status === 2000) {
-                    laytpl(htmlTpl2Str).render(data.Data, function(html){
-                        $users.html(html);
+                    $(data.Data).each(function(k, gpData){
+                        $users.each(function (i, group) {
+                            if (i === k) {
+                                console.log(gpData)
+                                $this = $(this);
+
+                                var gi = $(group).parents("div.layui-card.form-user-group").find('input[name="groupID"]').val(gpData.groupID)
+                                var gn = $(group).parents("div.layui-card.form-user-group").find('input[name="groupName"]').val(gpData.groupName)
+                                var tn = $(group).parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(gpData.teaNum)
+                                var sn = $(group).parents("div.draggable").find('.user-group-selected .selected.student .count').html(gpData.stuNum)
+
+                                laytpl(htmlTpl2Str).render(gpData, function(html){
+                                    $this.html(html);
+                                });
+                            }
+                        });
                     });
-                    $('#groupID').val(data.Data.groupID);
-                    $('#groupName').val(data.Data.groupName);
-                    editIdArr.push(data.Data.batchID);
-                    editIdArr.push(data.Data.classID);
                 } else {
                     layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
@@ -167,6 +237,13 @@
 
         //页面加载时初始化
         function initData() {
+            function initHeight() {
+                var h = $(window).height() - 370;
+                $('.draggable-full .draggable ul.user-list').height(h);
+                $('.draggable-full .draggable ul.user-group').height(h/2 - 56);
+            }
+
+            initHeight();
             //初始化联级
             getBatchClassData('search-batch-class-id', loadData, editIdArr);
 
@@ -182,13 +259,15 @@
             var param = {
                 batchID: batchID,
                 classID: classID,
+                // batchID: 1,
+                // classID: 1,
                 stage: stage,
             }
 
             api.req('group/teaList', param, function (data) {
                 if (data.Status === 2000) {
                     data.type = 'teacher';
-                    laytpl(htmlTpl1Str).render(data, function(html){
+                    laytpl(htmlTpl0Str).render(data, function(html){
                         $teachers.html(html);
                     });
                 } else {
@@ -196,7 +275,7 @@
                     $teachers.html('');
                 }
             });
-            api.req('group/stuList', param, function (data) {
+            api.req('group/stuList2', param, function (data) {
                 if (data.Status === 2000) {
                     data.type = 'student';
                     laytpl(htmlTpl1Str).render(data, function(html){
@@ -227,6 +306,11 @@
             animation: 150,
             onRemove: function (evt) {
                 $(evt.item).find('span[data-type="prefix"]').html('老师：');
+
+                var $to = $(evt.to);
+
+                var tn = $to.find('li[data-type="teacher"]').length;
+                $to.parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(tn);
             }
         });
         $users.sortable({
@@ -249,6 +333,14 @@
             },
             onRemove: function (evt) {
                 $(evt.item).find('span[data-type="prefix"]').html('');
+
+
+                var $from = $(evt.from);
+
+                var tn = $from.find('li[data-type="teacher"]').length;
+                var sn = $from.find('li[data-type="student"]').length;
+                $from.parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(tn);
+                $from.parents("div.draggable").find('.user-group-selected .selected.student .count').html(sn);
             }
         });
         $students.sortable({
@@ -266,7 +358,28 @@
             sort: false,
             animation: 150,
             onRemove: function (evt) {
-                $(evt.item).find('span[data-type="prefix"]').html('学生：');
+
+                var $to = $(evt.to);
+
+                var sn = $to.find('li[data-type="student"]').length;
+
+                var type = $(evt.item).data('type');
+                var id = $(evt.item).data('id');
+                if (type === 'teacher') {
+                    var sunli = $(evt.from).find('li[data-pid="' + id + '"]');
+                    sunli.find('span[data-type="prefix"]').html('学生：');
+
+                    sn = sn + sunli.length;
+                    // evt.item = sunli
+                    $(evt.item).replaceWith(sunli);
+                    // $(evt.item).find('span[data-type="prefix"]').html('老师：');
+                } else {
+                    $(evt.item).find('span[data-type="prefix"]').html('学生：');
+                }
+                var tn = $to.find('li[data-type="teacher"]').length;
+
+                $to.parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(tn);
+                $to.parents("div.draggable").find('.user-group-selected .selected.student .count').html(sn);
             }
         });
         $('#group-form-reset').click(function () {
@@ -284,35 +397,35 @@
         // 表单提交事件
         form.on('submit(group-form-submit)', function (data) {
             layer.load(2);
-            var tids = [];
-            var sids = [];
-            var UUIDs = [];
-            $users.find('li').each(function (i, li) {
-                var type = $(li).data('type');
-                var id = $(li).find('input[name=id]').val();
-                if (type === 'teacher') {
-                    tids.push(id);
-                    UUIDs.push(id);
-                }
-                if (type === 'student') {
-                    sids.push(id);
-                    UUIDs.push(id);
+
+            var s = [];
+            $users.each(function (i, group) {
+                var g = [];
+                var gi = $(group).parents("div.layui-card.form-user-group").find('input[name="groupID"]').val()
+                var gn = $(group).parents("div.layui-card.form-user-group").find('input[name="groupName"]').val()
+                var tn = $(group).parents("div.draggable").find('.user-group-selected .selected.teacher .count').html()
+                var sn = $(group).parents("div.draggable").find('.user-group-selected .selected.student .count').html()
+
+                var ids = []
+                $(group).find('li').each(function (i, li) {
+                    // var type = $(li).data('type');
+                    var id = $(li).find('input[name=id]').val();
+                    ids.push(id);
+                })
+                if (ids.length > 0) {
+
+                    if (ef) {
+                        g.push(gi);
+                    }
+                    g.push(gn);
+                    g.push(tn);
+                    g.push(sn);
+                    g.push(ids.join(','))
+                    s.push(g.join(';'))
                 }
             });
-            if (tids.length === 0) {
-                layer.closeAll('loading');
-                layer.msg('请选择老师', {icon: 2});
-                return false;
-            }
-            if (sids.length === 0) {
-                layer.closeAll('loading');
-                layer.msg('请选择学生', {icon: 2});
-                return false;
-            }
-            if (data.field.id) {
-                delete data.field.id;
-            }
-            data.field.UUIDs = UUIDs.join(',');
+            //console.log(s.join('|'))
+
 
             var idArr = getIdArr();
             var batchID = idArr[0];
@@ -321,12 +434,17 @@
             data.field.batchID = batchID;
             data.field.classID = classID;
             data.field.stage = stage;
+            data.field.groupJsonStr = s.join('|');
+
+            delete data.field.id
+            delete data.field.groupName
+            delete data.field.groupID
 
             var url = '';
-            if (data.field.groupID) {
-                url = 'group/editGroup';
+            if (ef) {
+                url = 'group/editGroup2';
             } else {
-                url = 'group/adGroup';
+                url = 'group/adGroup2';
             }
             api.req(url, data.field, function (data) {
                 layer.closeAll('loading');

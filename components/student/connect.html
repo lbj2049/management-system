@@ -1,1 +1,71 @@
-交流管理
+
+<link rel="stylesheet" href="assets/css/connect.css"/>
+<div class="layui-card">
+    <div class="layui-card-header">
+        <h2 class="header-title">交流管理</h2>
+        <span class="layui-breadcrumb pull-right">
+          <a href="#!welcome">首页</a>
+          <a><cite>交流管理</cite></a>
+        </span>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-tab" style="margin-top: 10px">
+            <ul class="layui-tab-title">
+                <li class="layui-this">在线交流</li>
+                <li>离线交流</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <ul class="chat-thread">
+                        <li>Are we meeting today?</li>
+                        <li>yes, what time suits you?</li>
+                        <li>I was thinking after lunch, I have a meeting in the morning</li>
+                        <li>Are we meeting today?</li>
+                        <li>yes, what time suits you?</li>
+                        <li>I was thinking after lunch, I have a meeting in the morning</li>
+                        <li>Are we meeting today?</li>
+                        <li>yes, what time suits you?</li>
+                        <li>I was thinking after lunch, I have a meeting in the morning</li>
+                        <li>Are we meeting today?</li>
+                        <li>yes, what time suits you?</li>
+                        <li>I was thinking after lunch, I have a meeting in the morning</li>
+                    </ul>
+                </div>
+                <div class="layui-tab-item">
+                    <ul class="chat-thread">
+                        <li>Are we meeting today?</li>
+                        <li>yes, what time suits you?</li>
+                        <li>I was thinking after lunch, I have a meeting in the morning</li>
+                        <li>Are we meeting today?</li>
+                        <li>yes, what time suits you?</li>
+                        <li>I was thinking after lunch, I have a meeting in the morning</li>
+                        <li>Are we meeting today?</li>
+                        <li>yes, what time suits you?</li>
+                        <li>I was thinking after lunch, I have a meeting in the morning</li>
+                        <li>Are we meeting today?</li>
+                        <li>yes, what time suits you?</li>
+                        <li>I was thinking after lunch, I have a meeting in the morning</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload', 'selectN', 'laytpl'], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var common = layui.common;
+        var auth = layui.auth;
+        var layer = layui.layer;
+        var util = layui.util;
+        var admin = layui.admin;
+        var api = layui.api;
+        var formSelects = layui.formSelects;
+        var upload = layui.upload;
+        var selectN = layui.selectN;
+        var laytpl = layui.laytpl;
+
+        $('.chat-thread').height($(window).height() - 310);
+    });
+</script>

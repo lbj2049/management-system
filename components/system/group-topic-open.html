@@ -213,6 +213,7 @@
                     $(data.Data).each(function(k, gpData){
                         $users.each(function (i, group) {
                             if (i === k) {
+                                console.log(gpData)
                                 $this = $(this);
 
                                 var gi = $(group).parents("div.layui-card.form-user-group").find('input[name="groupID"]').val(gpData.groupID)
@@ -423,7 +424,7 @@
                     s.push(g.join(';'))
                 }
             });
-            console.log(s.join('|'))
+            //console.log(s.join('|'))
 
 
             var idArr = getIdArr();

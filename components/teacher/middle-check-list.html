@@ -21,17 +21,33 @@
 </div>
 
 <!-- 表格操作列 -->
+<script type="text/html" id="topic-table-bar1">
+    <a class="layui-btn layui-btn-xs" lay-event="download1">下载</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview1">预览</a>
+</script>
+<script type="text/html" id="topic-table-bar2">
+    <a class="layui-btn layui-btn-xs" lay-event="download2">下载</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview2">预览</a>
+</script>
+<script type="text/html" id="topic-table-bar3">
+    <a class="layui-btn layui-btn-xs" lay-event="download3">下载</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview3">预览</a>
+</script>
+<!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar">
-    {{#  if(d.downLoadAddr != '' && d.score == 0) { }}
+    {{#  if(d.score === 0 || d.state == 1) { }}
     <a class="layui-btn layui-btn-xs" lay-event="check-view">批阅</a>
+    <!--
         {{# if (d.ismodel == 1) { }}
         <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="unset-model">设为普通论文</a>
         {{# } else { }}
         <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="set-model">设为范文</a>
         {{# } }}
+    -->
     {{#  } else { }}
-
+    <a class="layui-btn layui-btn-xs" lay-event="check-view">查看</a>
     {{#  } }}
+    <a class="layui-btn layui-btn-xs" lay-event="his-view">回顾</a>
 </script>
 
 <!-- 表单弹窗 -->
@@ -43,9 +59,9 @@
             <label class="layui-form-label">已选题目</label>
             <div class="layui-form-mid layui-word-aux">
                 <a href="javascript:;" class="topic-title">{{d.title}}</a>
-                {{# if (d.reviewState) { }}
+                {{# if (d.state === 2) { }}
                 {{# if (d.ismodel == 1) { }}
-                <span class="layui-badge layui-bg-green">范文</span>
+                <span class="layui-badge">范文</span>
                 {{# } else { }}
                 <span class="layui-badge layui-bg-gray">非范文</span>
                 {{# } }}
@@ -56,49 +72,58 @@
 
         <!-- 老师未批阅 -->
         <div>
-            {{# if (!d.reviewState) { }}
             <div class="layui-form-item">
-                <label class="layui-form-label">论文标题</label>
-                <div class="layui-form-mid">
-                    {{d.pageTitle}}
+                <div class="layui-inline">
+                    <label class="layui-form-label">翻译原文</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        {{d.pageTitle1}}
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">论文附件</label>
-                <div class="layui-input-block">
+                <div class="layui-inline pull-right">
                     <div class="layui-upload">
-                        {{# if(d.subState){ }}
-                        <button type="button" class="layui-btn" id="file-download" data-url="{{d.downLoadAddr}}">下载</button>
-                        <button type="button" class="layui-btn layui-btn-warm" id="file-preview" data-url="{{d.downLoadAddr}}">在线浏览</button>
+                        {{# if(d.subState1){ }}
+                        <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr1}}">下载</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr1}}">预览</button>
                         {{# } }}
                     </div>
                 </div>
             </div>
-            {{# } }}
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">文献翻译</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        {{d.pageTitle2}}
+                    </div>
+                </div>
+                <div class="layui-inline pull-right">
+                    <div class="layui-upload">
+                        {{# if(d.subState2){ }}
+                        <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr2}}">下载</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr2}}">预览</button>
+                        {{# } }}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">实习报告</label>
+                    <div class="layui-form-mid layui-word-aux">
+                        {{d.pageTitle3}}
+                    </div>
+                </div>
+                <div class="layui-inline pull-right">
+                    <div class="layui-upload">
+                        {{# if(d.subState3){ }}
+                        <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{d.downLoadAddr3}}">下载</button>
+                        <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{d.downLoadAddr3}}">预览</button>
+                        {{# } }}
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- 老师已经批阅 -->
         <div>
-            {{# if (d.reviewState) { }}
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">论文标题</label>
-                <div class="layui-form-mid">
-                    {{d.pageTitle}}
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">论文附件</label>
-                <div class="layui-input-block">
-                    <div class="layui-upload">
-                        {{# if(d.subState){ }}
-                        <button type="button" class="layui-btn" id="file-download" data-url="{{d.downLoadAddr}}">下载</button>
-                        <button type="button" class="layui-btn layui-btn-warm" id="file-preview" data-url="{{d.downLoadAddr}}">在线浏览</button>
-                        {{# } }}
-                    </div>
-                </div>
-            </div>
-            {{# } }}
             <div class="layui-form-item">
                 <label class="layui-form-label">小组名称</label>
                 <div class="layui-form-mid">
@@ -123,19 +148,7 @@
                     {{d.userTel}}
                 </div>
             </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">阶段</label>
-                <div class="layui-form-mid">
-                    {{# if(d.stage == 1) { }}
-                    开题
-                    {{# } else if(d.stage == 2) { }}
-                    中期检查
-                    {{# } else if(d.stage == 3) { }}
-                    答辩
-                    {{# } }}
-                </div>
-            </div>
-            {{# if (d.reviewState) { }}
+            {{# if (d.state === 2) { }}
             <div class="layui-form-item">
                 <label class="layui-form-label">审核老师</label>
                 <div class="layui-form-mid layui-word-aux">
@@ -156,7 +169,7 @@
             </div>
             {{# } }}
         </div>
-        {{# if(d.subState){ }}
+        {{# if(d.state === 1){ }}
         <div class="layui-form-item">
             <label class="layui-form-label">评分</label>
             <div class="layui-input-block">
@@ -188,28 +201,44 @@
     </form>
 </script>
 
+<script type="text/html" id="topic-file-model">
 
-<script type="text/html" id="stageTpl">
-    {{#  if(d.stage == 1) { }}
-    开题
-    {{#  } else if(d.stage == 2) { }}
-    中期检查
-    {{#  } else if(d.stage == 3) { }}
-    答辩
-    {{#  } }}
+    <div class="layui-form model-form">
+        <div id="topic-file-content"></div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
+        </div>
+    </div>
 </script>
 
-<script type="text/html" id="stateTpl">
-    {{#  if(d.downLoadAddr == '') { }}
-    未提交
-    {{#  } else { }}
-    <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>
-    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview">预览</a>
-    {{#  } }}
+<script type="text/html" id="topic-file-content-tpl">
+
+    {{#  layui.each(d.vs, function(index, item){ }}
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>{{item.title}}</legend>
+    </fieldset>
+    {{#  layui.each(item.fvs, function(index, sitem){ }}
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">{{sitem.label}}</label>
+            <div class="layui-form-mid layui-word-aux">
+                {{sitem.pageTitle}}
+            </div>
+        </div>
+        <div class="layui-inline pull-right">
+            <div class="layui-upload">
+                <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{sitem.downLoadAddr}}">下载</button>
+                <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{sitem.downLoadAddr}}">预览</button>
+            </div>
+        </div>
+    </div>
+    {{# }) }}
+    {{# }) }}
 </script>
+
 
 <script type="text/html" id="scoreTpl">
-    {{#  if(d.downLoadAddr !== '' && d.score > 0) { }}
+    {{#  if(d.state === 2 && d.score > 0) { }}
     {{d.score}}
     {{#  } else { }}
 
@@ -253,7 +282,7 @@
             // 渲染表格
             table.render({
                 elem: '#topic-table',
-                url: common.base_server + 'stuPage/stuWorkList',
+                url: common.base_server + 'stuPage/stuWorkList2',
                 method: 'POST',
                 where: {
                     UUID: auth.getUUID(),
@@ -269,13 +298,13 @@
                 cols: [[
                     {type: 'numbers'},
                     {field: 'title', title: '选择题目'},
-                    {field: 'userName', title: '学生姓名', width: 110},
-                    {field: 'userNo', title: '学生学号', width: 110},
-                    {field: 'userTel', title: '学生电话', width: 110},
-                    {field: 'stage', title: '环节', templet: '#stageTpl', width: 90},
-                    {field: 'state', title: '作业情况', templet: '#stateTpl', width: 110},
+                    {field: 'userName', title: '学生姓名', width: 92},
+                    {field: 'userNo', title: '学生学号', width: 108},
+                    {field: 'userTel', title: '学生电话', width: 92},
+                    {align: 'center', toolbar: '#topic-table-bar1', title: '翻译原文', width: 108},
+                    {align: 'center', toolbar: '#topic-table-bar2', title: '文献翻译', width: 108},
+                    {align: 'center', toolbar: '#topic-table-bar3', title: '实习报告', width: 108},
                     {field: 'score', title: '评分', templet: '#scoreTpl', width: 60},
-                    // {field: 'teacherName', title: '审批人'},
                     {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 160}
                 ]]
             });
@@ -305,14 +334,24 @@
             if (obj.event === 'check-view') { //批阅
                 // doCheckView(data.id, 1);
                 showEditModel(data)
+            } else if (obj.event === 'his-view') {
+                showFileModel(data);
             } else if (obj.event === 'set-model') { //设为范文
                 doModel(data.spID, 1);
             } else if (obj.event === 'unset-model') { //设为普通论文
                 doModel(data.spID, 2);
-            } else if (obj.event === 'download') {
-                download(data.downLoadAddr)
-            } else if (obj.event === 'preview') {
-                preview(data.downLoadAddr)
+            } else if (obj.event === 'download1') {
+                download(data.downLoadAddr1)
+            } else if (obj.event === 'preview1') {
+                preview(data.downLoadAddr1)
+            } else if (obj.event === 'download2') {
+                download(data.downLoadAddr2)
+            } else if (obj.event === 'preview2') {
+                preview(data.downLoadAddr2)
+            } else if (obj.event === 'download3') {
+                download(data.downLoadAddr3)
+            } else if (obj.event === 'preview3') {
+                preview(data.downLoadAddr4)
             }
         });
 
@@ -327,14 +366,15 @@
 
         // 显示编辑弹窗
         var showEditModel = function (data) {
-            data.subState = data.downLoadAddr !== '' || data.downLoadAddr.length > 0;
-            data.reviewState = data.score !== '' && data.score > 0;
-
+            data.subState1 = data.downLoadAddr1 && data.downLoadAddr1.length > 0;
+            data.subState2 = data.downLoadAddr2 && data.downLoadAddr2.length > 0;
+            data.subState3 = data.downLoadAddr3 && data.downLoadAddr3.length > 0;
+            data.state = (data.score === '' || data.score === 0) ? 1 : 2;
             laytpl($('#topic-model').html()).render(data, function (html) {
 
                 layer.open({
                     type: 1,
-                    title: '批阅论文',
+                    title: '中期答辩',
                     area: '450px',
                     offset: '120px',
                     content: html,
@@ -352,13 +392,75 @@
                 });
             })
         };
+        var showFileModel = function (v) {
+
+            layer.open({
+                type: 1,
+                title: '回顾',
+                area: '450px',
+                offset: '120px',
+                content: $('#topic-file-model').html(),
+            });
+
+            var vv = {}
+            vv.vs = [];
+            api.ajax({
+                url: common.base_server + 'stuPage/lookBack2',
+                data: {
+                    UUID: v.UUID,
+                    stage: stage
+                },
+                type: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.Status === 2000) {
+                        for (var i = 0; i < data.Data.length; i++) {
+                            var vt = data.Data[i];
+                            var ov = {};
+                            ov.title = vt.stage === 1 ? '开题' : '中期检查';
+                            ov.fvs = [];
+                            ov.fvs.push({
+                                label: vt.stage === 1 ? '开题报告' : '翻译原文',
+                                pageTitle: vt.pageTitle1,
+                                downLoadAddr: vt.downLoadAddr1
+                            });
+                            ov.fvs.push({
+                                label: vt.stage === 1 ? '文献综述' : '文献翻译',
+                                pageTitle: vt.pageTitle2,
+                                downLoadAddr: vt.downLoadAddr2
+                            });
+                            ov.fvs.push({
+                                label: vt.stage === 1 ? '任务书' : '实习报告',
+                                pageTitle: vt.pageTitle3,
+                                downLoadAddr: vt.downLoadAddr3
+                            });
+                            if (vt.stage === 1) {
+                                ov.fvs.push({
+                                    label: '计划进度',
+                                    pageTitle: vt.pageTitle4,
+                                    downLoadAddr: vt.downLoadAddr4
+                                });
+                            }
+                            vv.vs.push(ov);
+                        }
+
+                        laytpl($('#topic-file-content-tpl').html()).render(vv, function (html) {
+                            $('#topic-file-content').append(html);
+                        });
+                        initEvent();
+                    } else {
+                        layer.msg(data.Data.ErrorDes, {icon: 2});
+                    }
+                }
+            });
+        }
 
         function initEvent() {
-            $('#file-download').on('click', function () {
+            $('.file-download').on('click', function () {
                 download($(this).data('url'))
             });
 
-            $('#file-preview').on('click', function () {
+            $('.file-preview').on('click', function () {
                 preview($(this).data('url'))
             });
         }
