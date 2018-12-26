@@ -45,6 +45,12 @@ layui.define(['jquery', 'common'], function (exports) {
                 url: '#!topic-distribute-list',
                 path: 'system/topic-distribute-list.html',
                 icon: 'icofont-tasks-alt',
+                auth: '3'
+            }, {
+                name: '选题结果',
+                url: '#!topic-selected-list',
+                path: 'system/topic-selected-list.html',
+                icon: 'icofont-tasks-alt',
                 auth: '3',
                 hr: true
             }, {

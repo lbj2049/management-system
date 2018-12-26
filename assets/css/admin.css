@@ -479,6 +479,10 @@ html {
 .layui-form.toolbar .layui-form-select {
     display: inline-block;
 }
+.layui-form.toolbar .layui-inline {
+    height: 35px;
+    line-height: 35px;
+}
 
 /* 表单弹窗样式 */
 .model-form {

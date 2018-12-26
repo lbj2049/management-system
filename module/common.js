@@ -19,6 +19,7 @@ layui.define(['layer'], function (exports) {
                 "code": res.Status, //解析接口状态
                 "msg": res.Data.ErrorDes, //解析提示文本
                 "count": res.Data.total, //解析数据长度
+                "size": res.Data.pageSize, //解析数据长度
                 "data": res.Data.datas //解析数据列表
             };
         },
@@ -274,7 +275,7 @@ layui.define(['layer'], function (exports) {
                     var ws = new ActiveXObject('WScript.Shell');
                     ws && ws.SendKeys('{F11}');
                 }
-                ti.addClass(ac).removeClass(ic);
+                // ti.addClass(ac).removeClass(ic);
             } else {
                 var el = document.documentElement;
                 var rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
@@ -284,7 +285,7 @@ layui.define(['layer'], function (exports) {
                     var ws = new ActiveXObject('WScript.Shell');
                     ws && ws.SendKeys('{F11}');
                 }
-                ti.addClass(ic).removeClass(ac);
+                // ti.addClass(ic).removeClass(ac);
             }
         },
         // 左滑动tab

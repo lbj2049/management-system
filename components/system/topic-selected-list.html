@@ -1,9 +1,9 @@
 <div class="layui-card">
     <div class="layui-card-header">
-        <h2 class="header-title">选题审核</h2>
+        <h2 class="header-title">选题结果</h2>
         <span class="layui-breadcrumb pull-right">
           <a href="#!welcome">首页</a>
-          <a><cite>选题审核</cite></a>
+          <a><cite>选题结果</cite></a>
         </span>
     </div>
     <div class="layui-card-body">
@@ -15,28 +15,12 @@
             </div>
             <input id="topic-search-value" class="layui-input search-input" type="text" placeholder="输入关键字"/>&emsp;
             <button id="topic-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+            <button id="topic-btn-export-batch" class="layui-btn icon-btn">导出全部数据</button>
+            <button id="topic-btn-export" class="layui-btn icon-btn">导出本页数据</button>
         </div>
         <table class="layui-table" id="topic-table" lay-filter="topic-table"></table>
     </div>
 </div>
-
-<!-- 表格操作列 -->
-<script type="text/html" id="topic-table-bar">
-    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="child">查看</a>
-</script>
-
-<!-- 表单弹窗 -->
-<script type="text/html" id="topic-child-model">
-    <div class="layui-card">
-
-        <div class="layui-card-body">
-            <table class="layui-table" id="topic-child-table" lay-filter="topic-child-table"></table>
-            <div class="model-view-footer">
-                <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">关闭</button>
-            </div>
-        </div>
-    </div>
-</script>
 
 <script type="text/html" id="topic-detail-model">
     <div id="topic-detail-form" class="layui-form model-form">
@@ -57,26 +41,6 @@
         </div>
     </div>
 </script>
-<script type="text/html" id="topic-child-table-bar">
-    {{#  if(d.state == 0 || d.state == 1 || d.state == 1) { }}
-    <a class="layui-btn layui-btn-xs" lay-event="pass">通过</a>
-    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="unpass">未通过</a>
-    {{#  } else if(d.state == 1) { }}
-
-    {{#  } else if(d.state == 2) { }}
-    <a class="layui-btn layui-btn-xs" lay-event="pass">通过</a>
-    {{#  } }}
-</script>
-
-<script type="text/html" id="stateTpl">
-    {{#  if(d.state == 0) { }}
-    未审核
-    {{#  } else if(d.state == 1) { }}
-    通过
-    {{#  } else if(d.state == 2) { }}
-    未通过
-    {{#  } }}
-</script>
 
 <script>
     layui.use(['api', 'form', 'table', 'util', 'common', 'auth', 'admin', 'formSelects', 'upload', 'selectN'], function () {
@@ -92,19 +56,20 @@
         var upload = layui.upload;
         var selectN = layui.selectN;
 
-        var editIdArr = [];
+        $.ajaxSetup({
+            async: false
+        })
+
         var batch_class_select, batch_class_id;
+
+        var page = {};
 
         initData();
 
         //页面加载时初始化
         function initData() {
             //初始化联级
-            getBatchClassData('search-batch-class-id', loadData, editIdArr);
-
-        }
-
-        function loadData() {
+            getBatchClassData('search-batch-class-id');
 
             var idArr = getIdArr();
             var batchID = idArr[0];
@@ -112,7 +77,7 @@
             // 渲染表格
             table.render({
                 elem: '#topic-table',
-                url: common.base_server + 'selQuest/getCheckList',
+                url: common.base_server + 'setQuest/getSLQList',
                 method: 'POST',
                 where: {
                     UUID: auth.getUUID(),
@@ -127,13 +92,18 @@
                 cols: [[
                     {type:'numbers'},
                     {field: 'title', title: '标题', templet: '<div><a href="javascript:;" class="layui-table-link" lay-event="detail">{{d.title}}</a></div>'},
-                    // {field: 'teacherName', title: '出题人'},
-                    {field: 'num', title: '选题人数'},
-                    {field: 'userNames', title: '学生名称'},
-                    // {field: 'state', title: '审核状态', templet: '#stateTpl'},
-                    {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 160}
-                ]]
+                    {field: 'teaName', title: '出题人'},
+                    {field: 'userName', title: '选题学生'},
+                    {field: 'userNo', title: '学生学号'},
+                    // {field: 'msg', title: '回复'},
+                    // {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 180}
+                ]],
+                done: function(res, curr, count){
+                    page.curr = curr
+                    page.size = res.size
+                }
             });
+
         }
 
         // 表单提交事件
@@ -141,15 +111,9 @@
             layer.load(2);
             var url = '';
             if (data.field.stqID) {
-                url = 'setQuest/updQuestion';
-            } else {
-                var idArr = getIdArr();
-                var batchID = idArr[0];
-                var classID = idArr[1];
-                data.field.batchID = batchID
-                data.field.classID = classID;
-                url = 'setQuest/adSetQuestInfo';
+                url = 'setQuest/setFB';
             }
+            data.field.stqIDs = data.field.stqID
             api.req(url, data.field, function (data) {
                 layer.closeAll('loading');
                 if (data.Status == 2000) {
@@ -167,9 +131,11 @@
         table.on('tool(topic-table)', function (obj) {
             var data = obj.data;
             if (obj.event === 'detail') { //查看
-                showDetailModel(data);
-            } else if (obj.event === 'child') { //编辑
-                showChildModel(data)
+                if (data.state == 1 || data.state == 4) {
+
+                } else {
+                    showDetailModel(data);
+                }
             }
         });
 
@@ -181,63 +147,53 @@
             var classID = idArr[1];
             table.reload('topic-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
         });
+        $('#topic-btn-export-batch').click(function () {
+            var keyword = $('#topic-edit-search').val();
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
 
-        // 显示子列表弹窗
-        var showChildModel = function (data) {
-            layer.open({
-                type: 1,
-                title: data ? '审核选题' : '添加选题',
-                area: '650px',
-                offset: '120px',
-                content: $('#topic-child-model').html(),
-                success: function () {
-                    var idArr = getIdArr();
-                    var batchID = idArr[0];
-                    var classID = idArr[1];
-                    table.render({
-                        elem: '#topic-child-table',
-                        url: common.base_server + 'selQuest/getCheckInfoList',
-                        method: 'POST',
-                        where: {
-                            UUID: auth.getUUID(),
-                            stqID: data.stqID,
-                            batchID: batchID,
-                            classID: classID
-                        },
-                        // request: common.tableRequest,
-                        response: common.tableResponse,
-                        parseData: common.tableParseDataWithNoPage,
-                        // height: 'full-250',
-                        page: false,
-                        cols: [[
-                            {type:'numbers'},
-                            {field: 'title', title: '标题'},
-                            {field: 'num', title: '选题人数'},
-                            {field: 'userName', title: '学生名称'},
-                            {field: 'state', title: '审核状态', templet: '#stateTpl'},
-                            {align: 'center', toolbar: '#topic-child-table-bar', title: '操作', width: 160}
-                        ]]
-                    });
+            //批量下载接口
+            api.req('setQuest/ExportExcel', {keyword: keyword, batchID: batchID, classID: classID, pageNum: page.curr, pageSize: page.size}, function (data) {
+                if (data.Status === 2000) {
+                    downloadExcel(data.Data.excelAddr);
+                } else {
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
             });
-        };
+        });
+        $('#topic-btn-export').click(function () {
+            var keyword = $('#topic-edit-search').val();
+            var idArr = getIdArr();
+            var batchID = idArr[0];
+            var classID = idArr[1];
 
-        // 工具条点击事件
-        table.on('tool(topic-child-table)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'pass') { //通过
-                doPass(data.slqID, 1);
-            } else if (obj.event === 'unpass') { //不通过
-                doPass(data.slqID, 2);
-            }
+            //批量下载接口
+            api.req('setQuest/ExportExcel', {keyword: keyword, batchID: batchID, classID: classID, pageNum: page.curr, pageSize: page.size}, function (data) {
+                if (data.Status === 2000) {
+                    downloadExcel(data.Data.excelAddr);
+                } else {
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
+                }
+            });
         });
 
+        function downloadExcel(url) {
+            try {
+                var elemIF = document.createElement("iframe");
+                elemIF.src = url;
+                elemIF.style.display = "none";
+                document.body.appendChild(elemIF);
+            } catch (e) {
 
-        // 显示编辑弹窗
+            }
+        }
+
+        // 显示弹窗
         var showDetailModel = function (data) {
             layer.open({
                 type: 1,
-                title: '查看选题内容',
+                title: '查看选题',
                 area: '450px',
                 offset: '120px',
                 content: $('#topic-detail-model').html(),
@@ -247,58 +203,28 @@
             });
         };
 
-        // 删除
-        var doDelete = function (obj) {
-            layer.confirm('确定要删除吗？', function (i) {
-                layer.close(i);
-                layer.load(2);
-
-                api.req('setQuest/delQuestionInfo', {'stqID': obj.stqID}, function (data) {
-                    layer.closeAll('loading');
-                    if (data.Status == 2000) {
-                        layer.msg(data.Data.Result, {icon: 1});
-                        table.reload('topic-table');
-                        layer.closeAll('page');
-                    } else {
-                        layer.msg(data.Data.ErrorDes, {icon: 2});
-                    }
-                });
-            });
-        };
-
-        //审核操作
-        function doPass(id, state) {
-            //请修改审核接口
-            api.req('selQuest/setState', {slqID: id, state: state}, function (data) {
-                layer.closeAll('loading');
-                if (data.Status == 2000) {
-                    layer.msg(data.Data.Result, {icon: 1});
-                    table.reload('topic-child-table');
-                    // layer.closeAll('page');
-                } else {
-                    layer.msg(data.Data.ErrorDes, {icon: 2});
-                }
-            });
-        }
-
 
         //年级与专业下拉联级
-        function getBatchClassData(selectId, callback, selected) {
+        function getBatchClassData(selectId, classId) {
             api.req('batchInfo/BatchLD', {}, function (data) {
-                if (data.Status === 2000) {
-                    var opvs = [];
-                    // var selected = [];
+                if (data.Status == 2000) {
+
+                    var opvs = new Array();
+                    var selected = new Array();
 
                     var rs = data.Data;
                     for (var i = 0; i < rs.length; i++) {
-                        if (i === 0 && selected.length === 0) {
+                        if (i == 0 && !classId) {
                             selected.push(rs[i].batchID);
                         }
                         var trs = rs[i].classList;
                         if (trs) {
-                            var topvs = [];
+                            var topvs = new Array();
                             for (var j = 0; j < trs.length; j++) {
-                                if ((i === 0 && j === 0) && selected.length === 1) {
+                                if ((i == 0 && j == 0) && !classId) {
+                                    selected.push(trs[j].classID);
+                                } else if (classId && classId == trs[j].classID) {
+                                    selected.push(rs[i].batchID);
                                     selected.push(trs[j].classID);
                                 }
                                 topvs.push({name: trs[j].className, id: trs[j].classID})
@@ -308,14 +234,12 @@
                             opvs.push({name: rs[i].batchName, id: rs[i].batchID});
                         }
                     }
-                    if (selectId === 'search-batch-class-id')  {
+                    if (selectId == 'search-batch-class-id')  {
                         batch_class_select = selectN(getSelectNParam(selectId, opvs, selected))
                     } else {
                         batch_class_id = selectN(getSelectNParam(selectId, opvs, selected))
                     }
-                    if (typeof callback === "function") {
-                        callback();
-                    }
+
                 }
             });
         }

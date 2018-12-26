@@ -20,7 +20,7 @@ layui.define(['jquery', 'form'], function(exports){
 		//当前选中最后一个值
 		this.lastValue = '';
 		//当前选中最后一个值
-		this.lastName = '';		
+		this.lastName = '';
 		//是否已选
 		this.isSelected = false;
 		//初始化配置
@@ -32,27 +32,27 @@ layui.define(['jquery', 'form'], function(exports){
 			//默认选中值
 			selected: [],
 			//空值项提示，可设置为数组['请选择省','请选择市','请选择县']
-			tips: '请选择',	
+			tips: '请选择',
 			//是否允许搜索，可设置为数组[true,true,true]
 			search:false,
 			//选择项宽度，可设置为数组['80','90','100']
-			width:null,	
+			width:null,
 			//为真只取最后一个值
 			last: false,
 			//值验证，与lay-verify一致
-			verify: '',		
+			verify: '',
 			//事件过滤器，lay-filter名
 			filter: '',
 			//input的name 不设置与选择器相同(去#.)
 			name: '',
 			//数据分隔符
-			delimiter: ',',		
+			delimiter: ',',
 			//数据的键名 status=0为禁用状态
 			field:{idName:'id',titleName:'name',statusName:'status',childName:'children'},
-			//多表单区分 form.render(type, filter); 为class="layui-form" 所在元素的 lay-filter="" 的值 
+			//多表单区分 form.render(type, filter); 为class="layui-form" 所在元素的 lay-filter="" 的值
 			formFilter: null
 		}
-		
+
 		//实例化配置
 		this.config = $.extend(this.config,config);
 
@@ -64,7 +64,7 @@ layui.define(['jquery', 'form'], function(exports){
 			}
 			else{
 				var i=$(c.elem).find('select').length;
-				return c.tips.hasOwnProperty(i) ? c.tips[i] : '请选择'; 
+				return c.tips.hasOwnProperty(i) ? c.tips[i] : '请选择';
 			}
 		}
 
@@ -95,8 +95,8 @@ layui.define(['jquery', 'form'], function(exports){
 					return /^\d+$/.test(c.width[i]) ? 'style="width:'+c.width[i]+'px;" ' : ' ';
 				}
 			}
-		}		
-			
+		}
+
 		//创建一个Select
 		this.createSelect = function(optionData){
 			var o = this,c = o.config,f=c.field;
@@ -120,7 +120,7 @@ layui.define(['jquery', 'form'], function(exports){
 			for(var i=0;i<optionIndex.length;i++){
 				if('undefined' == typeof item[optionIndex[i]]){
 					item = null;
-					break;      
+					break;
 				}
 				else if('undefined' == typeof item[optionIndex[i]][f.childName]){
 					item = null;
@@ -148,7 +148,7 @@ layui.define(['jquery', 'form'], function(exports){
 				//设置最后一个select的选中值
 				$E.find('select:last').val(selected[i]);
 				//获取该选中值的索引
-				var lastIndex = $E.find('select:last').get(0).selectedIndex-1; 
+				var lastIndex = $E.find('select:last').get(0).selectedIndex-1;
 				index.push(lastIndex);
 				//取出下级的选项值
 				var childItem = o.getOptionData(c.data,index);
@@ -159,9 +159,9 @@ layui.define(['jquery', 'form'], function(exports){
 				}
 			}
 			form.render('select',c.formFilter);
-			o.getSelected();					
+			o.getSelected();
 		};
-		
+
 		//下拉事件
 		this.change = function(elem){
 			var o = this,c = o.config;
@@ -173,14 +173,14 @@ layui.define(['jquery', 'form'], function(exports){
 			$thisItem.parent().find('select').each(function(){
 				index.push($(this).get(0).selectedIndex-1);
 			});
-			
+
 			var childItem = o.getOptionData(c.data,index);
 			if(childItem){
 				var html = o.createSelect(childItem);
 				$thisItem.after(html);
 				form.render('select',c.formFilter);
 			}
-			o.getSelected();			
+			o.getSelected();
 		};
 
 		//获取所有值-数组 每次选择后执行
@@ -200,12 +200,12 @@ layui.define(['jquery', 'form'], function(exports){
 				names.push(n);
 				selected.push(item);
 			});
-			o.selected =selected;			
+			o.selected =selected;
 			o.values = values;
 			o.names = names;
 			o.lastValue = $E.find('select:last').val();
 			o.lastName = $E.find('option:selected:last').text();
-			
+
 			o.isSelected = o.lastValue=='' ? false : true;
 			var inputVal = c.last===true ? o.lastValue : o.values.join(c.delimiter);
 			$E.find('input[name='+c.name+']').val(inputVal);
@@ -226,9 +226,9 @@ layui.define(['jquery', 'form'], function(exports){
 				}
 			});
 			return d;
-		}		
-		
-		
+		}
+
+
 	};
 
 	//渲染一个实例
@@ -247,29 +247,29 @@ layui.define(['jquery', 'form'], function(exports){
 			}
 			o.config.data =  data;
 		}
-		
+
 		c.filter = c.filter=='' ? c.elem.replace('#','').replace('.','') : c.filter;
 		c.name = c.name=='' ? c.elem.replace('#','').replace('.','') : c.name;
 		o.config = c;
-		
+
 		//初始化
 		o.set();
-		
+
 		//监听下拉事件
 		form.on('select('+c.filter+')',function(data){
-			o.change($(data.elem));	
+			o.change($(data.elem));
 		});
 		//验证失败样式
 		$E.find('input[name='+c.name+']').focus(function(){
 			var t = $(c.elem).offset().top;
-			$('html,body').scrollTop(t-200);			
+			$('html,body').scrollTop(t-200);
 			$(c.elem).find('select:last').addClass('layui-form-danger');
 			setTimeout(function(){
 				$(c.elem).find('select:last').removeClass('layui-form-danger');
 			},3000);
 		});
 	}
-	
+
 	//输出模块
 	exports(MOD_NAME, function (config) {
 		var _this = new obj(config);
