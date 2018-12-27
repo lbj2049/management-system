@@ -220,8 +220,6 @@
                 if (data.Status === 2000) {
                     var paperData = data.Data;
                     paperData.subState1 = paperData.downLoadAddr1 && paperData.downLoadAddr1.length > 0;
-                    paperData.subState2 = paperData.downLoadAddr2 && paperData.downLoadAddr2.length > 0;
-                    paperData.subState3 = paperData.downLoadAddr3 && paperData.downLoadAddr3.length > 0;
                     paperData.reviewState = paperData.score !== '' && paperData.score > 0;
                     laytpl($('#topic-info').html()).render(paperData, function (html) {
                         $('#topic-info-container').html(html)
@@ -326,44 +324,32 @@
 
         // 表单提交事件
         form.on('submit(topic-form-submit)', function (data) {
-            layer.load(2);
             var url = '';
             if (data.field.stqID) {
                 url = 'stuPage/upLoadFile2';
             } else {
                 url = 'stuPage/upLoadFile2';
             }
-            var formData = new FormData($('#topic-form')[0]);
+            var formData = new FormData();
+
+            formData.append('stqID',data.field.stqID)
+            formData.append('groupID',data.field.groupID)
+            formData.append('spID',data.field.spID)
+
             var fs1 = $('input[name="fileName1"]').data('state') === 1;
-            var fs2 = $('input[name="fileName2"]').data('state') === 1;
-            var fs3 = $('input[name="fileName3"]').data('state') === 1;
             if ((data.field.pageTitle1 && !data.field.fileName1 && !fs1) || (!data.field.pageTitle1 && data.field.fileName1 && !fs1)) {
-                layer.msg('填写的翻译原文信息不完整', {icon: 2});
+                layer.msg('填写的毕业论文信息不完整', {icon: 2});
                 return false;
-            } else if ((!data.field.pageTitle1 && !data.field.fileName1) || fs1) {
-                formData.delete("pageTitle1");
-                formData.delete("file1");
-                formData.delete("fileName1");
-            }
-            if ((data.field.pageTitle2 && !data.field.fileName2 && !fs2) || (!data.field.pageTitle2 && data.field.fileName2 && !fs2)) {
-                layer.msg('填写的文献翻译信息不完整', {icon: 2});
-                return false;
-            } else if ((!data.field.pageTitle2 && !data.field.fileName2) || fs2) {
-                formData.delete("pageTitle2");
-                formData.delete("file2");
-                formData.delete("fileName2");
-            }
-            if ((data.field.pageTitle3 && !data.field.fileName3 && !fs3) || (!data.field.pageTitle3 && data.field.fileName3 && !fs3)) {
-                layer.msg('填写的实习报告信息不完整', {icon: 2});
-                return false;
-            } else if ((!data.field.pageTitle3 && !data.field.fileName3) || fs3) {
-                formData.delete("pageTitle3");
-                formData.delete("file3");
-                formData.delete("fileName3");
+            } else if (data.field.pageTitle1 && data.field.fileName1 && !fs1) {
+                formData.append('pageTitle1', data.field.pageTitle1)
+                formData.append('file1', $('#file1')[0].files[0])
+                formData.append('fileName1', data.field.fileName1)
             }
 
             formData.append('UUID', auth.getUUID())
             formData.append('stage', stage);
+
+            layer.load(2);
             api.ajax({
                 url: common.base_server + url,
                 data: formData,

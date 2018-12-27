@@ -401,7 +401,7 @@
             return {
                 //元素容器【必填】
                 elem: '#' + id,
-                search: [false, true],
+                search: [false, false],
                 //候选数据【必填】
                 data: opvs,
                 //为真只取最后一个值
@@ -410,6 +410,7 @@
                 selected: selected,
                 //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
                 tips: ['请选择年级', '请选择专业'],
+                showTips: false,
                 //数据的键名
                 field: {idName: 'id', titleName: 'name', childName: 'children'},
                 //添加验证

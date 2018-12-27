@@ -213,7 +213,6 @@
                     $(data.Data).each(function(k, gpData){
                         $users.each(function (i, group) {
                             if (i === k) {
-                                console.log(gpData)
                                 $this = $(this);
 
                                 var gi = $(group).parents("div.layui-card.form-user-group").find('input[name="groupID"]').val(gpData.groupID)
@@ -519,6 +518,7 @@
                 selected: selected,
                 //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
                 tips: ['请选择年级', '请选择专业'],
+                showTips: false,
                 //数据的键名
                 field:{idName:'id',titleName:'name',childName:'children'},
                 //添加验证

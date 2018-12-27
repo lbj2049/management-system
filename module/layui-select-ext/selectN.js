@@ -33,6 +33,7 @@ layui.define(['jquery', 'form'], function(exports){
 			selected: [],
 			//空值项提示，可设置为数组['请选择省','请选择市','请选择县']
 			tips: '请选择',
+            showTips: true,
 			//是否允许搜索，可设置为数组[true,true,true]
 			search:false,
 			//选择项宽度，可设置为数组['80','90','100']
@@ -103,7 +104,9 @@ layui.define(['jquery', 'form'], function(exports){
 			var html = '';
 			html+= '<div class="layui-input-inline" '+o.setWidth()+'>';
 			html+= ' <select '+o.setSearch()+'lay-filter="'+c.filter+'">';
-			html+= '  <option value="">'+o.setTips()+'</option>';
+			if (c.showTips) {
+                html+= '  <option value="">'+o.setTips()+'</option>';
+			}
 			for(var i=0;i<optionData.length;i++){
 				var disabled = optionData[i][f.statusName]==0 ? 'disabled="" ' : '';
 				html+= '  <option '+disabled+'value="'+optionData[i][f.idName]+'">'+optionData[i][f.titleName]+'</option>';
@@ -148,7 +151,7 @@ layui.define(['jquery', 'form'], function(exports){
 				//设置最后一个select的选中值
 				$E.find('select:last').val(selected[i]);
 				//获取该选中值的索引
-				var lastIndex = $E.find('select:last').get(0).selectedIndex-1;
+				var lastIndex = c.showTips ? $E.find('select:last').get(0).selectedIndex-1 : $E.find('select:last').get(0).selectedIndex;
 				index.push(lastIndex);
 				//取出下级的选项值
 				var childItem = o.getOptionData(c.data,index);
@@ -171,7 +174,8 @@ layui.define(['jquery', 'form'], function(exports){
 			var index=[];
 			//获取所有select，取出选中项的值和索引
 			$thisItem.parent().find('select').each(function(){
-				index.push($(this).get(0).selectedIndex-1);
+				// index.push($(this).get(0).selectedIndex-1);
+                index.push(c.showTips ? $(this).get(0).selectedIndex-1 : $(this).get(0).selectedIndex);
 			});
 
 			var childItem = o.getOptionData(c.data,index);
