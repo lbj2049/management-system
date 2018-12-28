@@ -205,32 +205,10 @@
             layui.data('GroupEditData', {
                 key: edit_data_key, remove: true
             });
+
             editIdArr.push(param.batchID);
             editIdArr.push(param.classID);
-            param.stage = stage
-            api.req('group/editGroupInfo2', param, function (data) {
-                if (data.Status === 2000) {
-                    $(data.Data).each(function(k, gpData){
-                        $users.each(function (i, group) {
-                            if (i === k) {
-                                // console.log(gpData)
-                                $this = $(this);
-
-                                var gi = $(group).parents("div.layui-card.form-user-group").find('input[name="groupID"]').val(gpData.groupID)
-                                var gn = $(group).parents("div.layui-card.form-user-group").find('input[name="groupName"]').val(gpData.groupName)
-                                var tn = $(group).parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(gpData.teaNum)
-                                var sn = $(group).parents("div.draggable").find('.user-group-selected .selected.student .count').html(gpData.stuNum)
-
-                                laytpl(htmlTpl2Str).render(gpData, function(html){
-                                    $this.html(html);
-                                });
-                            }
-                        });
-                    });
-                } else {
-                    layer.msg(data.Data.ErrorDes, {icon: 2});
-                }
-            });
+            fetchData(param)
         }
 
         initData();
@@ -286,6 +264,34 @@
                     $students.html('');
                 }
             });
+
+            fetchData(param)
+        }
+
+        function fetchData(param) {
+            param.stage = stage
+            api.req('group/editGroupInfo2', param, function (data) {
+                if (data.Status === 2000) {
+                    $(data.Data).each(function(k, gpData){
+                        $users.each(function (i, group) {
+                            if (i === k) {
+                                $this = $(this);
+
+                                var gi = $(group).parents("div.layui-card.form-user-group").find('input[name="groupID"]').val(gpData.groupID)
+                                var gn = $(group).parents("div.layui-card.form-user-group").find('input[name="groupName"]').val(gpData.groupName)
+                                var tn = $(group).parents("div.draggable").find('.user-group-selected .selected.teacher .count').html(gpData.teaNum)
+                                var sn = $(group).parents("div.draggable").find('.user-group-selected .selected.student .count').html(gpData.stuNum)
+
+                                laytpl(htmlTpl2Str).render(gpData, function(html){
+                                    $this.html(html);
+                                });
+                            }
+                        });
+                    });
+                } else {
+                    layer.msg(data.Data.ErrorDes, {icon: 2});
+                }
+            });
         }
 
         // 移动老师和学生
@@ -317,7 +323,7 @@
             group: {
                 name: 'users',
                 pull: true,
-                put: ['teachers', 'students']
+                put: ['teachers', 'students', 'users']
             },
             animation: 150,
             onStart: function (evt) {
@@ -390,8 +396,8 @@
 
         // 搜索按钮点击事件
         $('#group-btn-search').click(function () {
-            loadData()
             $users.html('');
+            loadData()
         });
 
         // 表单提交事件
@@ -450,7 +456,7 @@
                 layer.closeAll('loading');
                 if (data.Status === 2000) {
                     layer.msg(data.Data.Result, {icon: 1});
-                    $('#group-form-reset').click();
+                    // $('#group-form-reset').click();
                 } else {
                     layer.msg(data.Data.ErrorDes, {icon: 2});
                 }
