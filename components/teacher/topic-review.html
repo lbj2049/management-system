@@ -72,9 +72,9 @@
     {{#  if(d.state == 0) { }}
     未审核
     {{#  } else if(d.state == 1) { }}
-    通过
-    {{#  } else if(d.state == 2) { }}
-    未通过
+    未审核
+    {{#  } else { }}
+    未知
     {{#  } }}
 </script>
 
@@ -130,7 +130,7 @@
                     // {field: 'teacherName', title: '出题人'},
                     {field: 'num', title: '选题人数'},
                     {field: 'userNames', title: '学生名称'},
-                    // {field: 'state', title: '审核状态', templet: '#stateTpl'},
+                    {field: 'state', title: '审核状态', templet: '#stateTpl'},
                     {align: 'center', toolbar: '#topic-table-bar', title: '操作', width: 160}
                 ]]
             });
@@ -226,9 +226,9 @@
         table.on('tool(topic-child-table)', function (obj) {
             var data = obj.data;
             if (obj.event === 'pass') { //通过
-                doPass(data.slqID, 1);
+                doPass(data, 1);
             } else if (obj.event === 'unpass') { //不通过
-                doPass(data.slqID, 2);
+                doPass(data, 2);
             }
         });
 
@@ -267,9 +267,9 @@
         };
 
         //审核操作
-        function doPass(id, state) {
+        function doPass(data, state) {
             //请修改审核接口
-            api.req('selQuest/setState', {slqID: id, state: state}, function (data) {
+            api.req('selQuest/setState', {slqID: data.slqID, 'stqID': data.stqID, state: state}, function (data) {
                 layer.closeAll('loading');
                 if (data.Status == 2000) {
                     layer.msg(data.Data.Result, {icon: 1});

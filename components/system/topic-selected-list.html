@@ -141,14 +141,14 @@
 
         // 搜索按钮点击事件
         $('#topic-btn-search').click(function () {
-            var keyword = $('#topic-edit-search').val();
+            var keyword = $('#topic-search-value').val();
             var idArr = getIdArr();
             var batchID = idArr[0];
             var classID = idArr[1];
             table.reload('topic-table', {where: {keyword: keyword, batchID: batchID, classID: classID}});
         });
         $('#topic-btn-export-batch').click(function () {
-            var keyword = $('#topic-edit-search').val();
+            var keyword = $('#topic-search-search').val();
             var idArr = getIdArr();
             var batchID = idArr[0];
             var classID = idArr[1];
@@ -163,7 +163,7 @@
             });
         });
         $('#topic-btn-export').click(function () {
-            var keyword = $('#topic-edit-search').val();
+            var keyword = $('#topic-search-search').val();
             var idArr = getIdArr();
             var batchID = idArr[0];
             var classID = idArr[1];

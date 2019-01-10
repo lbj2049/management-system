@@ -157,6 +157,7 @@
                     {type:'numbers'},
                     {field: 'title', title: '标题', templet: '<div><a href="javascript:;" class="layui-table-link" lay-event="detail">{{d.title}}</a></div>'},
                     {field: 'userName', title: '出题人'},
+                    {field: 'stuName', title: '选题人'},
                     // {field: 'upTime', title: '提交时间'},
                     {field: 'state', title: '选择状态', templet: '#stateTpl'},
                     // {field: 'msg', title: '回复'},
@@ -210,7 +211,7 @@
 
         // 搜索按钮点击事件
         $('#topic-btn-search').click(function () {
-            var keyword = $('#topic-edit-search').val();
+            var keyword = $('#topic-search-value').val();
             table.reload('topic-table', {where: {keyword: keyword}});
         });
 
