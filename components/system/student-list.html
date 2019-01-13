@@ -265,15 +265,13 @@
                 return;
             }
             var ids = new Array();
-            var f = false;
             $.each(checkStatus.data, function (i, v) {
-                if (v.state != 0) {
-                    f = true;
+                if (v.state !== 1) {
+                    ids.push(v.id);
                 }
-                ids.push(v.id);
             });
-            if (f) {
-                layer.msg('请选择需要审核的数据', {icon: 2});
+            if (checkStatus.data.length !== ids.length) {
+                layer.msg('请不要选择已审核的数据', {icon: 2});
                 return;
             } else {
                 layer.confirm('确定审核？', {icon: 3, title:'提示'}, function(index) {
