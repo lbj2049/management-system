@@ -267,7 +267,7 @@
             var ids = new Array();
             $.each(checkStatus.data, function (i, v) {
                 if (v.state !== 1) {
-                    ids.push(v.id);
+                    ids.push(v.UUID);
                 }
             });
             if (checkStatus.data.length !== ids.length) {
