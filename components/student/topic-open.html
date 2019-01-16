@@ -125,7 +125,7 @@
                     <div class="layui-input-block">
                         <div class="layui-upload">
                             <button type="button" class="layui-btn select-file">选择文件</button>
-                            <input name="file4" type="file" class="layui-upload-file" id="file" data-fileindex="4"/>
+                            <input name="file4" type="file" class="layui-upload-file" id="file4" data-fileindex="4"/>
                             <input name="fileName4" type="hidden" data-state="1"/>
                             <div class="layui-inline layui-upload-choose"></div>
                             {{# if(d.subState4){ }}
@@ -463,7 +463,7 @@
             var fs2 = $('input[name="fileName2"]').data('state') === 1;
             var fs3 = $('input[name="fileName3"]').data('state') === 1;
             var fs4 = $('input[name="fileName4"]').data('state') === 1;
-            
+
             if ((data.field.pageTitle1 && !data.field.fileName1 && !fs1) || (!data.field.pageTitle1 && data.field.fileName1 && !fs1)) {
                 layer.msg('填写的开题报告信息不完整', {icon: 2});
                 return false;

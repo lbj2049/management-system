@@ -22,24 +22,32 @@
 
 <!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar1">
+    {{# if (d.downLoadAddr1 && d.downLoadAddr1.length > 0) { }}
     <a class="layui-btn layui-btn-xs" lay-event="download1">下载</a>
     <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview1">预览</a>
+    {{#  } }}
 </script>
 <script type="text/html" id="topic-table-bar2">
+    {{# if (d.downLoadAddr2 && d.downLoadAddr2.length > 0) { }}
     <a class="layui-btn layui-btn-xs" lay-event="download2">下载</a>
     <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview2">预览</a>
+    {{#  } }}
 </script>
 <script type="text/html" id="topic-table-bar3">
+    {{# if (d.downLoadAddr3 && d.downLoadAddr3.length > 0) { }}
     <a class="layui-btn layui-btn-xs" lay-event="download3">下载</a>
     <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview3">预览</a>
+    {{#  } }}
 </script>
 <script type="text/html" id="topic-table-bar4">
+    {{# if (d.downLoadAddr4 && d.downLoadAddr4.length > 0) { }}
     <a class="layui-btn layui-btn-xs" lay-event="download4">下载</a>
     <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview4">预览</a>
+    {{#  } }}
 </script>
 <!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar">
-    {{#  if(d.state == 1) { }}
+    {{#  if(d.score === 0 || d.state == 1) { }}
     <a class="layui-btn layui-btn-xs" lay-event="check-view">批阅</a>
     <!--
         {{# if (d.ismodel == 1) { }}
@@ -234,7 +242,7 @@
 </script>
 
 <script type="text/html" id="scoreTpl">
-    {{#  if(d.state === 2) { }}
+    {{#  if(d.state === 2 && d.score > 0) { }}
     {{d.score}}
     {{#  } else { }}
 
@@ -371,6 +379,7 @@
             data.subState2 = data.downLoadAddr2 && data.downLoadAddr2.length > 0;
             data.subState3 = data.downLoadAddr3 && data.downLoadAddr3.length > 0;
             data.subState4 = data.downLoadAddr4 && data.downLoadAddr4.length > 0;
+            data.state = (data.score === '' || data.score === 0) ? 1 : 2;
 
             laytpl($('#topic-model').html()).render(data, function (html) {
 
@@ -378,7 +387,7 @@
                     type: 1,
                     title: '开题',
                     area: '450px',
-                    offset: '120px',
+                    offset: '80px',
                     content: html,
                     success: function () {
 

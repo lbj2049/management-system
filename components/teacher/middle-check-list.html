@@ -22,16 +22,22 @@
 
 <!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar1">
+    {{# if (d.downLoadAddr1 && d.downLoadAddr1.length > 0) { }}
     <a class="layui-btn layui-btn-xs" lay-event="download1">下载</a>
     <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview1">预览</a>
+    {{#  } }}
 </script>
 <script type="text/html" id="topic-table-bar2">
+    {{# if (d.downLoadAddr2 && d.downLoadAddr2.length > 0) { }}
     <a class="layui-btn layui-btn-xs" lay-event="download2">下载</a>
     <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview2">预览</a>
+    {{#  } }}
 </script>
 <script type="text/html" id="topic-table-bar3">
+    {{# if (d.downLoadAddr3 && d.downLoadAddr3.length > 0) { }}
     <a class="layui-btn layui-btn-xs" lay-event="download3">下载</a>
     <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="preview3">预览</a>
+    {{#  } }}
 </script>
 <!-- 表格操作列 -->
 <script type="text/html" id="topic-table-bar">
@@ -227,12 +233,20 @@
         </div>
         <div class="layui-inline pull-right">
             <div class="layui-upload">
+                {{# if (sitem.downLoadAddr && sitem.downLoadAddr.length > 0) { }}
                 <button type="button" class="layui-btn layui-btn-xs file-download" data-url="{{sitem.downLoadAddr}}">下载</button>
                 <button type="button" class="layui-btn layui-btn-xs file-preview layui-btn-warm" data-url="{{sitem.downLoadAddr}}">预览</button>
+                {{#  } }}
             </div>
         </div>
     </div>
     {{# }) }}
+    <div class="layui-form-item">
+        <label class="layui-form-label">老师评价</label>
+        <div class="layui-form-mid">
+            {{item.teaContent}}
+        </div>
+    </div>
     {{# }) }}
 </script>
 
@@ -418,6 +432,7 @@
                             var vt = data.Data[i];
                             var ov = {};
                             ov.title = vt.stage === 1 ? '开题' : '中期检查';
+                            ov.teaContent = vt.teaContent;
                             ov.fvs = [];
                             ov.fvs.push({
                                 label: vt.stage === 1 ? '开题报告' : '翻译原文',
